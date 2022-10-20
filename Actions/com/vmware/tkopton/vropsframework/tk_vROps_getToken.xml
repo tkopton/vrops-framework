@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="tk_vROps_getToken" result-type="SecureString" api-version="6.0.0" id="91718c0c-6286-4463-a35b-12d6e44c8b99" version="0.0.0" category-name="com.vmware.tkopton.vropsframework">
+  <description><![CDATA[Returns vROps token.]]></description>
+  <param n="restOp" t="REST:RESTOperation"/>
+  <param n="userName" t="string"/>
+  <param n="userPassword" t="SecureString"/>
+  <param n="authSource" t="string"/>
+  <script encoded="false"><![CDATA[return getToken();
+
+function getToken() {
+    var jsonBody = {
+        "username": "",
+        "authSource": "",
+        "password": "",
+        "others": [],
+        "otherAttributes": {}
+    };
+
+    jsonBody.username = userName;
+    jsonBody.password = userPassword;
+    jsonBody.authSource = authSource;
+
+    var inParamtersValues = null;
+    var acceptHeadersValue = "";
+
+    var requestBody = JSON.stringify(jsonBody);
+    var request = restOp.createRequest(inParamtersValues, requestBody);
+    request.contentType = "application/json";
+    request.setHeader("accept", "application/json");
+
+    var response = request.execute();
+    statusCode = response.statusCode;
+    statusCodeAttribute = statusCode;
+    contentLength = response.contentLength;
+    headers = response.getAllHeaders();
+    contentAsString = response.contentAsString;
+
+    var jsonObject = JSON.parse(response.contentAsString);
+    var vropsNewToken = jsonObject.token;
+
+    return vropsNewToken;
+}
+]]></script>
+</dunes-script-module>
