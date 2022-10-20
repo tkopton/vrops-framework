@@ -19,7 +19,7 @@ function startInstance() {
     urlParamValues.push(adapterInstanceID);
     var startAdapter = createOp(myRestHost, myRestOpMethod, myRestOpUrl);
     
-    // Execute request
+    // Executing request
     var request = setRequest(startAdapter, setUrlParamValues(urlParamValues), null, null, null);
     request.setHeader("accept", "application/json");
     request.setHeader("Authorization", "vRealizeOpsToken " + vropsToken);
