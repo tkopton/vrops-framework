@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item2" object-name="workflow:name=generic" id="06ea5edb-c998-44f6-916b-6ef7ee39c403" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-createAdapterInstance-MSSQL-02</display-name>
+    <description>Creates an MSSQL Adapter Instance</description>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="adapterInstanceName" type="string"/>
+        <param name="vropsUserName" type="string"/>
+        <param name="vropsUserPassword" type="SecureString"/>
+        <param name="vropsUserAuthSource" type="string"/>
+        <param name="adapterInstanceDescription" type="string"/>
+        <param name="mssqlHost" type="string">
+            <description>IP or FQDN</description>
+        </param>
+        <param name="mssqlInstanceName" type="string"/>
+        <param name="startAdapter" type="boolean"/>
+    </input>
+    <output/>
+    <attrib name="createAdapterInstances" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='d527adad-f227-4685-bb5a-63c8f427a9f2:8fbf910c-67a8-4633-bed9-ba6ba4ea1c35'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="vropsToken" type="SecureString">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="aquireToken" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='d527adad-f227-4685-bb5a-63c8f427a9f2:cc1fe82e-520a-4615-a8f5-859bd4714f0d'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="jsonBody" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="adapterInstanceID" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="actionResult" type="boolean">
+        <value encoded="n">false</value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="10.0" x="360.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item6" type="task" comparator="0">
+        <display-name>executeRESTCall</display-name>
+        <script encoded="false">var requestBody = JSON.stringify(jsonBody);
+
+System.log(requestBody);
+
+var jsonResponse = null;
+var request = createAdapterInstances.createRequest(null, requestBody);
+request.contentType = "application/json";
+request.setHeader("accept", "application/json");
+request.setHeader("Authorization", "vRealizeOpsToken " + vropsToken);
+
+var response = request.execute();
+var statusCode = response.statusCode;
+var contentAsString = response.contentAsString;
+
+jsonResponse = JSON.parse(contentAsString);
+adapterInstanceID = jsonResponse.id;
+</script>
+        <in-binding>
+            <bind name="vropsToken" type="SecureString" export-name="vropsToken"/>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+            <bind name="createAdapterInstances" type="REST:RESTOperation" export-name="createAdapterInstances"/>
+        </in-binding>
+        <out-binding>
+            <bind name="adapterInstanceID" type="string" export-name="adapterInstanceID"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="80.0" x="120.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.tkopton.vropsframework/tk_vROps_getToken" comparator="0">
+        <display-name>tk_vROps_getToken</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_vROps_getToken(restOp, userName, userPassword, authSource);
+</script>
+        <in-binding>
+            <bind name="restOp" type="REST:RESTOperation" export-name="aquireToken"/>
+            <bind name="userName" type="string" export-name="vropsUserName"/>
+            <bind name="userPassword" type="SecureString" export-name="vropsUserPassword"/>
+            <bind name="authSource" type="string" export-name="vropsUserAuthSource"/>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="SecureString" export-name="vropsToken"/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="80.0" x="0.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item1" type="task" comparator="0">
+        <display-name>createBody</display-name>
+        <script encoded="false">jsonBody = {
+    "name": null,
+    "description": null,
+    "adapterKindKey": "SqlServerAdapter",
+    "collectorId": 2,
+    "resourceIdentifiers": [
+        {
+            "name": "host",
+            "value": null
+        },
+        {
+            "name": "active_query_count",
+            "value": "10"
+        },
+        {
+            "name": "active_wait_time_count",
+            "value": "10"
+        },
+        {
+            "name": "connection_pool_size",
+            "value": "16"
+        },
+        {
+            "name": "exclude_events",
+            "value": "False"
+        },
+        {
+            "name": "exclude_log_based_events",
+            "value": "False"
+        },
+        {
+            "name": "instance",
+            "value": null
+        },
+        {
+            "name": "port",
+            "value": ""
+        },
+        {
+            "name": "query_count",
+            "value": "100"
+        },
+        {
+            "name": "ssl_config",
+            "value": "No Verify"
+        },
+        {
+            "name": "support_autodiscovery",
+            "value": "True"
+        },
+        {
+            "name": "thread_pool_size",
+            "value": "16"
+        },
+        {
+            "name": "thread_timeout",
+            "value": "30"
+        },
+        {
+            "name": "use_ntlm_v2",
+            "value": "False"
+        },
+        {
+            "name": "wait_time_count",
+            "value": "100"
+        }
+    ],
+    "credential": {
+        "id": "f0724f79-ef21-4ab1-82ef-c1809498308c",
+        "name": null,
+        "adapterKindKey": null,
+        "credentialKindKey": null,
+        "fields": [],
+        "others": [],
+        "otherAttributes": {}
+    },
+    "others": [],
+    "otherAttributes": {}
+}
+
+jsonBody.name = adapterInstanceName;
+jsonBody.description = adapterInstanceDescription;
+jsonBody.resourceIdentifiers[0].value = mssqlHost;
+jsonBody.resourceIdentifiers[6].value = mssqlInstanceName;</script>
+        <in-binding>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+            <bind name="adapterInstanceName" type="string" export-name="adapterInstanceName"/>
+            <bind name="mssqlHost" type="string" export-name="mssqlHost"/>
+            <bind name="mssqlInstanceName" type="string" export-name="mssqlInstanceName"/>
+            <bind name="adapterInstanceDescription" type="string" export-name="adapterInstanceDescription"/>
+        </in-binding>
+        <out-binding>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="20.0" x="120.0"/>
+    </workflow-item>
+    <workflow-item name="item5" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="80.0" x="260.0"/>
+    </workflow-item>
+    <workflow-item name="item6" out-name="item7" alt-out-name="item5" type="condition" comparator="0">
+        <display-name>Decision</display-name>
+        <script encoded="false">// Generated by the system, cannot be edited
+return (startAdapter === true);</script>
+        <in-binding>
+            <bind name="startAdapter" type="boolean" export-name="startAdapter"/>
+        </in-binding>
+        <out-binding/>
+        <description>Custom decision based on a custom script.</description>
+        <condition name="startAdapter" type="boolean" comparator="0" label="null"></condition>
+        <position y="10.0" x="220.0"/>
+    </workflow-item>
+    <workflow-item name="item7" out-name="item0" type="task" script-module="com.vmware.tkopton.vropsframework/tk_vROps_startAdapterInstamce_02" comparator="0">
+        <display-name>tk_vROps_startAdapterInstamce_02</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_vROps_startAdapterInstamce_02(adapterInstanceID,vropsToken);
+</script>
+        <in-binding>
+            <bind name="adapterInstanceID" type="string" export-name="adapterInstanceID">
+                <description></description>
+            </bind>
+            <bind name="vropsToken" type="SecureString" export-name="vropsToken">
+                <description></description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="boolean" export-name="actionResult"/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="80.0" x="320.0"/>
+    </workflow-item>
+</ns2:workflow>

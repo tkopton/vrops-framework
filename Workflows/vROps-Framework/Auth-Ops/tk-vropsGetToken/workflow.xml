@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item2" object-name="workflow:name=generic" id="03e9c8e7-2543-45ad-a4ee-f538a54d8d06" editor-version="2.0" version="0.0.1" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-vropsGetToken</display-name>
+    <description>Acquires a vROps authorization token.
+@param {string} userName User name.
+@param {string} userPassword User password.
+@param {string} authSource vROps authentication source, like LOCAL or a configured AD.
+@return {string} New vROps token.
+</description>
+    <position y="18.636363636363633" x="45.0"/>
+    <input>
+        <param name="userName" type="string"/>
+        <param name="userPaassword" type="SecureString"/>
+        <param name="authSource" type="string"/>
+    </input>
+    <output>
+        <param name="vropsToken" type="SecureString"/>
+    </output>
+    <attrib name="aquireToken" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='d527adad-f227-4685-bb5a-63c8f427a9f2:cc1fe82e-520a-4615-a8f5-859bd4714f0d'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="jsonBody" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="100.0" x="140.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item0" type="task" comparator="0">
+        <display-name>callREST</display-name>
+        <script encoded="false">var requestBody = JSON.stringify(jsonBody);
+var request = aquireToken.createRequest(null, requestBody);
+request.contentType = "application/json";
+request.setHeader("accept","application/json");
+var response = request.execute();
+jsonObject = JSON.parse(response.contentAsString);
+vropsToken = jsonObject.token;</script>
+        <in-binding>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+            <bind name="aquireToken" type="REST:RESTOperation" export-name="aquireToken"/>
+        </in-binding>
+        <out-binding>
+            <bind name="vropsToken" type="SecureString" export-name="vropsToken"/>
+        </out-binding>
+        <position y="30.0" x="100.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item1" type="task" comparator="0">
+        <display-name>createJsonBody</display-name>
+        <script encoded="false">jsonBody = {
+	"username" : "",
+	"authSource" : "",
+	"password" : "",
+	"others" : [],
+	"otherAttributes" : {
+	}
+};
+
+jsonBody.username = userName;
+jsonBody.password = userPaassword;
+jsonBody.authSource = authSource;
+</script>
+        <in-binding>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+            <bind name="userName" type="string" export-name="userName"/>
+            <bind name="userPaassword" type="SecureString" export-name="userPaassword"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+        </in-binding>
+        <out-binding>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+        </out-binding>
+        <position y="110.0" x="0.0"/>
+    </workflow-item>
+</ns2:workflow>
