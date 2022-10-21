@@ -35,7 +35,10 @@ request.contentType = "application/json";
 request.setHeader("accept","application/json");
 var response = request.execute();
 jsonObject = JSON.parse(response.contentAsString);
-vropsToken = jsonObject.token;</script>
+vropsToken = jsonObject.token;
+
+// commit test - tkopton
+</script>
         <in-binding>
             <bind name="jsonBody" type="string" export-name="jsonBody"/>
             <bind name="aquireToken" type="REST:RESTOperation" export-name="aquireToken"/>
