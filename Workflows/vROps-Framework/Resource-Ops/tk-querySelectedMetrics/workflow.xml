@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item2" object-name="workflow:name=generic" id="ed319a88-2176-4af0-a466-b6ce02a03c33" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-querySelectedMetrics</display-name>
+    <description>Creates an MSSQL Adapter Instance</description>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="objectID" type="string"/>
+    </input>
+    <output/>
+    <attrib name="vropsToken" type="SecureString">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="aquireToken" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='f88d3c7d-524b-4d44-b7a7-e7c2c97b1019:b5ef2339-28ed-4446-81b3-afd8a4ea6850'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="jsonBody" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="actionResult" type="boolean">
+        <value encoded="n">false</value>
+    </attrib>
+    <attrib name="querySelectedMetrics" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='2f74a066-0aba-45a5-948c-493a32d891fa:9c1381ca-ca6a-49a7-a392-3ba67ee83be1'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="20.0" x="720.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item6" type="task" comparator="0">
+        <display-name>executeRESTCall</display-name>
+        <script encoded="false">var requestBody = JSON.stringify(jsonBody);
+
+System.log(requestBody);
+
+var jsonResponse = null;
+var request = createAdapterInstances.createRequest(null, requestBody);
+request.contentType = "application/json";
+request.setHeader("accept", "application/json");
+request.setHeader("Authorization", "vRealizeOpsToken " + vropsToken);
+
+var response = request.execute();
+var statusCode = response.statusCode;
+var contentAsString = response.contentAsString;
+
+jsonResponse = JSON.parse(contentAsString);
+adapterInstanceID = jsonResponse.id;
+</script>
+        <in-binding>
+            <bind name="vropsToken" type="SecureString" export-name="vropsToken"/>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+            <bind name="objectID" type="string" export-name="objectID"/>
+        </in-binding>
+        <out-binding/>
+        <description>Simple task with custom script capability.</description>
+        <position y="20.0" x="380.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.tkopton.vropsframework/tk_vROps_getToken_SaaS" comparator="0">
+        <display-name>tk_vROps_getToken_SaaS</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_vROps_getToken_SaaS(restOp,cspApiToken);
+</script>
+        <in-binding>
+            <bind name="restOp" type="REST:RESTOperation" export-name="aquireToken">
+                <description></description>
+            </bind>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken">
+                <description></description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="SecureString" export-name="vropsToken"/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="20.0" x="100.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item1" type="task" comparator="0">
+        <display-name>createBody</display-name>
+        <script encoded="false">jsonBody = {
+    "begin": startTime,
+    "end": endTime,
+    "intervalType": "MINUTES",
+    "intervalQuantifier": 1,
+    "rollUpType": "AVG",
+    "resourceId": [
+        objectID
+    ],
+    "statKey": [
+        "power|energy_summation_sum"
+    ]
+};
+
+jsonBody.name = adapterInstanceName;
+jsonBody.description = adapterInstanceDescription;
+jsonBody.resourceIdentifiers[0].value = mssqlHost;
+jsonBody.resourceIdentifiers[6].value = mssqlInstanceName;</script>
+        <in-binding>
+            <bind name="objectID" type="string" export-name="objectID"/>
+        </in-binding>
+        <out-binding>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="20.0" x="240.0"/>
+    </workflow-item>
+    <workflow-item name="item5" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="90.0" x="620.0"/>
+    </workflow-item>
+    <workflow-item name="item6" out-name="item7" alt-out-name="item5" type="condition" comparator="0">
+        <display-name>Decision</display-name>
+        <script encoded="false">// Generated by the system, cannot be edited
+return (startAdapter === true);</script>
+        <in-binding>
+            <bind name="startAdapter" type="boolean"/>
+        </in-binding>
+        <out-binding/>
+        <description>Custom decision based on a custom script.</description>
+        <condition name="" type="" comparator="-1" label="null"></condition>
+        <position y="20.0" x="580.0"/>
+    </workflow-item>
+    <workflow-item name="item7" out-name="item0" type="task" script-module="com.vmware.tkopton.vropsframework/tk_vROps_startAdapterInstamce_02" comparator="0">
+        <display-name>tk_vROps_startAdapterInstamce_02</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_vROps_startAdapterInstamce_02(adapterInstanceID,vropsToken);
+</script>
+        <in-binding>
+            <bind name="adapterInstanceID" type="string">
+                <description></description>
+            </bind>
+            <bind name="vropsToken" type="SecureString" export-name="vropsToken">
+                <description></description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="boolean" export-name="actionResult"/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="90.0" x="680.0"/>
+    </workflow-item>
+</ns2:workflow>
