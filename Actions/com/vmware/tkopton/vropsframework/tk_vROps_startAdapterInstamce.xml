@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="tk_vROps_startAdapterInstamce" result-type="boolean" api-version="6.0.0" id="ed12c5d0-c4c7-4beb-ba3c-7e0a86c41394" version="0.0.0" category-name="com.vmware.tkopton.vropsframework">
+  <description><![CDATA[Starts an adapter instance by instance ID.]]></description>
+  <param n="adapterInstanceID" t="string"/>
+  <param n="vropsToken" t="SecureString"/>
+  <param n="startAdapterInstance" t="REST:RESTOperation"/>
+  <script encoded="false"><![CDATA[var params = new Array();
+
+startInstance();
+
+function startInstance() {
+    params.push(adapterInstanceID);
+    var request = startAdapterInstance.createRequest(params, null);
+    request.setHeader("accept", "application/json");
+    request.setHeader("Authorization", "vRealizeOpsToken " + vropsToken);
+
+    var response = request.execute();
+}]]></script>
+</dunes-script-module>

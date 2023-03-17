@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="6e689cb1-008c-4c44-bddb-ab8962ec03e7" editor-version="2.0" version="0.0.1" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-vropsGetToken-SaaS</display-name>
+    <description>Acquires a vROps authorization token.
+@param {string} apiToken CSP API Token.
+@return {string} New Aria Operations access token.
+</description>
+    <position y="18.636363636363633" x="45.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+    </input>
+    <output>
+        <param name="accessToken" type="SecureString"/>
+    </output>
+    <attrib name="aquireToken" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='f88d3c7d-524b-4d44-b7a7-e7c2c97b1019:b5ef2339-28ed-4446-81b3-afd8a4ea6850'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="jsonBody" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="20.0" x="240.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item0" type="task" comparator="0">
+        <display-name>callREST</display-name>
+        <script encoded="false">// var requestBody = JSON.stringify(jsonBody);
+var body = 'refresh_token=' + cspApiToken;
+var request = aquireToken.createRequest(null, body);
+request.contentType = "application/x-www-form-urlencoded";
+request.setHeader("accept","application/json");
+
+var response = request.execute();
+jsonObject = JSON.parse(response.contentAsString);
+vropsToken = jsonObject.access_token;
+
+System.log(vropsToken);
+// commit test - tkopton
+</script>
+        <in-binding>
+            <bind name="aquireToken" type="REST:RESTOperation" export-name="aquireToken"/>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+        </in-binding>
+        <out-binding>
+            <bind name="vropsToken" type="SecureString" export-name="accessToken"/>
+        </out-binding>
+        <position y="30.0" x="100.0"/>
+    </workflow-item>
+</ns2:workflow>

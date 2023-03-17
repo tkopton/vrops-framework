@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="tk_vROps_startAdapterInstamce_02" result-type="boolean" api-version="6.0.0" id="d4266af3-750f-4d3a-9a23-d80f1b049d66" version="0.0.0" category-name="com.vmware.tkopton.vropsframework">
+  <description><![CDATA[Starts an adapter instance by instance ID.]]></description>
+  <param n="adapterInstanceID" t="string"/>
+  <param n="vropsToken" t="SecureString"/>
+  <script encoded="false"><![CDATA[// Action Inputs:
+// hostBaseUrl - string - Base URL for connecting to vROps REST API
+// adapterInstanceID - string - vROps ID of the adapter instance to start
+
+var hostBaseUrl = "https://vrops.cpod-cmbu-vcf01.az-muc.cloud-garage.net/suite-api";
+var urlParamValues = new Array();
+var myRestOpMethod = "PUT";
+var myRestOpUrl = "/api/adapters/{objectID}/monitoringstate/start";
+var myRestHost = createHost(hostBaseUrl);
+
+startInstance();
+
+function startInstance() {
+    urlParamValues.push(adapterInstanceID);
+    var startAdapter = createOp(myRestHost, myRestOpMethod, myRestOpUrl);
+    
+    // Executing request
+    var request = setRequest(startAdapter, setUrlParamValues(urlParamValues), null, null, null);
+    request.setHeader("accept", "application/json");
+    request.setHeader("Authorization", "vRealizeOpsToken " + vropsToken);
+
+    var response = request.execute();
+    var statusCode = response.statusCode;
+}
+
+// Create a transient RESTHost
+function createHost(url) {
+	System.log("Creating transient REST host with base URL: " + url);
+	
+	var host = new RESTHost(url);
+	host.name = generateNameFromUrl(url);
+	host.url = url;
+	host.hostVerification = false;
+	host.proxyHost = null;
+	host.proxyPort = 0;
+	host = RESTHostManager.createTransientHostFrom(host);
+	RESTHostManager.reloadConfiguration();
+	
+	return host;
+}
+
+// Create a transient RESTOperation
+// For POST and PUT, the default content type is application/json
+function createOp(host, method, url) {
+	var name = generateNameFromUrl(url);
+	var op = new RESTOperation(name);
+	op.method = method;
+	op.urlTemplate = url;
+	op.host = host;
+	
+	if (method.toUpperCase() === "POST" || method.toUpperCase() === "PUT") {
+		op.defaultContentType = "application/json";
+	}
+	
+	System.debug("Creating operation '" + name + " with URL '" + url + "'");
+	System.debug("New operation: " + op);
+	
+	op = RESTHostManager.createTransientOperationFrom(op);
+	
+	return op;
+}
+
+// Prepare the RESTRequest object for executing the RESTOperation
+function setRequest(op, urlParamValues, headers, contentType, content) {
+	var request = op.createRequest(urlParamValues, content);
+	request.contentType = contentType;
+	
+	for each (var header in headers) {
+		request.setHeader(header.key, header.value);
+	}
+	
+	System.debug("Request to execute: " + request);
+	System.log("Request URL: " + request.fullUrl);
+	
+	return request;
+}
+
+// If no in-line parameter values are given, return empty array by default
+function setUrlParamValues(urlParamValues) {
+	return (!urlParamValues) ? [] : urlParamValues;
+}
+
+// Generate a friendly name for a RESTHost or RESTOperation from a given URL,
+// removing "HTTP" and "HTTPS", and replacing non-words with '_'
+function generateNameFromUrl(url) {
+	var name = url;
+	name = name.replace(/https:\/\//i, '');
+	name = name.replace(/http:\/\//i, '');
+	name = name.replace(/\W/g, '_');
+	return name;
+}]]></script>
+</dunes-script-module>

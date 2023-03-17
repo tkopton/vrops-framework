@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="571399a0-deb1-4319-8b2e-acff1a123f9a" version="0.0.0" api-version="6.0.0" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[tk-getAdapterInstancesByType]]></display-name>
+  <description><![CDATA[Returns an array of adapter instance IDs.
+@param {string} adapterKind Type of the adapter, like MSSQL.
+@param {string} adapterInstanceName Display name of the adapter instance, might be empty for all instances of a type.
+@return Array{string} List of adapter instance IDs.]]></description>
+  <position y="10.0" x="20.0"/>
+  <input>
+    <param name="adapterKindKey" type="string"/>
+    <param name="adapterInstanceName" type="Array/string"/>
+    <param name="vropsUserName" type="string"/>
+    <param name="vropsUserPassword" type="SecureString"/>
+    <param name="vropsUserAuthSource" type="string"/>
+  </input>
+  <output>
+    <param name="adapterInstanceIDs" type="Array/string"/>
+    <param name="adapterInstanceNames" type="Array/string"/>
+  </output>
+  <attrib name="getAdapterInstances" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='d527adad-f227-4685-bb5a-63c8f427a9f2:03dc2e49-bfcf-4f94-a31b-b66d067f2c7d'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="vropsToken" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="aquireToken" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='d527adad-f227-4685-bb5a-63c8f427a9f2:cc1fe82e-520a-4615-a8f5-859bd4714f0d'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="70.0" x="240.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[executeRESTCall]]></display-name>
+    <script encoded="false"><![CDATA[var adapterInstanceIDs = new Array();
+var adapterInstanceNames = new Array();
+var jsonResponse = null;
+var vropsToken = vropsToken;
+var params = new Array();
+params.push(adapterKindKey);
+var request = getAdapterInstances.createRequest(params, null);
+request.contentType = "application/json";
+request.setHeader("accept", "application/json");
+request.setHeader("Authorization", "vRealizeOpsToken " + vropsToken);
+
+var response = request.execute();
+var contentAsString = response.contentAsString;
+jsonResponse = JSON.parse(contentAsString);
+var instances = jsonResponse.adapterInstancesInfoDto;
+
+instances.forEach(testInstance);
+
+function testInstance(instanceObject) {
+    adapterInstanceIDs.push(instanceObject.id);
+    adapterInstanceNames.push(instanceObject.resourceKey.name);
+}]]></script>
+    <in-binding>
+      <bind name="vropsToken" type="SecureString" export-name="vropsToken"/>
+      <bind name="adapterKindKey" type="string" export-name="adapterKindKey"/>
+      <bind name="adapterInstanceName" type="Array/string" export-name="adapterInstanceName"/>
+      <bind name="getAdapterInstances" type="REST:RESTOperation" export-name="getAdapterInstances"/>
+    </in-binding>
+    <out-binding>
+      <bind name="adapterInstanceIDs" type="Array/string" export-name="adapterInstanceIDs"/>
+      <bind name="adapterInstanceNames" type="Array/string" export-name="adapterInstanceNames"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="80.0" x="80.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task" script-module="com.vmware.tkopton.vropsframework/tk_vROps_getToken">
+    <display-name><![CDATA[tk_vROps_getToken]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_vROps_getToken(restOp, userName, userPassword, authSource);
+]]></script>
+    <in-binding>
+      <bind name="restOp" type="REST:RESTOperation" export-name="aquireToken"/>
+      <bind name="userName" type="string" export-name="vropsUserName"/>
+      <bind name="userPassword" type="SecureString" export-name="vropsUserPassword"/>
+      <bind name="authSource" type="string" export-name="vropsUserAuthSource"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="SecureString" export-name="vropsToken"/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="20.0" x="80.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="adapterKindKey">
+      <desc><![CDATA[adapterKindKey]]></desc>
+    </p-param>
+    <p-param name="adapterInstanceName">
+      <desc><![CDATA[adapterInstanceName]]></desc>
+    </p-param>
+    <p-param name="vropsUserName">
+      <desc><![CDATA[vropsUserName]]></desc>
+    </p-param>
+    <p-param name="vropsUserPassword">
+      <desc><![CDATA[vropsUserPassword]]></desc>
+    </p-param>
+    <p-param name="vropsUserAuthSource">
+      <desc><![CDATA[vropsUserAuthSource]]></desc>
+    </p-param>
+  </presentation>
+</workflow>
