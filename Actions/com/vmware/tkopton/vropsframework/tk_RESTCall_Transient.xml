@@ -10,11 +10,15 @@
   <param n="headers" t="Array/CompositeType(key:string,value:string):myHeaders"><![CDATA[]]></param>
   <param n="contentType" t="string"><![CDATA[]]></param>
   <param n="content" t="string"><![CDATA[]]></param>
+  <param n="authtype" t="string"><![CDATA[]]></param>
   <script encoded="false"><![CDATA[// Executes a transient RESTOperation for a transient RESTHost.
 // Performs the operation without having the operation nor the host persist in the RESTHost Inventory.
 // Returns the response string and status code as named key-value pairs "responseString" and "statusCode", respectively.
-// No proxy and no host verification
-// 
+// No proxy and no host verification.
+// Not trusted HTTPS certificate has to be imported in vRO prior to running REST operations.
+// Session moede is hard coded to 'Sharted session' 
+// Authentication type os Basic or NONE
+//
 // For vRO 7.0+
 //
 // Action Inputs:
@@ -58,10 +62,16 @@ function createHost(url, user, pw) {
 	host.hostVerification = false;
 	host.proxyHost = null;
 	host.proxyPort = 0;
-	host.authentication = createSharedBasicAuth(user, pw);
-	
+	if(authtype == 'Basic') {
+		host.authentication = createSharedBasicAuth(user, pw);
+	}
+	else if(authtype == 'NONE') {
+		var authParams = ['Shared session', null, null];
+		var authenticationObject = RESTAuthenticationManager.createAuthentication(authtype, authParams);
+		host.authentication = authenticationObject;
+	}
+
 	host = RESTHostManager.createTransientHostFrom(host);
-	
 	RESTHostManager.reloadConfiguration();
 	
 	return host;
@@ -129,11 +139,14 @@ function setRequest(op, urlParamValues, headers, contentType, content) {
 	request.contentType = contentType;
 	
 	for each (var header in headers) {
+		System.log('Header\n');
+		System.log(header.key + ':' + header.value)
 		request.setHeader(header.key, header.value);
 	}
 	
 	System.debug("Request to execute: " + request);
 	System.log("Request URL: " + request.fullUrl);
+	System.log("Request content: " + content);
 	
 	return request;
 }
