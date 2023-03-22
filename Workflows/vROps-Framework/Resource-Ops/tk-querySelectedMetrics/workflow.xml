@@ -12,7 +12,9 @@
         <param name="myIntervalQuantifier" type="number"/>
         <param name="myRollUpType" type="string"/>
     </input>
-    <output/>
+    <output>
+        <param name="requestResponse" type="string"/>
+    </output>
     <attrib name="vropsToken" type="SecureString">
         <value encoded="n"></value>
     </attrib>
@@ -59,14 +61,18 @@ var contentAsString = response.contentAsString;
 System.log(contentAsString);
 
 jsonResponse = JSON.parse(contentAsString);
-// resID = jsonResponse.values[0].resourceId;</script>
+// resID = jsonResponse.values[0].resourceId;
+
+requestResponse = contentAsString;</script>
         <in-binding>
             <bind name="vropsToken" type="SecureString" export-name="vropsToken"/>
             <bind name="jsonBody" type="string" export-name="jsonBody"/>
             <bind name="objectID" type="string" export-name="objectID"/>
             <bind name="querySelectedMetrics" type="REST:RESTOperation" export-name="querySelectedMetrics"/>
         </in-binding>
-        <out-binding/>
+        <out-binding>
+            <bind name="requestResponse" type="string" export-name="requestResponse"/>
+        </out-binding>
         <description>Simple task with custom script capability.</description>
         <position y="20.0" x="280.0"/>
     </workflow-item>

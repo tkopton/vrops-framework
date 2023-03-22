@@ -116,10 +116,6 @@ function createOp(host, method, url) {
 	op.urlTemplate = url;
 	op.host = host;
 	
-	if (method.toUpperCase() === "POST" || method.toUpperCase() === "PUT") {
-		op.defaultContentType = "application/json";
-	}
-	
 	System.debug("Creating operation '" + name + " with URL '" + url + "'");
 	System.debug("New operation: " + op);
 	
