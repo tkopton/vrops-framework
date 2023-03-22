@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item4" object-name="workflow:name=generic" id="ed319a88-2176-4af0-a466-b6ce02a03c33" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-querySelectedMetrics</display-name>
+    <description>Creates an MSSQL Adapter Instance</description>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="objectID" type="string"/>
+        <param name="hours" type="number"/>
+        <param name="metric" type="string"/>
+        <param name="myIntervalType" type="string"/>
+        <param name="myIntervalQuantifier" type="number"/>
+        <param name="myRollUpType" type="string"/>
+    </input>
+    <output>
+        <param name="requestResponse" type="string"/>
+    </output>
+    <attrib name="vropsToken" type="SecureString">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="aquireToken" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='f88d3c7d-524b-4d44-b7a7-e7c2c97b1019:b5ef2339-28ed-4446-81b3-afd8a4ea6850'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="jsonBody" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="querySelectedMetrics" type="REST:RESTOperation">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='2f74a066-0aba-45a5-948c-493a32d891fa:9c1381ca-ca6a-49a7-a392-3ba67ee83be1'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="beginEpoch" type="number">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="endEpoch" type="number">
+        <value encoded="n"/>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="90.0" x="320.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item0" type="task" comparator="0">
+        <display-name>executeRESTCall</display-name>
+        <script encoded="false">var requestBody = JSON.stringify(jsonBody);
+
+System.log(requestBody);
+
+var jsonResponse = null;
+var params = new Array();
+params.push(objectID);
+var request = querySelectedMetrics.createRequest(params, requestBody);
+request.contentType = "application/json";
+request.setHeader("accept", "application/json");
+request.setHeader("Authorization", "CSPToken " + vropsToken);
+
+System.log(request.url);
+
+var response = request.execute();
+var statusCode = response.statusCode;
+var contentAsString = response.contentAsString;
+
+System.log(contentAsString);
+
+jsonResponse = JSON.parse(contentAsString);
+// resID = jsonResponse.values[0].resourceId;
+
+requestResponse = contentAsString;</script>
+        <in-binding>
+            <bind name="vropsToken" type="SecureString" export-name="vropsToken"/>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+            <bind name="objectID" type="string" export-name="objectID"/>
+            <bind name="querySelectedMetrics" type="REST:RESTOperation" export-name="querySelectedMetrics"/>
+        </in-binding>
+        <out-binding>
+            <bind name="requestResponse" type="string" export-name="requestResponse"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="20.0" x="280.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.tkopton.vropsframework/tk_vROps_getToken_SaaS" comparator="0">
+        <display-name>tk_vROps_getToken_SaaS</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_vROps_getToken_SaaS(restOp,cspApiToken);
+</script>
+        <in-binding>
+            <bind name="restOp" type="REST:RESTOperation" export-name="aquireToken">
+                <description></description>
+            </bind>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken">
+                <description></description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="SecureString" export-name="vropsToken"/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="20.0" x="120.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item1" type="task" comparator="0">
+        <display-name>createBody</display-name>
+        <script encoded="false">jsonBody = {
+    "begin": null,
+    "end": null,
+    "intervalType": "MINUTES",
+    "intervalQuantifier": 1,
+    "rollUpType": "AVG",
+    "resourceId": [
+        null
+    ],
+    "statKey": [
+        null
+    ]
+};
+
+jsonBody.begin = beginEpoch;
+jsonBody.end = endEpoch;
+jsonBody.intervalType = myIntervalType;
+jsonBody.intervalQuantifier = myIntervalQuantifier;
+jsonBody.rollUpType = myRollUpType;
+jsonBody.resourceId[0] = objectID;
+jsonBody.statKey[0] = metric;</script>
+        <in-binding>
+            <bind name="objectID" type="string" export-name="objectID"/>
+            <bind name="beginEpoch" type="number" export-name="beginEpoch"/>
+            <bind name="endEpoch" type="number" export-name="endEpoch"/>
+            <bind name="metric" type="string" export-name="metric"/>
+            <bind name="myIntervalQuantifier" type="number" export-name="myIntervalQuantifier"/>
+            <bind name="myIntervalType" type="string" export-name="myIntervalType"/>
+            <bind name="myRollUpType" type="string" export-name="myRollUpType"/>
+        </in-binding>
+        <out-binding>
+            <bind name="jsonBody" type="string" export-name="jsonBody"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="90.0" x="120.0"/>
+    </workflow-item>
+    <workflow-item name="item4" out-name="item2" type="task" comparator="0">
+        <display-name>calculateStarEnd</display-name>
+        <script encoded="false">var endEpoch = (new Date).getTime();
+var beginEpoch = endEpoch - (hours*60*60*1000);</script>
+        <in-binding>
+            <bind name="hours" type="number" export-name="hours"/>
+        </in-binding>
+        <out-binding>
+            <bind name="beginEpoch" type="number" export-name="beginEpoch"/>
+            <bind name="endEpoch" type="number" export-name="endEpoch"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="90.0" x="0.0"/>
+    </workflow-item>
+</ns2:workflow>

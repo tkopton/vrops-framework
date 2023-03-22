@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="tk_vROps_getToken_SaaS" result-type="SecureString" api-version="6.0.0" id="97584c0a-0379-442f-b6a0-e8ae4b21416c" version="0.0.0" category-name="com.vmware.tkopton.vropsframework">
+  <description><![CDATA[Returns vROps token.]]></description>
+  <param n="restOp" t="REST:RESTOperation"><![CDATA[]]></param>
+  <param n="cspApiToken" t="SecureString"/>
+  <script encoded="false"><![CDATA[return getToken();
+
+function getToken() {
+    var inParamtersValues = null;
+    var acceptHeadersValue = "";
+    var requestBody = 'refresh_token=' + cspApiToken;
+
+    var request = restOp.createRequest(inParamtersValues, requestBody);
+    request.contentType = "application/x-www-form-urlencoded";
+    request.setHeader("accept", "application/json");
+
+    var response = request.execute();
+    statusCode = response.statusCode;
+    statusCodeAttribute = statusCode;
+    contentLength = response.contentLength;
+    headers = response.getAllHeaders();
+    contentAsString = response.contentAsString;
+
+    var jsonObject = JSON.parse(response.contentAsString);
+    var vropsNewToken = jsonObject.access_token;
+
+    return vropsNewToken;
+}]]></script>
+</dunes-script-module>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item2" object-name="workflow:name=generic" id="03e9c8e7-2543-45ad-a4ee-f538a54d8d06" editor-version="2.0" version="0.0.1" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
-    <display-name>tk-vropsGetToken</display-name>
+    <display-name>tk-vropsGetToken-onPrem</display-name>
     <description>Acquires a vROps authorization token.
 @param {string} userName User name.
 @param {string} userPassword User password.

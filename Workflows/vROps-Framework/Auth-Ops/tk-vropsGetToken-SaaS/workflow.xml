@@ -37,6 +37,7 @@ vropsToken = jsonObject.access_token;
 
 System.log(vropsToken);
 // commit test - tkopton
+// second change and commit test
 </script>
         <in-binding>
             <bind name="aquireToken" type="REST:RESTOperation" export-name="aquireToken"/>
