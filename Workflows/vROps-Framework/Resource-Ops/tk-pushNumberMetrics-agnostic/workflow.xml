@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item5" object-name="workflow:name=generic" id="ba99d841-bb2d-4d85-abb7-7d3a7df2a838" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
-    <display-name>tk-querySelectedMetrics-agnostic</display-name>
-    <description>Retrieves metrics for a specific object.</description>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item5" object-name="workflow:name=generic" id="b3937e37-b59a-4347-9f8c-ad1896508b51" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-pushNumberMetrics-agnostic</display-name>
+    <description>Pushes metric(s) to a specific object.</description>
     <position y="10.0" x="40.0"/>
     <input>
         <param name="cspApiToken" type="SecureString"/>
         <param name="objectID" type="string"/>
-        <param name="hours" type="number"/>
-        <param name="metric" type="string"/>
-        <param name="myIntervalType" type="string"/>
-        <param name="myIntervalQuantifier" type="number"/>
-        <param name="myRollUpType" type="string"/>
         <param name="username" type="string"/>
         <param name="password" type="SecureString"/>
         <param name="isSaaS" type="boolean"/>
         <param name="authSource" type="string"/>
+        <param name="metricKey" type="string"/>
+        <param name="timestamps" type="Array/number"/>
+        <param name="metricValues" type="Array/number"/>
     </input>
     <output>
-        <param name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse"/>
+        <param name="requestResponse" type="string"/>
     </output>
-    <attrib name="beginEpoch" type="number">
-        <value encoded="n"/>
-    </attrib>
-    <attrib name="endEpoch" type="number">
-        <value encoded="n"/>
-    </attrib>
     <attrib name="accessToken" type="SecureString">
         <value encoded="n"></value>
     </attrib>
@@ -58,69 +50,47 @@
     <attrib name="content" type="string">
         <value encoded="n"></value>
     </attrib>
-    <attrib name="requestResponse" type="string">
-        <value encoded="n"/>
-    </attrib>
     <workflow-item name="item0" type="end" end-mode="0" comparator="0">
         <in-binding/>
         <out-binding/>
-        <position y="20.0" x="380.0"/>
+        <position y="90.0" x="260.0"/>
     </workflow-item>
     <workflow-item name="item3" out-name="item7" type="task" comparator="0">
         <display-name>createBody</display-name>
         <script encoded="false">var jsonBody = {
-    "begin": null,
-    "end": null,
-    "intervalType": "MINUTES",
-    "intervalQuantifier": 1,
-    "rollUpType": "AVG",
-    "resourceId": [
+    "stat-content": []
+};
+var statContent = {
+    "statKey": null,
+    "timestamps": [
         null
     ],
-    "statKey": [
+    "data": [
         null
-    ]
-};
+    ],
+    "others": [],
+    "otherAttributes": {}
+}
 
-jsonBody.begin = beginEpoch;
-jsonBody.end = endEpoch;
-jsonBody.intervalType = myIntervalType;
-jsonBody.intervalQuantifier = myIntervalQuantifier;
-jsonBody.rollUpType = myRollUpType;
-jsonBody.resourceId[0] = objectID;
-jsonBody.statKey[0] = metric;
+var jsonBody0 = JSON.parse(JSON.stringify(statContent));
+jsonBody0.statKey = metricKey;
+jsonBody0.timestamps[0] = Date.now();
+jsonBody0.data[0] = 23.0;
+jsonBody["stat-content"].push(jsonBody0);
 
 content = JSON.stringify(jsonBody);</script>
         <in-binding>
-            <bind name="objectID" type="string" export-name="objectID"/>
-            <bind name="beginEpoch" type="number" export-name="beginEpoch"/>
-            <bind name="endEpoch" type="number" export-name="endEpoch"/>
-            <bind name="metric" type="string" export-name="metric"/>
-            <bind name="myIntervalQuantifier" type="number" export-name="myIntervalQuantifier"/>
-            <bind name="myIntervalType" type="string" export-name="myIntervalType"/>
-            <bind name="myRollUpType" type="string" export-name="myRollUpType"/>
+            <bind name="metricKey" type="string" export-name="metricKey"/>
+            <bind name="metricValues" type="Array/number" export-name="metricValues"/>
+            <bind name="timestamps" type="Array/number" export-name="timestamps"/>
         </in-binding>
         <out-binding>
             <bind name="content" type="string" export-name="content"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="90.0" x="100.0"/>
-    </workflow-item>
-    <workflow-item name="item4" out-name="item3" type="task" comparator="0">
-        <display-name>calculateStarEnd</display-name>
-        <script encoded="false">var endEpoch = (new Date).getTime();
-var beginEpoch = endEpoch - (hours*60*60*1000);</script>
-        <in-binding>
-            <bind name="hours" type="number" export-name="hours"/>
-        </in-binding>
-        <out-binding>
-            <bind name="beginEpoch" type="number" export-name="beginEpoch"/>
-            <bind name="endEpoch" type="number" export-name="endEpoch"/>
-        </out-binding>
-        <description>Simple task with custom script capability.</description>
         <position y="20.0" x="100.0"/>
     </workflow-item>
-    <workflow-item name="item5" out-name="item4" type="link" linked-workflow-id="a88facd7-588a-46c2-be66-0193f74311df" comparator="0">
+    <workflow-item name="item5" out-name="item3" type="link" linked-workflow-id="a88facd7-588a-46c2-be66-0193f74311df" comparator="0">
         <display-name>tk-ariaOps-GetToken-02</display-name>
         <script encoded="false"></script>
         <in-binding>
@@ -177,21 +147,21 @@ actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_RESTCall
             </bind>
         </in-binding>
         <out-binding>
-            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+            <bind name="actionResult" type="string" export-name="requestResponse"/>
         </out-binding>
         <description>Add a note to the workflow schema.</description>
-        <position y="90.0" x="220.0"/>
+        <position y="20.0" x="220.0"/>
     </workflow-item>
     <workflow-item name="item7" out-name="item6" type="task" comparator="0">
         <display-name>setEnvironment</display-name>
         <script encoded="false">if(isSaaS) {
     headers[1].value = "CSPToken " + accessToken;
     baseUrl = "https://www.mgmt.cloud.vmware.com";
-    opUrl = "/vrops-cloud/suite-api/api/resources/{param1}/stats/query";
+    opUrl = "/vrops-cloud/suite-api/api/resources/{param1}/stats";
 }
 else {
     headers[1].value = "vRealizeOpsToken " + accessToken;
-    opUrl = "/suite-api/api/resources/{param1}/stats/query";
+    opUrl = "/suite-api/api/resources/{param1}/stats";
 }
 
 urlParamValues = [objectID];</script>
@@ -210,6 +180,6 @@ urlParamValues = [objectID];</script>
             <bind name="baseUrl" type="string" export-name="baseUrl"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="20.0" x="220.0"/>
+        <position y="90.0" x="100.0"/>
     </workflow-item>
 </ns2:workflow>

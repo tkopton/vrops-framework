@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="166412cd-3ba2-4742-899b-7c8221115203" editor-version="2.0" version="0.0.0" api-version="6.0.0" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-getESXiMTDPowerConsumption</display-name>
+    <position y="50.0" x="100.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="objectID" type="string"/>
+        <param name="username" type="string"/>
+        <param name="password" type="SecureString"/>
+        <param name="isSaaS" type="boolean"/>
+        <param name="authSource" type="string"/>
+    </input>
+    <output>
+        <param name="MTDPowerUsage" type="number"/>
+    </output>
+    <attrib name="hours" type="number">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="metric" type="string">
+        <value encoded="n">power|energy_summation_sum</value>
+    </attrib>
+    <attrib name="myIntervalType" type="string">
+        <value encoded="n">HOURS</value>
+    </attrib>
+    <attrib name="myIntervalQuantifier" type="number">
+        <value encoded="n">1.0</value>
+    </attrib>
+    <attrib name="myRollUpType" type="string">
+        <value encoded="n">SUM</value>
+    </attrib>
+    <attrib name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse">
+        <value encoded="n"/>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="50.0" x="515.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item2" throw-bind-name="" type="task" comparator="0">
+        <display-name>Scriptable task</display-name>
+        <script encoded="false">// create a new Date object
+const now = new Date();
+
+// get the current year and month
+const year = now.getFullYear();
+const month = now.getMonth();
+
+// get the number of days in the current month
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+// calculate the total number of hours up to now in the current month
+hours = now.getHours() + (now.getDate() - 1) * 24;
+
+System.log('Total hours up to now in the current month: ' + hours);
+</script>
+        <in-binding/>
+        <out-binding>
+            <bind name="hours" type="number" export-name="hours"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="60.0" x="180.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item3" type="link" linked-workflow-id="ba99d841-bb2d-4d85-abb7-7d3a7df2a838" comparator="0">
+        <display-name>tk-querySelectedMetrics-agnostic</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="objectID" type="string" export-name="objectID"/>
+            <bind name="hours" type="number" export-name="hours"/>
+            <bind name="metric" type="string" export-name="metric"/>
+            <bind name="myIntervalType" type="string" export-name="myIntervalType"/>
+            <bind name="myIntervalQuantifier" type="number" export-name="myIntervalQuantifier"/>
+            <bind name="myRollUpType" type="string" export-name="myRollUpType"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+        </out-binding>
+        <description> </description>
+        <position y="60.0" x="275.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item0" type="task" comparator="0">
+        <display-name>Scriptable task</display-name>
+        <script encoded="false">System.log("#########################");
+System.log(actionResult.responseString);
+System.log("#########################");
+
+var jsonResponse = JSON.parse(actionResult.responseString);
+
+System.log(jsonResponse.values[0]["stat-list"].stat[0].data[2]);</script>
+        <in-binding>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+        </in-binding>
+        <out-binding>
+            <bind name="MTDPowerUsage" type="number" export-name="MTDPowerUsage"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="60.0" x="380.0"/>
+    </workflow-item>
+</ns2:workflow>

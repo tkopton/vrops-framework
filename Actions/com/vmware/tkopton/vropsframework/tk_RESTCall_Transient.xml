@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<dunes-script-module name="tk_RESTCall_Transient" result-type="string" api-version="6.0.0" id="b4ecb0d1-0923-43eb-9423-e2d22a2dbc7a" version="0.0.0" category-name="com.vmware.tkopton.vropsframework">
+<dunes-script-module name="tk_RESTCall_Transient" result-type="CompositeType(statusCode:string,responseString:string):restResponse" api-version="6.0.0" id="b4ecb0d1-0923-43eb-9423-e2d22a2dbc7a" version="0.0.0" category-name="com.vmware.tkopton.vropsframework">
   <description><![CDATA[Source: https://gist.github.com/trisharia/7b62fcdf12600511b3d7e9b635981b2c]]></description>
   <param n="baseUrl" t="string"><![CDATA[]]></param>
   <param n="username" t="string"><![CDATA[]]></param>
