@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="166412cd-3ba2-4742-899b-7c8221115203" editor-version="2.0" version="0.0.0" api-version="6.0.0" restartMode="1" resumeFromFailedMode="0">
     <display-name>tk-getESXiMTDPowerConsumption</display-name>
-    <position y="50.0" x="100.0"/>
+    <position y="10.0" x="40.0"/>
     <input>
         <param name="cspApiToken" type="SecureString"/>
         <param name="objectID" type="string"/>
@@ -34,10 +34,10 @@
     <workflow-item name="item0" type="end" end-mode="0" comparator="0">
         <in-binding/>
         <out-binding/>
-        <position y="50.0" x="515.0"/>
+        <position y="10.0" x="360.0"/>
     </workflow-item>
     <workflow-item name="item1" out-name="item2" throw-bind-name="" type="task" comparator="0">
-        <display-name>Scriptable task</display-name>
+        <display-name>MTDHoursCalculation</display-name>
         <script encoded="false">// create a new Date object
 const now = new Date();
 
@@ -58,9 +58,9 @@ System.log('Total hours up to now in the current month: ' + hours);
             <bind name="hours" type="number" export-name="hours"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="60.0" x="180.0"/>
+        <position y="90.0" x="0.0"/>
     </workflow-item>
-    <workflow-item name="item2" out-name="item3" type="link" linked-workflow-id="ba99d841-bb2d-4d85-abb7-7d3a7df2a838" comparator="0">
+    <workflow-item name="item2" out-name="item3" type="link" linked-workflow-id="dbae3759-6165-4dfc-ac98-98bf2a133697" comparator="0">
         <display-name>tk-querySelectedMetrics-agnostic</display-name>
         <script encoded="false"></script>
         <in-binding>
@@ -80,17 +80,23 @@ System.log('Total hours up to now in the current month: ' + hours);
             <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
         </out-binding>
         <description> </description>
-        <position y="60.0" x="275.0"/>
+        <position y="20.0" x="160.0"/>
     </workflow-item>
     <workflow-item name="item3" out-name="item0" type="task" comparator="0">
-        <display-name>Scriptable task</display-name>
+        <display-name>MTDEnergyConsumptionCalculation</display-name>
         <script encoded="false">System.log("#########################");
 System.log(actionResult.responseString);
 System.log("#########################");
 
 var jsonResponse = JSON.parse(actionResult.responseString);
+System.log(jsonResponse.values[0]["stat-list"].stat[0].data[2]);
 
-System.log(jsonResponse.values[0]["stat-list"].stat[0].data[2]);</script>
+var mtdEnergyConsumption = 0;
+for (p in jsonResponse.values[0]["stat-list"].stat[0].data) {
+    mtdEnergyConsumption = mtdEnergyConsumption + jsonResponse.values[0]["stat-list"].stat[0].data[p];
+}
+
+System.log("MTD Energy Consumption in kWh: " + (mtdEnergyConsumption/1000).toFixed(2));</script>
         <in-binding>
             <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
         </in-binding>
@@ -98,6 +104,6 @@ System.log(jsonResponse.values[0]["stat-list"].stat[0].data[2]);</script>
             <bind name="MTDPowerUsage" type="number" export-name="MTDPowerUsage"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="60.0" x="380.0"/>
+        <position y="90.0" x="160.0"/>
     </workflow-item>
 </ns2:workflow>
