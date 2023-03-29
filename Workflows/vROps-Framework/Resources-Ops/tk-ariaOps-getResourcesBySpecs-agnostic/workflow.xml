@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item5" object-name="workflow:name=generic" id="7534a8c7-41f9-48a9-84ab-14f362d28b9a" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-ariaOps-getResourcesBySpecs-agnostic</display-name>
+    <description>Retrieves metrics for a specific object.</description>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="username" type="string"/>
+        <param name="password" type="SecureString"/>
+        <param name="isSaaS" type="boolean"/>
+        <param name="authSource" type="string"/>
+        <param name="adapterKind" type="string"/>
+        <param name="resourceKind" type="string"/>
+        <param name="statKey" type="string"/>
+        <param name="statKeyInclusive" type="string"/>
+        <param name="statKeyLowerBound" type="string"/>
+    </input>
+    <output>
+        <param name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse"/>
+    </output>
+    <attrib name="accessToken" type="SecureString">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="baseUrl" type="string">
+        <value encoded="n">https://vrops01.internal.kopton.eu</value>
+    </attrib>
+    <attrib name="opMethod" type="string">
+        <value encoded="n">GET</value>
+    </attrib>
+    <attrib name="opUrl" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="contentType" type="string">
+        <value encoded="n">application/json</value>
+    </attrib>
+    <attrib name="authtype" type="string">
+        <value encoded="n">NONE</value>
+    </attrib>
+    <attrib name="urlParamValues" type="Array/string">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="headers" type="Array/CompositeType(key:string,value:string):myHeaders">
+        <value encoded="n">[115:CompositeType(key:string,value:string):myHeaders#{5:23:value=string#application/json
+3:19:key=string#Content-Type
+},100:CompositeType(key:string,value:string):myHeaders#{5:8:value=string# 
+3:20:key=string#Authorization
+},109:CompositeType(key:string,value:string):myHeaders#{5:23:value=string#application/json
+3:13:key=string#Accept
+}]</value>
+    </attrib>
+    <attrib name="content" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="requestResponse" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="140.0" x="380.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item7" type="task" comparator="0">
+        <display-name>createBody</display-name>
+        <script encoded="false">// GET REST Request - no body
+content = null;</script>
+        <in-binding/>
+        <out-binding>
+            <bind name="content" type="string" export-name="content"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="150.0" x="160.0"/>
+    </workflow-item>
+    <workflow-item name="item5" out-name="item3" type="link" linked-workflow-id="a88facd7-588a-46c2-be66-0193f74311df" comparator="0">
+        <display-name>tk-ariaOps-GetToken-02</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="baseUrl" type="string" export-name="baseUrl"/>
+            <bind name="cspAPIToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+            <bind name="authtype" type="string" export-name="authtype"/>
+        </in-binding>
+        <out-binding>
+            <bind name="accessToken" type="SecureString" export-name="accessToken"/>
+            <bind name="requestResponse" type="string" export-name="requestResponse"/>
+        </out-binding>
+        <description> </description>
+        <position y="150.0" x="0.0"/>
+    </workflow-item>
+    <workflow-item name="item6" out-name="item0" type="task" script-module="com.vmware.tkopton.vropsframework/tk_RESTCall_Transient" comparator="0">
+        <display-name>tk_RESTCall_Transient</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_RESTCall_Transient(baseUrl,username,password,opMethod,opUrl,urlParamValues,headers,contentType,content,authtype);
+</script>
+        <in-binding>
+            <bind name="baseUrl" type="string" export-name="baseUrl">
+                <description></description>
+            </bind>
+            <bind name="username" type="string" export-name="username">
+                <description></description>
+            </bind>
+            <bind name="password" type="SecureString" export-name="password">
+                <description></description>
+            </bind>
+            <bind name="opMethod" type="string" export-name="opMethod">
+                <description></description>
+            </bind>
+            <bind name="opUrl" type="string" export-name="opUrl">
+                <description></description>
+            </bind>
+            <bind name="urlParamValues" type="Array/string" export-name="urlParamValues">
+                <description></description>
+            </bind>
+            <bind name="headers" type="Array/CompositeType(key:string,value:string):myHeaders" export-name="headers">
+                <description></description>
+            </bind>
+            <bind name="contentType" type="string" export-name="contentType">
+                <description></description>
+            </bind>
+            <bind name="content" type="string" export-name="content">
+                <description></description>
+            </bind>
+            <bind name="authtype" type="string" export-name="authtype">
+                <description></description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="60.0" x="340.0"/>
+    </workflow-item>
+    <workflow-item name="item7" out-name="item6" type="task" comparator="0">
+        <display-name>setEnvironment</display-name>
+        <script encoded="false">var metricName = encodeURIComponent(statKey);
+
+if(isSaaS) {
+    headers[1].value = "CSPToken " + accessToken;
+    baseUrl = "https://www.mgmt.cloud.vmware.com";
+    opUrl = "/vrops-cloud/suite-api/api/resources?adapterKind=" + adapterKind + "&amp;resourceKind=" + resourceKind + "&amp;statKey=" + metricName + "&amp;statKeyInclusive=" + statKeyInclusive + "&amp;statKeyLowerBound=" + statKeyLowerBound + "&amp;_no_links=true";
+}
+else {
+    headers[1].value = "vRealizeOpsToken " + accessToken;
+    opUrl = "/suite-api/api/resources?adapterKind=" + adapterKind + "&amp;resourceKind=" + resourceKind + "&amp;statKey=" + metricName + "&amp;statKeyInclusive=" + statKeyInclusive + "&amp;statKeyLowerBound=" + statKeyLowerBound + "&amp;_no_links=true";
+}
+
+urlParamValues = null;</script>
+        <in-binding>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="accessToken" type="SecureString" export-name="accessToken"/>
+            <bind name="headers" type="Array/CompositeType(key:string,value:string):myHeaders" export-name="headers"/>
+            <bind name="urlParamValues" type="Array/string" export-name="urlParamValues"/>
+            <bind name="baseUrl" type="string" export-name="baseUrl"/>
+            <bind name="adapterKind" type="string" export-name="adapterKind"/>
+            <bind name="resourceKind" type="string" export-name="resourceKind"/>
+            <bind name="statKey" type="string" export-name="statKey"/>
+            <bind name="statKeyInclusive" type="string" export-name="statKeyInclusive"/>
+            <bind name="statKeyLowerBound" type="string" export-name="statKeyLowerBound"/>
+        </in-binding>
+        <out-binding>
+            <bind name="headers" type="Array/CompositeType(key:string,value:string):myHeaders" export-name="headers"/>
+            <bind name="urlParamValues" type="Array/string" export-name="urlParamValues"/>
+            <bind name="opUrl" type="string" export-name="opUrl"/>
+            <bind name="baseUrl" type="string" export-name="baseUrl"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="60.0" x="160.0"/>
+    </workflow-item>
+</ns2:workflow>

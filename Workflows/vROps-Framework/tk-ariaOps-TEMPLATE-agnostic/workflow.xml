@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item5" object-name="workflow:name=generic" id="ba99d841-bb2d-4d85-abb7-7d3a7df2a838" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
-    <display-name>tk-TEMPLATE-agnostic</display-name>
+    <display-name>tk-ariaOps-TEMPLATE-agnostic</display-name>
     <description>Retrieves metrics for a specific object.</description>
     <position y="10.0" x="40.0"/>
     <input>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item4" object-name="workflow:name=generic" id="3ea2fdf4-0643-4845-9310-0a0036c7737f" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-TEMPLATE</display-name>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="username" type="string"/>
+        <param name="password" type="SecureString"/>
+        <param name="isSaaS" type="boolean"/>
+        <param name="authSource" type="string"/>
+    </input>
+    <output/>
+    <attrib name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse">
+        <value encoded="n"/>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="10.0" x="260.0"/>
+    </workflow-item>
+    <workflow-item name="item4" out-name="item6" type="task" comparator="0">
+        <display-name>prepWork</display-name>
+        <script encoded="false"></script>
+        <in-binding/>
+        <out-binding/>
+        <description>Simple task with custom script capability.</description>
+        <position y="100.0" x="0.0"/>
+    </workflow-item>
+    <workflow-item name="item5" out-name="item0" type="task" comparator="0">
+        <display-name>postProcessing</display-name>
+        <script encoded="false"></script>
+        <in-binding/>
+        <out-binding/>
+        <description>Simple task with custom script capability.</description>
+        <position y="100.0" x="100.0"/>
+    </workflow-item>
+    <workflow-item name="item6" out-name="item5" type="link" linked-workflow-id="ba99d841-bb2d-4d85-abb7-7d3a7df2a838" comparator="0">
+        <display-name>tk-ariaOps-TEMPLATE-agnostic</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+        </out-binding>
+        <description> </description>
+        <position y="20.0" x="100.0"/>
+    </workflow-item>
+</ns2:workflow>
