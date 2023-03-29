@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item4" object-name="workflow:name=generic" id="f3bfb109-d8c6-4999-9b9e-005d339c12bd" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-getAllHostsReportingPowerUsage</display-name>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="username" type="string"/>
+        <param name="password" type="SecureString"/>
+        <param name="isSaaS" type="boolean"/>
+        <param name="authSource" type="string"/>
+    </input>
+    <output>
+        <param name="objectIDs" type="Array/string"/>
+    </output>
+    <attrib name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="adapterKind" type="string">
+        <value encoded="n">VMWARE</value>
+    </attrib>
+    <attrib name="resourceKind" type="string">
+        <value encoded="n">hostsystem</value>
+    </attrib>
+    <attrib name="statKey" type="string">
+        <value encoded="n">power|energy_summation_sum</value>
+    </attrib>
+    <attrib name="statKeyInclusive" type="string">
+        <value encoded="n">false</value>
+    </attrib>
+    <attrib name="statKeyLowerBound" type="string">
+        <value encoded="n">0</value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="10.0" x="260.0"/>
+    </workflow-item>
+    <workflow-item name="item4" out-name="item6" type="task" comparator="0">
+        <display-name>prepWork</display-name>
+        <script encoded="false">// Nothing to do
+// variables could be set here as well
+</script>
+        <in-binding/>
+        <out-binding/>
+        <description>Simple task with custom script capability.</description>
+        <position y="100.0" x="0.0"/>
+    </workflow-item>
+    <workflow-item name="item5" out-name="item0" type="task" comparator="0">
+        <display-name>postProcessing</display-name>
+        <script encoded="false">System.log("#########################");
+System.log(actionResult.responseString);
+System.log("#########################");
+
+var jsonResponse = JSON.parse(actionResult.responseString);
+System.log(jsonResponse.resourceList[0]["resourceKey"]["name"]);
+System.log(jsonResponse.resourceList[0]["identifier"]);
+
+objectIDs  = new Array();
+
+// var mtdEnergyConsumption = 0;
+for (p in jsonResponse.resourceList) {
+    System.log(jsonResponse.resourceList[p]["resourceKey"]["name"]);
+    System.log(jsonResponse.resourceList[p]["identifier"]);
+    objectIDs.push(jsonResponse.resourceList[p]["identifier"]);
+}</script>
+        <in-binding>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+        </in-binding>
+        <out-binding>
+            <bind name="objectIDs" type="Array/string" export-name="objectIDs"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="100.0" x="100.0"/>
+    </workflow-item>
+    <workflow-item name="item6" out-name="item5" type="link" linked-workflow-id="7534a8c7-41f9-48a9-84ab-14f362d28b9a" comparator="0">
+        <display-name>tk-ariaOps-getResourcesBySpecs-agnostic</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+            <bind name="adapterKind" type="string" export-name="adapterKind"/>
+            <bind name="resourceKind" type="string" export-name="resourceKind"/>
+            <bind name="statKey" type="string" export-name="statKey"/>
+            <bind name="statKeyInclusive" type="string" export-name="statKeyInclusive"/>
+            <bind name="statKeyLowerBound" type="string" export-name="statKeyLowerBound"/>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+        </out-binding>
+        <description> </description>
+        <position y="20.0" x="100.0"/>
+    </workflow-item>
+</ns2:workflow>
