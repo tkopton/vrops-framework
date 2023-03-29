@@ -47,20 +47,20 @@
     </workflow-item>
     <workflow-item name="item5" out-name="item0" type="task" comparator="0">
         <display-name>postProcessing</display-name>
-        <script encoded="false">System.log("#########################");
-System.log(actionResult.responseString);
-System.log("#########################");
+        <script encoded="false">//System.log("#########################");
+//System.log(actionResult.responseString);
+//System.log("#########################");
 
 var jsonResponse = JSON.parse(actionResult.responseString);
-System.log(jsonResponse.resourceList[0]["resourceKey"]["name"]);
-System.log(jsonResponse.resourceList[0]["identifier"]);
+//System.log(jsonResponse.resourceList[0]["resourceKey"]["name"]);
+//System.log(jsonResponse.resourceList[0]["identifier"]);
 
 objectIDs  = new Array();
 
 // var mtdEnergyConsumption = 0;
 for (p in jsonResponse.resourceList) {
-    System.log(jsonResponse.resourceList[p]["resourceKey"]["name"]);
-    System.log(jsonResponse.resourceList[p]["identifier"]);
+    //System.log(jsonResponse.resourceList[p]["resourceKey"]["name"]);
+    //System.log(jsonResponse.resourceList[p]["identifier"]);
     objectIDs.push(jsonResponse.resourceList[p]["identifier"]);
 }</script>
         <in-binding>

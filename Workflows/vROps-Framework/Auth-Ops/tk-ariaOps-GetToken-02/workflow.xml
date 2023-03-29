@@ -142,8 +142,8 @@ actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_RESTCall
     </workflow-item>
     <workflow-item name="item3" out-name="item0" type="task" comparator="0">
         <display-name>parseOutput</display-name>
-        <script encoded="false">System.log("Result.Code: " + response.statusCode)
-System.log("Result.Response: " + response.responseString);
+        <script encoded="false">// System.log("Result.Code: " + response.statusCode)
+// System.log("Result.Response: " + response.responseString);
 
 var jsonData = JSON.parse(response.responseString);
 
@@ -154,7 +154,7 @@ else {
     accessToken = jsonData.token;
 }
 
-System.log("Access token: " + accessToken);</script>
+// System.log("Access token: " + accessToken);</script>
         <in-binding>
             <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
             <bind name="response" type="string" export-name="response"/>

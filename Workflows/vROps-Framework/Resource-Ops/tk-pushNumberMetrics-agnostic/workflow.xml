@@ -74,8 +74,8 @@ var statContent = {
 
 var jsonBody0 = JSON.parse(JSON.stringify(statContent));
 jsonBody0.statKey = metricKey;
-jsonBody0.timestamps[0] = Date.now();
-jsonBody0.data[0] = 23.0;
+jsonBody0.timestamps = timestamps;
+jsonBody0.data = metricValues;
 jsonBody["stat-content"].push(jsonBody0);
 
 content = JSON.stringify(jsonBody);</script>

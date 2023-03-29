@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="fe7f418d-082d-42fc-b959-7755ecb35d56" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-UpdateHostsMTDEnergyConsumption</display-name>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="username" type="string"/>
+        <param name="password" type="SecureString"/>
+        <param name="isSaaS" type="boolean"/>
+        <param name="authSource" type="string"/>
+    </input>
+    <output/>
+    <attrib name="objectIDs" type="Array/string">
+        <value encoded="n"/>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="10.0" x="520.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item2" type="link" linked-workflow-id="f3bfb109-d8c6-4999-9b9e-005d339c12bd" comparator="0">
+        <display-name>tk-getAllHostsReportingPowerUsage</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+        </in-binding>
+        <out-binding>
+            <bind name="objectIDs" type="Array/string" export-name="objectIDs"/>
+        </out-binding>
+        <description> </description>
+        <position y="20.0" x="120.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item0" type="foreach" comparator="0">
+        <display-name>tk-UpdateHostsMTDEnergyConsumptionHELPER</display-name>
+        <in-binding>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+            <bind name="objectID" type="Array/string" export-name="*objectIDs"/>
+        </in-binding>
+        <out-binding/>
+        <reference id="183e144e-7380-42b6-8b4d-2cc92b09d3d0" type="Workflow"/>
+        <position y="20.0" x="340.0"/>
+    </workflow-item>
+</ns2:workflow>

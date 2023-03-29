@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="183e144e-7380-42b6-8b4d-2cc92b09d3d0" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-UpdateHostsMTDEnergyConsumptionHELPER</display-name>
+    <position y="10.0" x="40.0"/>
+    <input>
+        <param name="cspApiToken" type="SecureString"/>
+        <param name="username" type="string"/>
+        <param name="password" type="SecureString"/>
+        <param name="isSaaS" type="boolean"/>
+        <param name="authSource" type="string"/>
+        <param name="objectID" type="string"/>
+    </input>
+    <output/>
+    <attrib name="metricKey" type="string">
+        <value encoded="n">Custom Metric|MTDEnergyConsumption</value>
+    </attrib>
+    <attrib name="timestamps" type="Array/number">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="metricValues" type="Array/number">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="MTDPowerUsage" type="number">
+        <value encoded="n"/>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="70.0" x="520.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item3" type="link" linked-workflow-id="166412cd-3ba2-4742-899b-7c8221115203" comparator="0">
+        <display-name>tk-getESXiMTDPowerConsumption</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="objectID" type="string" export-name="objectID"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+        </in-binding>
+        <out-binding>
+            <bind name="MTDPowerUsage" type="number" export-name="MTDPowerUsage"/>
+        </out-binding>
+        <description> </description>
+        <position y="70.0" x="60.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item4" type="link" linked-workflow-id="b3937e37-b59a-4347-9f8c-ad1896508b51" comparator="0">
+        <display-name>tk-pushNumberMetrics-agnostic</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="cspApiToken" type="SecureString" export-name="cspApiToken"/>
+            <bind name="objectID" type="string" export-name="objectID"/>
+            <bind name="username" type="string" export-name="username"/>
+            <bind name="password" type="SecureString" export-name="password"/>
+            <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
+            <bind name="authSource" type="string" export-name="authSource"/>
+            <bind name="metricKey" type="string" export-name="metricKey"/>
+            <bind name="timestamps" type="Array/number" export-name="timestamps"/>
+            <bind name="metricValues" type="Array/number" export-name="metricValues"/>
+        </in-binding>
+        <out-binding>
+            <bind name="requestResponse" type="string" export-name=""/>
+        </out-binding>
+        <description> </description>
+        <position y="70.0" x="280.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item2" type="task" comparator="0">
+        <display-name>createMetricsArray</display-name>
+        <script encoded="false">metricValues = new Array();
+metricValues.push(MTDPowerUsage);
+
+System.log("Current ObjedtID: +" + objectID);
+System.log("Current MTD Energy Consumption value: " + metricValues[0]);
+
+
+timestamps = new Array();
+timestamps.push(Date.now());
+</script>
+        <in-binding>
+            <bind name="MTDPowerUsage" type="number" export-name="MTDPowerUsage"/>
+            <bind name="timestamps" type="Array/number" export-name="timestamps"/>
+            <bind name="objectID" type="string" export-name="objectID"/>
+        </in-binding>
+        <out-binding>
+            <bind name="metricValues" type="Array/number" export-name="metricValues"/>
+            <bind name="timestamps" type="Array/number" export-name="timestamps"/>
+            <bind name="MTDPowerUsage" type="number" export-name="MTDPowerUsage"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="20.0" x="160.0"/>
+    </workflow-item>
+    <workflow-item name="item4" out-name="item0" type="task" comparator="0">
+        <display-name>cleanUp</display-name>
+        <script encoded="false">metricValues = null;
+timestamps = null;</script>
+        <in-binding>
+            <bind name="metricValues" type="Array/number" export-name="metricValues"/>
+            <bind name="timestamps" type="Array/number" export-name="timestamps"/>
+        </in-binding>
+        <out-binding>
+            <bind name="metricValues" type="Array/number" export-name="metricValues"/>
+            <bind name="timestamps" type="Array/number" export-name="timestamps"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="20.0" x="380.0"/>
+    </workflow-item>
+</ns2:workflow>

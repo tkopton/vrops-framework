@@ -51,7 +51,7 @@ const daysInMonth = new Date(year, month + 1, 0).getDate();
 // calculate the total number of hours up to now in the current month
 hours = now.getHours() + (now.getDate() - 1) * 24;
 
-System.log('Total hours up to now in the current month: ' + hours);
+// System.log('Total hours up to now in the current month: ' + hours);
 </script>
         <in-binding/>
         <out-binding>
@@ -84,19 +84,20 @@ System.log('Total hours up to now in the current month: ' + hours);
     </workflow-item>
     <workflow-item name="item3" out-name="item0" type="task" comparator="0">
         <display-name>MTDEnergyConsumptionCalculation</display-name>
-        <script encoded="false">System.log("#########################");
-System.log(actionResult.responseString);
-System.log("#########################");
+        <script encoded="false">//System.log("#########################");
+//System.log(actionResult.responseString);
+//System.log("#########################");
 
 var jsonResponse = JSON.parse(actionResult.responseString);
-System.log(jsonResponse.values[0]["stat-list"].stat[0].data[2]);
+//System.log(jsonResponse.values[0]["stat-list"].stat[0].data[2]);
 
-var mtdEnergyConsumption = 0;
+var MTDPowerUsage = 0;
 for (p in jsonResponse.values[0]["stat-list"].stat[0].data) {
-    mtdEnergyConsumption = mtdEnergyConsumption + jsonResponse.values[0]["stat-list"].stat[0].data[p];
+    MTDPowerUsage = MTDPowerUsage + jsonResponse.values[0]["stat-list"].stat[0].data[p];
 }
 
-System.log("MTD Energy Consumption in kWh: " + (mtdEnergyConsumption/1000).toFixed(2));</script>
+System.log("MTD Energy Consumption in kWh: " + (MTDPowerUsage/1000).toFixed(2));
+MTDPowerUsage = (MTDPowerUsage/1000).toFixed(2);</script>
         <in-binding>
             <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
         </in-binding>

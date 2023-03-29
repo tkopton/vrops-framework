@@ -54,7 +54,7 @@ return {
 // Create a transient RESTHost
 // If given user/password, uses Basic auth in Shared Session mode
 function createHost(url, user, pw) {
-	System.log("Creating transient REST host with base URL: " + url);
+	// System.log("Creating transient REST host with base URL: " + url);
 	
 	var host = new RESTHost(url);
 	host.name = generateNameFromUrl(url);
@@ -96,7 +96,7 @@ function createSharedBasicAuth(user, pw) {
 	var authParams = ["Shared Session", user, pw];
 	var authObject = RESTAuthenticationManager.createAuthentication("Basic", authParams);
 	
-	System.log("REST host authentication: " + authObject);
+	// System.log("REST host authentication: " + authObject);
 	
 	return authObject;
 }
@@ -116,8 +116,8 @@ function createOp(host, method, url) {
 	op.urlTemplate = url;
 	op.host = host;
 	
-	System.debug("Creating operation '" + name + " with URL '" + url + "'");
-	System.debug("New operation: " + op);
+	// System.debug("Creating operation '" + name + " with URL '" + url + "'");
+	// System.debug("New operation: " + op);
 	
 	op = RESTHostManager.createTransientOperationFrom(op);
 	
@@ -135,14 +135,14 @@ function setRequest(op, urlParamValues, headers, contentType, content) {
 	request.contentType = contentType;
 	
 	for each (var header in headers) {
-		System.log('Header\n');
-		System.log(header.key + ':' + header.value)
+		//System.log('Header\n');
+		//System.log(header.key + ':' + header.value)
 		request.setHeader(header.key, header.value);
 	}
 	
-	System.debug("Request to execute: " + request);
-	System.log("Request URL: " + request.fullUrl);
-	System.log("Request content: " + content);
+	//System.debug("Request to execute: " + request);
+	//System.log("Request URL: " + request.fullUrl);
+	//System.log("Request content: " + content);
 	
 	return request;
 }
@@ -151,15 +151,15 @@ function setRequest(op, urlParamValues, headers, contentType, content) {
 function parseResponse(response) {
     const HTTP_ClientError = 404;
 	var statusCode = response.statusCode;
-	System.log("Status code: " + statusCode);
+	//System.log("Status code: " + statusCode);
 	
 	var headers = response.getAllHeaders();
 	for each (var headerKey in headers.keys) {
-		System.debug(headerKey + ": " + headers.get(headerKey));
+		//System.debug(headerKey + ": " + headers.get(headerKey));
 	}
 	
 	var contentAsString = response.contentAsString;
-	System.log("Response content as string: " + contentAsString);
+	//System.log("Response content as string: " + contentAsString);
 	
 	if (statusCode > HTTP_ClientError) {
 	    throw "HTTPError: status code: " + statusCode;
