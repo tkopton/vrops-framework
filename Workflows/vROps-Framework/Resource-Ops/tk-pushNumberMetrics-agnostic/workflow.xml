@@ -104,7 +104,6 @@ content = JSON.stringify(jsonBody);</script>
         </in-binding>
         <out-binding>
             <bind name="accessToken" type="SecureString" export-name="accessToken"/>
-            <bind name="requestResponse" type="string" export-name="requestResponse"/>
         </out-binding>
         <description> </description>
         <position y="90.0" x="0.0"/>

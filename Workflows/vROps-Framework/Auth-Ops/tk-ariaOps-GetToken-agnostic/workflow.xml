@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="a88facd7-588a-46c2-be66-0193f74311df" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
-    <display-name>tk-ariaOps-GetToken-02</display-name>
-    <position y="10.0" x="20.0"/>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item4" object-name="workflow:name=generic" id="a88facd7-588a-46c2-be66-0193f74311df" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>tk-ariaOps-GetToken-agnostic</display-name>
+    <position y="10.0" x="50.0"/>
     <input>
         <param name="baseUrl" type="string"/>
         <param name="cspAPIToken" type="SecureString"/>
@@ -13,7 +13,6 @@
     </input>
     <output>
         <param name="accessToken" type="SecureString"/>
-        <param name="requestResponse" type="string"/>
     </output>
     <attrib name="opMethod" type="string">
         <value encoded="n"></value>
@@ -41,10 +40,19 @@
     <attrib name="response" type="string">
         <value encoded="n"></value>
     </attrib>
+    <attrib name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="configCategoryName" type="string">
+        <value encoded="n">tkopton</value>
+    </attrib>
+    <attrib name="configAattributName" type="string">
+        <value encoded="n">accessTokenTTL</value>
+    </attrib>
     <workflow-item name="item0" type="end" end-mode="0" comparator="0">
         <in-binding/>
         <out-binding/>
-        <position y="10.0" x="280.0"/>
+        <position y="285.0" x="50.0"/>
     </workflow-item>
     <workflow-item name="item1" out-name="item2" type="task" comparator="0">
         <display-name>prepare inputs</display-name>
@@ -95,7 +103,7 @@ opMethod = 'POST';</script>
             <bind name="urlParamValues" type="Array/string" export-name="urlParamValues"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="80.0" x="-20.0"/>
+        <position y="130.0" x="10.0"/>
     </workflow-item>
     <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.tkopton.vropsframework/tk_RESTCall_Transient" comparator="0">
         <display-name>tk_RESTCall_Transient</display-name>
@@ -135,17 +143,17 @@ actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_RESTCall
             </bind>
         </in-binding>
         <out-binding>
-            <bind name="actionResult" type="string" export-name="response"/>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
         </out-binding>
         <description>Add a note to the workflow schema.</description>
-        <position y="20.0" x="100.0"/>
+        <position y="185.0" x="10.0"/>
     </workflow-item>
     <workflow-item name="item3" out-name="item0" type="task" comparator="0">
         <display-name>parseOutput</display-name>
         <script encoded="false">// System.log("Result.Code: " + response.statusCode)
 // System.log("Result.Response: " + response.responseString);
 
-var jsonData = JSON.parse(response.responseString);
+var jsonData = JSON.parse(actionResult.responseString);
 
 if(isSaaS) {
     accessToken = jsonData.access_token;
@@ -157,12 +165,47 @@ else {
 // System.log("Access token: " + accessToken);</script>
         <in-binding>
             <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
-            <bind name="response" type="string" export-name="response"/>
+            <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
         </in-binding>
         <out-binding>
             <bind name="accessToken" type="SecureString" export-name="accessToken"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="80.0" x="100.0"/>
+        <position y="240.0" x="10.0"/>
+    </workflow-item>
+    <workflow-item name="item4" out-name="item1" type="task" comparator="0">
+        <display-name>checkTokenTTL</display-name>
+        <script encoded="false">//get category
+var category = Server.getConfigurationElementCategoryWithPath(configCategoryName);
+
+if (category == null) {
+    System.log("NO CATEGORY!");
+    throw "Configuration element category " + configCategoryName + " not found";
+}
+
+//get elements
+var elements = category.configurationElements;
+
+//get elements content
+for (i = 0; i &lt; elements.length; i++) {
+    System.log("Found configuration element " + elements[i].name);
+
+    var attribute = elements[i].getAttributeWithKey(configAattributName);
+        if (attribute != null) {
+            System.log("Found attribute " + configAattributName + " in " + elements[i].name + " with value " + attribute.value);
+        }
+        else {
+            throw "Attribute " + configAattributName + " not found!";
+        }
+
+}
+</script>
+        <in-binding>
+            <bind name="configCategoryName" type="string" export-name="configCategoryName"/>
+            <bind name="configAattributName" type="string" export-name="configAattributName"/>
+        </in-binding>
+        <out-binding/>
+        <description>Simple task with custom script capability.</description>
+        <position y="70.0" x="20.0"/>
     </workflow-item>
 </ns2:workflow>

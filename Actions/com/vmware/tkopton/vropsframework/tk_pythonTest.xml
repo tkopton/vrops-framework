@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="tk_pythonTest" result-type="string" api-version="6.0.0" id="a9fb0cfb-651e-4d99-a8f2-b1861db9082a" version="0.0.0" category-name="com.vmware.tkopton.vropsframework">
+  <runtime><![CDATA[python:3.7]]></runtime>
+  <script encoded="false"><![CDATA[from com.vmware.vapi.std_client import DynamicID
+from com.vmware.vapi.core import ExecutionContext
+from com.vmware.vapi.security.user_password import \
+    create_user_password_security_context
+from com.vmware.o11n.plugin.rest.client.factory import RestHostFactory
+
+def create_transient_host_and_execute_post(url, username, password, post_data):
+    # Create a security context with the provided username and password
+    security_context = create_user_password_security_context(username, password)
+
+    # Create a transient host factory and a REST host using the provided URL and security context
+    host_factory = RestHostFactory()
+    host = host_factory.createTransientHost(url, security_context)
+
+    # Create a REST operation for a POST method with the provided data
+    operation_id = DynamicID(type='REST_SERVICE', id='POST')
+    request_body = str(post_data)
+    operation_input = {'request_body': request_body}
+    operation = host.newOperation(operation_id, operation_input)
+
+    # Execute the operation and get the response
+    response = operation.execute()
+    response_code = response.getStatusCode()
+    response_body = response.getBodyAsString()
+
+    # Return the response code and body as a dictionary
+    return {'response_code': response_code, 'response_body': response_body}
+
+]]></script>
+</dunes-script-module>

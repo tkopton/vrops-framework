@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="7c56f745-6715-421c-8448-bf6ca5b31cec" version="0.0.0">
+  <display-name><![CDATA[tk-ops-framework]]></display-name>
+  <atts>
+    <att name="accessTokenTTL" type="Date" read-only="false">
+      <value encoded="n"><![CDATA[20230330090700000+0000]]></value>
+    </att>
+  </atts>
+</config-element>
