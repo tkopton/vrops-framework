@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item4" object-name="workflow:name=generic" id="a88facd7-588a-46c2-be66-0193f74311df" editor-version="2.0" version="0.0.0" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
     <display-name>tk-ariaOps-GetToken-agnostic</display-name>
-    <position y="10.0" x="50.0"/>
+    <position y="0.0" x="60.0"/>
     <input>
         <param name="baseUrl" type="string"/>
         <param name="cspAPIToken" type="SecureString"/>
@@ -46,13 +46,22 @@
     <attrib name="configCategoryName" type="string">
         <value encoded="n">tkopton</value>
     </attrib>
-    <attrib name="configAattributName" type="string">
+    <attrib name="configAattribuTokenTTL" type="string">
         <value encoded="n">accessTokenTTL</value>
+    </attrib>
+    <attrib name="configAattribuToken" type="string">
+        <value encoded="n">accessToken</value>
+    </attrib>
+    <attrib name="skipTokenRequest" type="boolean">
+        <value encoded="n">false</value>
+    </attrib>
+    <attrib name="accessTokenTTL" type="Date">
+        <value encoded="n"/>
     </attrib>
     <workflow-item name="item0" type="end" end-mode="0" comparator="0">
         <in-binding/>
         <out-binding/>
-        <position y="285.0" x="50.0"/>
+        <position y="300.0" x="60.0"/>
     </workflow-item>
     <workflow-item name="item1" out-name="item2" type="task" comparator="0">
         <display-name>prepare inputs</display-name>
@@ -103,7 +112,7 @@ opMethod = 'POST';</script>
             <bind name="urlParamValues" type="Array/string" export-name="urlParamValues"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="130.0" x="10.0"/>
+        <position y="130.0" x="20.0"/>
     </workflow-item>
     <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.tkopton.vropsframework/tk_RESTCall_Transient" comparator="0">
         <display-name>tk_RESTCall_Transient</display-name>
@@ -146,10 +155,10 @@ actionResult = System.getModule("com.vmware.tkopton.vropsframework").tk_RESTCall
             <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
         </out-binding>
         <description>Add a note to the workflow schema.</description>
-        <position y="185.0" x="10.0"/>
+        <position y="190.0" x="20.0"/>
     </workflow-item>
     <workflow-item name="item3" out-name="item0" type="task" comparator="0">
-        <display-name>parseOutput</display-name>
+        <display-name>parseOutputAndStoreToken</display-name>
         <script encoded="false">// System.log("Result.Code: " + response.statusCode)
 // System.log("Result.Response: " + response.responseString);
 
@@ -157,6 +166,7 @@ var jsonData = JSON.parse(actionResult.responseString);
 
 if(isSaaS) {
     accessToken = jsonData.access_token;
+    System.log(jsonData.expires_in);
 }
 else {
     accessToken = jsonData.token;
@@ -166,12 +176,13 @@ else {
         <in-binding>
             <bind name="isSaaS" type="boolean" export-name="isSaaS"/>
             <bind name="actionResult" type="CompositeType(statusCode:string,responseString:string):restResponse" export-name="actionResult"/>
+            <bind name="accessTokenTTL" type="Date" export-name="accessTokenTTL"/>
         </in-binding>
         <out-binding>
             <bind name="accessToken" type="SecureString" export-name="accessToken"/>
         </out-binding>
         <description>Simple task with custom script capability.</description>
-        <position y="240.0" x="10.0"/>
+        <position y="250.0" x="20.0"/>
     </workflow-item>
     <workflow-item name="item4" out-name="item1" type="task" comparator="0">
         <display-name>checkTokenTTL</display-name>
@@ -190,19 +201,33 @@ var elements = category.configurationElements;
 for (i = 0; i &lt; elements.length; i++) {
     System.log("Found configuration element " + elements[i].name);
 
-    var attribute = elements[i].getAttributeWithKey(configAattributName);
+    var attribute = elements[i].getAttributeWithKey(configAattribuTokenTTL);
+        
         if (attribute != null) {
-            System.log("Found attribute " + configAattributName + " in " + elements[i].name + " with value " + attribute.value);
+            System.log("Found attribute " + configAattribuTokenTTL + " in " + elements[i].name + " with value " + attribute.value);
+            const date1 = new Date(attribute.value);
+            const date2 = new Date();
+            System.log(date1.getTime());
+            System.log(date2.getTime());
+            var tokenTTL = date1.getTime() - 300000;
+            System.log(tokenTTL);
+            if (date2.getTime() &lt; tokenTTL) {
+                System.log('Token still valid');
+                skipTokenRequest = true;
+            }
+            else {
+                System.log('Token no longer valid or expiring in 5 minutes');
+                skipTokenRequest = false;
+            }
         }
         else {
-            throw "Attribute " + configAattributName + " not found!";
+            throw "Attribute " + configAattribuTokenTTL + " not found!";
         }
-
-}
-</script>
+}</script>
         <in-binding>
             <bind name="configCategoryName" type="string" export-name="configCategoryName"/>
-            <bind name="configAattributName" type="string" export-name="configAattributName"/>
+            <bind name="configAattribuTokenTTL" type="string" export-name="configAattribuTokenTTL"/>
+            <bind name="skipTokenRequest" type="boolean" export-name="skipTokenRequest"/>
         </in-binding>
         <out-binding/>
         <description>Simple task with custom script capability.</description>

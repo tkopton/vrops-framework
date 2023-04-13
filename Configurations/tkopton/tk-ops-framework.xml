@@ -3,7 +3,10 @@
   <display-name><![CDATA[tk-ops-framework]]></display-name>
   <atts>
     <att name="accessTokenTTL" type="Date" read-only="false">
-      <value encoded="n"><![CDATA[20230330090700000+0000]]></value>
+      <value encoded="n"><![CDATA[20230414090700000+0000]]></value>
+    </att>
+    <att name="accessToken" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
     </att>
   </atts>
 </config-element>
