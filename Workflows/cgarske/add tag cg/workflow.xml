@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="1183b058-a0f5-4f14-a45d-6a2c77fe688a" editor-version="2.0" version="0.0.2" api-version="6.0.0" restartMode="1" resumeFromFailedMode="0">
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="1183b058-a0f5-4f14-a45d-6a2c77fe688a" editor-version="2.0" version="0.0.3" api-version="6.0.0" restartMode="1" resumeFromFailedMode="0">
     <display-name>add tag cg</display-name>
     <position y="50.0" x="100.0"/>
     <input>
         <param name="vm" type="VC:VirtualMachine">
             <description>VM to which tag will be assigned</description>
         </param>
+        <param name="vc" type="VC:SdkConnection"/>
     </input>
     <output/>
     <attrib name="vcenter" type="VAPI:VAPIEndpoint">
