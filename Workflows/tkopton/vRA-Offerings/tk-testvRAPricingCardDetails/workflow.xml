@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="9d370b73-b458-4a39-b53e-d63c42b5f198" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[tk-testvRAPricingCardDetails]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="pricingCardId" type="string"/>
+  </input>
+  <output>
+    <param name="pricingCardName" type="string"/>
+  </output>
+  <attrib name="getRToken" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='834ea004-0a9d-488e-bc65-4919152ba49f:95c291bd-7502-460a-a0a9-6a0b6134c8d8'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="getBToken" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='834ea004-0a9d-488e-bc65-4919152ba49f:9894748a-59ab-425f-975c-4a33f7d5e487'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="vRAConfig" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='fdcb8307-c0fd-4d7f-960d-ced06a0f38ad'&dunesName='ConfigurationElement']]></value>
+  </attrib>
+  <attrib name="getPCardDetails" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='834ea004-0a9d-488e-bc65-4919152ba49f:d6a2d93f-e820-4d7c-a6c5-4aa353b52e26'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="440.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.tkopton/tk_vraRefreshToken">
+    <display-name><![CDATA[tk_vraRefreshToken]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton").tk_vraRefreshToken(getBToken,getRToken,vRAConfig);
+]]></script>
+    <in-binding>
+      <bind name="getBToken" type="REST:RESTOperation" export-name="getBToken"/>
+      <bind name="getRToken" type="REST:RESTOperation" export-name="getRToken"/>
+      <bind name="vRAConfig" type="ConfigurationElement" export-name="vRAConfig"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" export-name=""/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="170.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[getPricingCardName]]></display-name>
+    <script encoded="false"><![CDATA[var vraBToken = vRAConfig.getAttributeWithKey("vraBearerToken").value;
+var params = new Array();
+var jsonResponse = null;
+
+pricingCardName = getPricingCardDetails(pricingCardId);
+
+function getPricingCardDetails(pCardId) {
+    params.push(pCardId);
+    var request = getPCardDetails.createRequest(params, null);
+
+    request.contentType = "application/json";
+    request.setHeader("accept", "application/json");
+    request.setHeader("Authorization", "Bearer " + vraBToken);
+
+    var response = request.execute();
+    var statusCode = response.statusCode;
+    var statusCodeAttribute = statusCode;
+    var headers = response.getAllHeaders();
+    var contentAsString = response.contentAsString;
+    jsonResponse = JSON.parse(contentAsString);
+    
+    params.pop();
+
+    return jsonResponse.name;
+}]]></script>
+    <in-binding>
+      <bind name="getPCardDetails" type="REST:RESTOperation" export-name="getPCardDetails"/>
+      <bind name="pricingCardId" type="string" export-name="pricingCardId"/>
+      <bind name="vRAConfig" type="ConfigurationElement" export-name="vRAConfig"/>
+    </in-binding>
+    <out-binding>
+      <bind name="pricingCardName" type="string" export-name="pricingCardName"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="300.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

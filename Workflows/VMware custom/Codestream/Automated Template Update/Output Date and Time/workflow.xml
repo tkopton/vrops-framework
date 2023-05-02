@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="dad0f618-17ff-4980-b58c-7cfe3fcc9e91" version="0.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Output Date and Time]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <output>
+    <param name="dateandtime" type="string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Output Date and Time]]></display-name>
+    <script encoded="false"><![CDATA[var today = new Date();
+
+var year = today.getFullYear();
+var month = today.getMonth()+1; 
+var day = today.getDate();
+var hour = today.getHours();
+var minute = today.getMinutes();
+
+if(month<10) 
+{
+    month='0'+month;
+} 
+
+if(day<10) 
+{
+    day='0'+day;
+} 
+
+if(minute<10) 
+{
+    minute='0'+minute;
+} 
+
+if(hour<10) 
+{
+    hour='0'+hour;
+} 
+
+today = year+'-'+month+'-'+day+'-'+hour+'-'+minute;
+
+System.log(today);
+dateandtime = today;]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="dateandtime" type="string" export-name="dateandtime"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getMemMBFromVM" result-type="number" api-version="6.0.0" id="e70504e7-99bc-4d25-a766-8700d7e7a959" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vra.tools">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return vcvm.summary.config.memorySizeMB;]]></script>
+</dunes-script-module>

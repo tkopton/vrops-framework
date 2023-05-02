@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getOperations" result-type="Array/string" api-version="6.0.0" id="f3c190b6-752c-4815-ab33-f11d642572d8" version="0.0.1" allowed-operations="evf" category-name="com.vmware.coe.itop">
+  <description><![CDATA[Returns an array of strings containing the valid operations.]]></description>
+  <param n="auth_user" t="string"><![CDATA[iTop API Username]]></param>
+  <param n="auth_pwd" t="SecureString"><![CDATA[iTop API Password]]></param>
+  <param n="restOperation" t="REST:RESTOperation"><![CDATA[REST Operation Object]]></param>
+  <script encoded="false"><![CDATA[if (auth_user == null || auth_pwd == null || restOperation == null) return null;
+
+var operations = new Array();
+var inParamtersValues = [auth_user,auth_pwd,'{"operation":"list_operations"}'];
+var request = restOperation.createRequest(inParamtersValues, "");
+request.contentType = "application/json";
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+//System.log("Response: " + response);
+if ( response.statusCode >= 400 ) {
+	Server.warn("HTTP Error: Status code: "+response.statusCode,inputData);
+	throw "HTTP Error: status code: " + response.statusCode;
+}	
+
+//System.log("Status code: " + statusCodeAttribute);
+//contentLength = response.contentLength;
+//headers = response.getAllHeaders();
+
+//System.log("");
+//System.log("==== Attempt to retrieve values ====");
+var jsonResponse = JSON.parse(response.contentAsString);
+var ops = jsonResponse.operations;
+for each (op in ops){
+	// Each op here is a JSON object
+	operations.push(op.verb);
+	//System.log("verb: "+op.verb);
+	//System.log("description: "+op.description);
+	//System.log("extension: "+op.extension);
+}
+return operations;
+/* Sample stringify representation of the operations object below:
+ {
+	"version":"1.0",
+	"operations":[
+		{"verb":"core\/create","description":"Create an object","extension":"CoreServices"},
+		{"verb":"core\/update","description":"Update an object","extension":"CoreServices"},
+		{"verb":"core\/apply_stimulus","description":"Apply a stimulus to change the state of an object","extension":"CoreServices"},
+		{"verb":"core\/get","description":"Search for objects","extension":"CoreServices"},
+		{"verb":"core\/delete","description":"Delete objects","extension":"CoreServices"},
+		{"verb":"core\/get_related","description":"Get related objects through the specified relation","extension":"CoreServices"}
+	],
+	"code":0,"message":"Operations: 6"}
+*/]]></script>
+</dunes-script-module>

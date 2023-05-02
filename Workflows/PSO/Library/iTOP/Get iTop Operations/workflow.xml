@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="fd96d399-9c42-4b0f-9cdd-9ce482f6a498" version="1.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get iTop Operations]]></display-name>
+  <description><![CDATA[Returns an array of strings containing the operation names.]]></description>
+  <position y="0.0" x="85.0"/>
+  <output>
+    <param name="statusCode" type="number">
+      <description><![CDATA[Status code of the HTTP request]]></description>
+    </param>
+    <param name="contentLength" type="number">
+      <description><![CDATA[Length of the request response]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[Response headers]]></description>
+    </param>
+    <param name="contentAsString" type="string">
+      <description><![CDATA[Response content as string]]></description>
+    </param>
+    <param name="operations" type="Array/string"/>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="statusCodeAttribute" type="number" read-only="false"/>
+  <attrib name="restOperation" type="REST:RESTOperation" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="restOperation">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[REST operation to be used for the call]]></description>
+  </attrib>
+  <attrib name="auth_user" type="string" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_user">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <attrib name="auth_pwd" type="SecureString" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_pwd">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item3" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[REST call]]></display-name>
+    <script encoded="false"><![CDATA[var operations = new Array();
+var inputData = '{"operation":"list_operations"}';
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, "");
+//set the request content type
+request.contentType = "application/json";
+System.log("Request: " + request);
+System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+System.log("Response: " + response);
+statusCode = response.statusCode;
+statusCodeAttribute = statusCode;
+System.log("Status code: " + statusCode);
+contentLength = response.contentLength;
+headers = response.getAllHeaders();
+contentAsString = response.contentAsString;
+System.log("Content as string: " + contentAsString);
+System.log("");
+System.log("==== Attempt to retrieve values ====");
+var jsonResponse = JSON.parse(contentAsString);
+var ops = jsonResponse.operations;
+for each (op in ops){
+	// Each op here is a JSON object
+	operations.push(op.verb);
+	System.log("verb: "+op.verb);
+	System.log("description: "+op.description);
+	System.log("extension: "+op.extension);
+}
+
+/* Sample stringify representation of the operations object below:
+ {
+	"version":"1.0",
+	"operations":[
+		{"verb":"core\/create","description":"Create an object","extension":"CoreServices"},
+		{"verb":"core\/update","description":"Update an object","extension":"CoreServices"},
+		{"verb":"core\/apply_stimulus","description":"Apply a stimulus to change the state of an object","extension":"CoreServices"},
+		{"verb":"core\/get","description":"Search for objects","extension":"CoreServices"},
+		{"verb":"core\/delete","description":"Delete objects","extension":"CoreServices"},
+		{"verb":"core\/get_related","description":"Get related objects through the specified relation","extension":"CoreServices"}
+	],
+	"code":0,"message":"Operations: 6"}
+*/]]></script>
+    <in-binding>
+      <bind name="auth_user" type="string" export-name="auth_user"/>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd"/>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+    </in-binding>
+    <out-binding>
+      <bind name="statusCode" type="number" export-name="statusCode"/>
+      <bind name="contentLength" type="number" export-name="contentLength"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="contentAsString" type="string" export-name="contentAsString"/>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+      <bind name="operations" type="Array/string" export-name="operations"/>
+    </out-binding>
+    <position y="73.59090909090908" x="45.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="181.77272727272725" x="85.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="127.22727272727272" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[Check status code]]></display-name>
+    <script encoded="false"><![CDATA[if ( statusCodeAttribute != 200 ) {
+	throw "HTTPError: status code: " + statusCodeAttribute;
+} else {
+	return true;
+}	]]></script>
+    <in-binding>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+    </in-binding>
+    <position y="127.22727272727272" x="45.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Get iTop Operations]]></title>
+    </p-step>
+  </presentation>
+</workflow>

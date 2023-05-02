@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="883e653d-d32d-4df4-bebd-3480822db49e" version="0.0.0">
+  <display-name><![CDATA[config.day2]]></display-name>
+  <atts>
+    <att name="PowerShellScriptingHostDay2" type="PowerShell:PowerShellHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='c9a3d905-3826-4873-bac8-61c41eaafff0'&dunesName='PowerShell:PowerShellHost']]></value>
+    </att>
+  </atts>
+</config-element>

@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="1e76c22a-dd16-4be7-9fcd-25005bbb3d6f" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[send mail]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="pizzaName" type="string"/>
+    <param name="toppingOne" type="string"/>
+    <param name="toppingTwo" type="string"/>
+    <param name="toppingThree" type="string"/>
+  </input>
+  <attrib name="toAddress" type="string" read-only="false">
+    <value encoded="n"><![CDATA[administrator@vpod.local]]></value>
+  </attrib>
+  <attrib name="subject" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Details about your pizza order]]></value>
+  </attrib>
+  <attrib name="fromAddress" type="string" read-only="false">
+    <value encoded="n"><![CDATA[pizza@vpod.local]]></value>
+  </attrib>
+  <attrib name="smtpHost" type="string" read-only="false">
+    <value encoded="n"><![CDATA[controlctr.vpod.local]]></value>
+  </attrib>
+  <attrib name="smtpUsername" type="string" read-only="false">
+    <value encoded="n"><![CDATA[pizza@vpod.local]]></value>
+  </attrib>
+  <attrib name="smtpPassword" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[8BR56M4DZ77G61G72M65Z31W21MF2F570U5B72029O43471BFQ2D7E8C9MFD5135CT1194161N95F2FCBQ17B5910SF361324SF64CFAFQ7FBFC48M2493C27MAD69F2DTB5178FBY9ABFA79L49F664BH238E1B2R86A8482M30F7146ZDDBF00ZF31B5A3R784F1F8X47022A4MCAE2ABAN]]></value>
+  </attrib>
+  <attrib name="fromName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Mafia Super Pizza]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[send mail]]></display-name>
+    <script encoded="false"><![CDATA[var htmlBody = '<html><body>';
+htmlBody += 'Details about your pizza order:<br><br>';
+htmlBody += '<table border="1" cellpadding="5">';
+htmlBody += '<tr><td colspan="2"><center>' + pizzaName + '</center></td></tr>';
+if (toppingOne != "None" && toppingOne != "") htmlBody += '<tr><td>Topping one:</td><td>' + toppingOne + '</td></tr>';
+if (toppingTwo != "None" && toppingTwo != "") htmlBody += '<tr><td>Topping two:</td><td>' + toppingTwo + '</td></tr>';
+if (toppingThree != "None" && toppingThree != "") htmlBody += '<tr><td>Topping three:</td><td>' + toppingThree + '</td></tr>';
+htmlBody += '</table><br><br>';
+htmlBody += 'Thank you for ordering at Mafia Pizza<br>';
+htmlBody += 'Your lovely italian pizza family corp<br>';
+htmlBody += '<a href="mailto:pizza@corp.local">pizza@corp.local - lovely italian pizza</a>';
+htmlBody += '</body></html>';
+
+var email         = new EmailMessage();
+email.smtpHost    = smtpHost;
+email.username    = smtpUsername;
+email.password    = smtpPassword;
+email.toAddress   = toAddress;
+email.fromAddress = fromAddress;
+email.fromName    = fromName;
+email.subject     = subject;
+email.addMimePart(htmlBody, "TEXT/HTML");
+email.sendMessage();
+]]></script>
+    <in-binding>
+      <bind name="toAddress" type="string" export-name="toAddress"/>
+      <bind name="subject" type="string" export-name="subject"/>
+      <bind name="fromAddress" type="string" export-name="fromAddress"/>
+      <bind name="smtpHost" type="string" export-name="smtpHost"/>
+      <bind name="smtpUsername" type="string" export-name="smtpUsername"/>
+      <bind name="smtpPassword" type="SecureString" export-name="smtpPassword"/>
+      <bind name="pizzaName" type="string" export-name="pizzaName"/>
+      <bind name="toppingOne" type="string" export-name="toppingOne"/>
+      <bind name="toppingTwo" type="string" export-name="toppingTwo"/>
+      <bind name="toppingThree" type="string" export-name="toppingThree"/>
+      <bind name="fromName" type="string" export-name="fromName"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="pizzaName">
+      <desc><![CDATA[pizzaName]]></desc>
+    </p-param>
+    <p-param name="toppingOne">
+      <desc><![CDATA[toppingOne]]></desc>
+    </p-param>
+    <p-param name="toppingTwo">
+      <desc><![CDATA[toppingTwo]]></desc>
+    </p-param>
+    <p-param name="toppingThree">
+      <desc><![CDATA[toppingThree]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

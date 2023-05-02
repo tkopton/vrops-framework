@@ -1,0 +1,468 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="17890a2d-aeef-43b1-8c8c-714e263a6808" version="0.1.16" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[PostBuildVM]]></display-name>
+  <error-handler name="item19" throw-bind-name="errorCode">
+    <position y="218.13636363636363" x="105.0"/>
+  </error-handler>
+  <position y="154.5" x="105.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <attrib name="sla" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The desired Service level agreement]]></description>
+  </attrib>
+  <attrib name="vcvm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="backupProp" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="repIntervall" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="repQuies" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="sourceDatacenter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="AKHCustom" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="debugFlag" type="boolean" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="EventManagerDebugFlag">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[(Optional) if Null it will work as true. False will switch exit without executing]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="JDBCString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUserPassword" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="deploymentId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="AKHnewStatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[add]]></value>
+  </attrib>
+  <attrib name="vRAnewStatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[added]]></value>
+  </attrib>
+  <attrib name="vmOSFamily" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="ReplicationDestionation" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="ServerDBnewStatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[add]]></value>
+  </attrib>
+  <attrib name="ServerDBignoreStatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[ignore]]></value>
+  </attrib>
+  <attrib name="exclusions" type="Array/string" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="EventManagerLoggingExclude">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="monitorStateOff" type="string" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <workflow-note x="1100.0" y="289.95454545454544" w="380.0" h="111.0" color="ebb0ebff">
+    <description><![CDATA[Start Replication]]></description>
+  </workflow-note>
+  <workflow-note x="1220.0" y="54.54545454545456" w="248.0" h="187.0">
+    <description><![CDATA[AKH Manager]]></description>
+  </workflow-note>
+  <workflow-note x="620.0" y="90.5" w="440.0" h="119.0" color="bfdfffff">
+    <description><![CDATA[Set Monitoring]]></description>
+  </workflow-note>
+  <workflow-note x="80.0" y="208.59090909090907" w="380.0" h="66.0" color="ebebebff">
+    <description><![CDATA[Default Error]]></description>
+  </workflow-note>
+  <workflow-note x="1480.0" y="90.9090909090909" w="128.0" h="196.0" color="bfffbfff">
+    <description><![CDATA[ServerDB]]></description>
+  </workflow-note>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="154.5" x="1784.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="link" linked-workflow-id="93ec16f3-6890-4b7d-b5be-7c36593c598d">
+    <display-name><![CDATA[addReservationsToVM]]></display-name>
+    <in-binding>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+      <bind name="sla" type="string" export-name="sla">
+        <description><![CDATA[The desired Service level agreement]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="109.95454545454544" x="1084.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item5" type="task">
+    <display-name><![CDATA[get values]]></display-name>
+    <script encoded="false"><![CDATA[sla = payload.get("machine").get("properties").get("akh.SLA");
+if ((sla==null)||(sla=="")){
+	AKHCustom=false;
+} else {
+	AKHCustom=true;
+	var vmName = payload.get("machine").get("name");
+	vcvm = Server.findAllForType("VC:VirtualMachine", "xpath:name='" + vmName + "'")[0];
+	backupProp=payload.get("machine").get("properties").get("akh.Backup");
+	temp=payload.get("machine").get("properties").get("akh.Replication");
+	sourceDatacenter=payload.get("machine").get("properties").get("akh.rechenzentrum");
+	deploymentId=payload.machine.properties.get("__Cafe.Root.Request.Id");
+}
+]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </in-binding>
+    <out-binding>
+      <bind name="sla" type="string" export-name="sla"/>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+      <bind name="backupProp" type="string" export-name="backupProp"/>
+      <bind name="repIntervall" type="number" export-name="repIntervall"/>
+      <bind name="repQuies" type="boolean" export-name="repQuies"/>
+      <bind name="sourceDatacenter" type="string" export-name="sourceDatacenter"/>
+      <bind name="AKHCustom" type="boolean" export-name="AKHCustom"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </out-binding>
+    <position y="164.5" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item17" catch-name="item23" throw-bind-name="errorCode" type="link" linked-workflow-id="fd0eb3d3-e547-4000-b2d0-e4703136a02e">
+    <display-name><![CDATA[startReplication]]></display-name>
+    <in-binding>
+      <bind name="rpo" type="number" export-name="repIntervall"/>
+      <bind name="quiesceGuestEnabled" type="boolean" export-name="repQuies"/>
+      <bind name="sourceDatacenter" type="string" export-name="sourceDatacenter"/>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="replicationDestination" type="string" export-name="ReplicationDestionation"/>
+    </out-binding>
+    <position y="355.4090909090909" x="1224.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item7" type="condition" alt-out-name="item20" comparator="0">
+    <display-name><![CDATA[has Replication?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (repIntervall > 0.0) ;]]></script>
+    <in-binding>
+      <bind name="repIntervall" type="number" export-name="repIntervall"/>
+    </in-binding>
+    <condition name="repIntervall" type="number" comparator="2" label="null">0.0</condition>
+    <position y="290.8636363636363" x="1084.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item6" type="link" linked-workflow-id="0ba0754b-c99e-4698-becf-ad96c71f40a1">
+    <display-name><![CDATA[updateDeploymnetNewStatus]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </in-binding>
+    <out-binding/>
+    <position y="164.5" x="1084.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item16" type="condition" alt-out-name="item9" comparator="0">
+    <display-name><![CDATA[AKH Customization?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (AKHCustom == true) ;]]></script>
+    <in-binding>
+      <bind name="AKHCustom" type="boolean" export-name="AKHCustom"/>
+    </in-binding>
+    <condition name="AKHCustom" type="boolean" comparator="0" label="null">false</condition>
+    <position y="154.5" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item9" type="end" end-mode="0">
+    <position y="218.13636363636363" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="link" linked-workflow-id="4442e79f-dc72-49f9-bfcd-9dcf555fe871">
+    <display-name><![CDATA[logAllProps]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="debugFlag" type="boolean" export-name="debugFlag">
+        <description><![CDATA[(Optional) if Null it will work as true. False will switch exit without executing]]></description>
+      </bind>
+      <bind name="exclusions" type="Array/string" export-name="exclusions"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Author: Daniel Langenhan (daniel_langenhan@yahoo.com.au)
+http://langenhan.info/software/logallprops.html
+
+This workflow will log the content of a property into the logs (System.log). The property can consists of multiple properties in properties as well as arrays. 
+The workflow will also log all system context variables (mostly used with vRA).
+
+The input variable debugFlag can be null. If set to false the workflow is not executed. This can be used to make sure that the logging will only work in a debug situtation. ]]></description>
+    <position y="164.5" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item14" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="45.40909090909091" x="1524.5"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item14" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="errorMessage" type="string" export-name="errorCode"/>
+      <bind name="vmhostname" type="string" explicitly-not-bound="true"/>
+      <bind name="usage" type="string" explicitly-not-bound="true"/>
+      <bind name="desciption" type="string" explicitly-not-bound="true"/>
+      <bind name="reservationName" type="string" explicitly-not-bound="true"/>
+      <bind name="ip" type="string" explicitly-not-bound="true"/>
+      <bind name="gateway" type="string" explicitly-not-bound="true"/>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="1224.5"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item24" catch-name="item15" throw-bind-name="errorCode" type="link" linked-workflow-id="17e8e4f0-c288-4347-b531-bf7bed7ad455">
+    <display-name><![CDATA[getAKHStatus]]></display-name>
+    <in-binding>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="AKHStatusReturn" type="string" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="109.95454545454544" x="1224.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item13" type="task" script-module="at.akhwien.db/updateAKHManagerStatus">
+    <display-name><![CDATA[setAKHManagerAdd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").updateAKHManagerStatus(JDBCString,DBUser,DBUserPassword,deploymentId,newStatus,oldStatus) ;]]></script>
+    <in-binding>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="newStatus" type="string" export-name="AKHnewStatus"/>
+      <bind name="oldStatus" type="string" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="164.5" x="1224.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item0" type="task" script-module="at.akhwien.db/updatevRAStatus">
+    <display-name><![CDATA[updatevRAStatus]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").updatevRAStatus(JDBCString,DBUser,DBUserPassword,deploymentId,newStatus,oldStatus) ;]]></script>
+    <in-binding>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="newStatus" type="string" export-name="vRAnewStatus"/>
+      <bind name="oldStatus" type="string" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="164.5" x="1604.5"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item2" type="task" script-module="at.akhwien.db/setMonitorTypeInDeploy">
+    <display-name><![CDATA[setMonitorTypeInDeploy]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").setMonitorTypeInDeploy(JDBCString,DBUser,DBUserPassword,deploymentId,monitorType) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="monitorType" type="string" export-name="vmOSFamily"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="109.95454545454544" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item16" out-name="item28" type="link" linked-workflow-id="4ab9ac88-9d80-4aa8-b44f-6b514ff06575">
+    <display-name><![CDATA[getOSFamiliy]]></display-name>
+    <in-binding>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vmOSFamily" type="string" export-name="vmOSFamily"/>
+    </out-binding>
+    <position y="164.5" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item20" throw-bind-name="errorCode" type="task" script-module="at.akhwien.db/setRepDestinationInDeploy">
+    <display-name><![CDATA[setRepDestinationInDeploy]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").setRepDestinationInDeploy(JDBCString,DBUser,DBUserPassword,deploymentId,ReplicationDestionation) ;]]></script>
+    <in-binding>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="ReplicationDestionation" type="string" export-name="ReplicationDestionation"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <position y="300.8636363636363" x="1224.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item8" type="link" linked-workflow-id="64fa012f-9b3d-42eb-af81-5cff8b3d9185">
+    <display-name><![CDATA[getReplicatoinValuesFromDeploy]]></display-name>
+    <in-binding>
+      <bind name="deploymentID" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="replicationIntervall" type="number" export-name="repIntervall"/>
+      <bind name="ReplicationQuiess" type="boolean" export-name="repQuies"/>
+    </out-binding>
+    <position y="237.22727272727272" x="1084.5"/>
+  </workflow-item>
+  <workflow-item name="item18" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="218.13636363636363" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item19" out-name="item18" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorCode"/>
+      <bind name="vmhostname" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="usage" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="desciption" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="reservationName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="ip" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="gateway" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="228.13636363636363" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item21" out-name="item12" type="task" script-module="at.akhwien.db/setMonitorInDeploy">
+    <display-name><![CDATA[setMonitorInDeploy]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").setMonitorInDeploy(JDBCString,DBUser,DBUserPassword,deploymentId,monitorState) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="monitorState" type="string" export-name="monitorStateOff"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="164.5" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item24" out-name="item25" type="task" script-module="at.akhwien.db/updateServerDBStatus">
+    <display-name><![CDATA[updateServerDBStatus]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").updateServerDBStatus(JDBCString,DBUser,DBUserPassword,deploymentId,newStatus,oldStatus) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="newStatus" type="string" export-name="ServerDBnewStatus"/>
+      <bind name="oldStatus" type="string" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="109.95454545454544" x="1484.5"/>
+  </workflow-item>
+  <workflow-item name="item25" out-name="item10" catch-name="item26" throw-bind-name="errorCode" type="link" linked-workflow-id="437728df-b364-4e4b-af15-d39cc68c5e41">
+    <display-name><![CDATA[getServerDBStatus]]></display-name>
+    <in-binding>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ServerDBStatusReturn" type="string" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="164.5" x="1484.5"/>
+  </workflow-item>
+  <workflow-item name="item22" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="209.04545454545453" x="1644.5"/>
+  </workflow-item>
+  <workflow-item name="item26" out-name="item22" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorCode"/>
+      <bind name="vmhostname" type="string" explicitly-not-bound="true"/>
+      <bind name="usage" type="string" explicitly-not-bound="true"/>
+      <bind name="desciption" type="string" explicitly-not-bound="true"/>
+      <bind name="reservationName" type="string" explicitly-not-bound="true"/>
+      <bind name="ip" type="string" explicitly-not-bound="true"/>
+      <bind name="gateway" type="string" explicitly-not-bound="true"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding/>
+    <position y="219.04545454545453" x="1484.5"/>
+  </workflow-item>
+  <workflow-item name="item27" out-name="item24" type="task" script-module="at.akhwien.db/updateAKHManagerStatus">
+    <display-name><![CDATA[setAKHManagerIgnore]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").updateAKHManagerStatus(JDBCString,DBUser,DBUserPassword,deploymentId,newStatus,oldStatus) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="newStatus" type="string" export-name="ServerDBignoreStatus"/>
+      <bind name="oldStatus" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <position y="164.5" x="1344.5"/>
+  </workflow-item>
+  <workflow-item name="item28" out-name="item12" type="condition" alt-out-name="item21" comparator="0">
+    <display-name><![CDATA[is Windows?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (vmOSFamily == "Windows") ;]]></script>
+    <in-binding>
+      <bind name="vmOSFamily" type="string" export-name="vmOSFamily"/>
+    </in-binding>
+    <condition name="vmOSFamily" type="string" comparator="0" label="null">Windows</condition>
+    <position y="154.5" x="764.5"/>
+  </workflow-item>
+  <workflow-item name="item20" out-name="item11" type="condition" alt-out-name="item27" comparator="0">
+    <display-name><![CDATA[is Windows?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (vmOSFamily == "Windows") ;]]></script>
+    <in-binding>
+      <bind name="vmOSFamily" type="string" export-name="vmOSFamily"/>
+    </in-binding>
+    <condition name="vmOSFamily" type="string" comparator="0" label="null">Windows</condition>
+    <position y="227.22727272727272" x="1224.5"/>
+  </workflow-item>
+  <workflow-item name="item23" out-name="item29" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorCode"/>
+      <bind name="vmhostname" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="usage" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="desciption" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="reservationName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="ip" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="gateway" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="355.4090909090909" x="1364.5"/>
+  </workflow-item>
+  <workflow-item name="item29" out-name="item20" type="task" script-module="at.akhwien.db/setRepNullValues">
+    <display-name><![CDATA[setRepNullValues]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").setRepNullValues(JDBCString,DBUser,DBUserPassword,deploymentId) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <position y="300.8636363636363" x="1364.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,409 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="2adb33ef-d089-4659-b0c2-2ce235abc757" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[switchLevel]]></display-name>
+  <description><![CDATA[This Workflow is triggered by "mainWorkflow" and will create and update switches as well as create/update/delete their portgroups]]></description>
+  <position y="136.3181818181818" x="145.0"/>
+  <input>
+    <param name="collection" type="Properties"/>
+    <param name="switchName" type="string"/>
+  </input>
+  <attrib name="collectionSwitch" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="resourceSwitch" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Cisco virtual Switch]]></value>
+  </attrib>
+  <attrib name="RESTHost" type="REST:RESTHost" read-only="false" conf-id="9f16cb09-818d-4334-8216-b1311fe5ca01" conf-key="restHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="switchID" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="switchMoref" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vcHosts" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="datacenterName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="switchPortsConfigured" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="switchPortsUsed" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="switchVersion" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="switchVendor" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="switchDesciption" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vcPortGroups" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="clusterName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="resourceCluster" type="string" read-only="false">
+    <value encoded="n"><![CDATA[ClusterComputeResource]]></value>
+    <description><![CDATA[ClusterComputeResource    Datacenter]]></description>
+  </attrib>
+  <attrib name="resourceHost" type="string" read-only="false">
+    <value encoded="n"><![CDATA[HostSystem]]></value>
+  </attrib>
+  <attrib name="hostsAdd" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="hostsDel" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vropsHosts" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="resourcePortGroup" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Cisco Virtual Port Group]]></value>
+  </attrib>
+  <attrib name="vropsPortGroups" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="portgroupsDEL" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="switchTestName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="internalID" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-note x="640.0" y="63.63636363636363" w="280.0" h="118.18181818181817" color="a1d7a1ff">
+    <description><![CDATA[Add new Switch]]></description>
+  </workflow-note>
+  <workflow-note x="1080.0" y="18.181818181818173" w="760.0" h="163.63636363636363" color="a1d7bcff">
+    <description><![CDATA[Add Hosts as Children]]></description>
+  </workflow-note>
+  <workflow-note x="620.0" y="290.4090909090909" w="544.0" h="107.0" color="ffbfbfff">
+    <description><![CDATA[Delete PortGroups]]></description>
+  </workflow-note>
+  <workflow-note x="1260.0" y="281.3181818181818" w="304.0" h="121.0" color="a1a1d7ff">
+    <description><![CDATA[add and update PortGroups]]></description>
+  </workflow-note>
+  <workflow-note x="1600.0" y="290.4090909090909" w="224.0" h="114.0" color="bfffffff">
+    <description><![CDATA[update Switch Props & Matrics]]></description>
+  </workflow-note>
+  <workflow-note x="240.0" y="109.0909090909091" w="380.0" h="81.81818181818181">
+    <description><![CDATA[extract relevant information for this switch]]></description>
+  </workflow-note>
+  <workflow-note x="920.0" y="118.18181818181817" w="160.0" h="136.36363636363635" color="bfdfffff">
+    <description><![CDATA[Has the switchname changed? if so update it]]></description>
+  </workflow-note>
+  <workflow-item name="item1" out-name="item9" type="task">
+    <display-name><![CDATA[get Switchname]]></display-name>
+    <script encoded="false"><![CDATA[collectionSwitch=collection.get(switchName);
+switchMoref=collectionSwitch.get("switchMoref");
+esxiName=collectionSwitch.get("switchChildren");
+datacenterName=collectionSwitch.get("switchDCParentName");
+switchPortsConfigured=collectionSwitch.get("switchPortsConfigured");
+switchPortsUsed=collectionSwitch.get("switchPortsUsed");
+switchVersion=collectionSwitch.get("switchVerion");
+switchVendor=collectionSwitch.get("switchVendor");
+switchDesciption=collectionSwitch.get("switchDesription");
+clusterName=collectionSwitch.get("switchClusterParentName");
+internalID=datacenterName+"-"+switchMoref;]]></script>
+    <in-binding>
+      <bind name="collection" type="Properties" export-name="collection"/>
+      <bind name="switchName" type="string" export-name="switchName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="collectionSwitch" type="Properties" export-name="collectionSwitch"/>
+      <bind name="switchMoref" type="string" export-name="switchMoref"/>
+      <bind name="esxiName" type="Array/string" export-name="vcHosts"/>
+      <bind name="switchPortsConfigured" type="string" export-name="switchPortsConfigured"/>
+      <bind name="switchPortsUsed" type="string" export-name="switchPortsUsed"/>
+      <bind name="switchVersion" type="string" export-name="switchVersion"/>
+      <bind name="switchVendor" type="string" export-name="switchVendor"/>
+      <bind name="switchDesciption" type="string" export-name="switchDesciption"/>
+      <bind name="datacenterName" type="string" export-name="datacenterName"/>
+      <bind name="clusterName" type="string" export-name="clusterName"/>
+      <bind name="internalID" type="string" export-name="internalID"/>
+    </out-binding>
+    <position y="146.3181818181818" x="244.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item3" type="condition" alt-out-name="item6" comparator="0">
+    <display-name><![CDATA[not Exists?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (switchID == "no such object") ;]]></script>
+    <in-binding>
+      <bind name="switchID" type="string" export-name="switchID"/>
+    </in-binding>
+    <condition name="switchID" type="string" comparator="0" label="null">no such object</condition>
+    <position y="136.3181818181818" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item5" type="link" linked-workflow-id="dce5c345-7e5a-4144-8232-226cafcd312e">
+    <display-name><![CDATA[addSwitch]]></display-name>
+    <in-binding>
+      <bind name="switchName" type="string" export-name="switchName"/>
+      <bind name="switchMoref" type="string" export-name="switchMoref"/>
+    </in-binding>
+    <out-binding>
+      <bind name="switchID" type="string" export-name="switchID"/>
+    </out-binding>
+    <position y="100.86363636363636" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item13" type="link" linked-workflow-id="f03249e9-3b56-4b00-960b-647cc89dab0e">
+    <display-name><![CDATA[addSwitchParent]]></display-name>
+    <in-binding>
+      <bind name="switchID" type="string" export-name="switchID"/>
+      <bind name="adapterKind" type="string" export-name="resourceCluster"/>
+      <bind name="parentName" type="string" export-name="clusterName"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.86363636363636" x="804.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item8" type="link" linked-workflow-id="bdd22c0c-efbd-4bcc-a607-dfcbc8b92f0d">
+    <display-name><![CDATA[addSwitchMetric]]></display-name>
+    <in-binding>
+      <bind name="switchID" type="string" export-name="switchID"/>
+      <bind name="switchPortsConfigured" type="string" export-name="switchPortsConfigured"/>
+      <bind name="switchPortsUsed" type="string" export-name="switchPortsUsed"/>
+    </in-binding>
+    <out-binding/>
+    <position y="328.1363636363636" x="1724.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item11" type="link" linked-workflow-id="bc892ef9-f29e-4172-8f67-708864bb46f6">
+    <display-name><![CDATA[addSwitchProps]]></display-name>
+    <in-binding>
+      <bind name="switchID" type="string" export-name="switchID"/>
+      <bind name="switchVersion" type="string" export-name="switchVersion"/>
+      <bind name="switchParentName" type="string" export-name="datacenterName"/>
+      <bind name="switchVendor" type="string" export-name="switchVendor"/>
+      <bind name="switchDesciption" type="string" export-name="switchDesciption"/>
+      <bind name="switchMoref" type="string" export-name="switchMoref"/>
+    </in-binding>
+    <out-binding/>
+    <position y="328.1363636363636" x="1584.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item12" type="task">
+    <display-name><![CDATA[get Portgroups]]></display-name>
+    <script encoded="false"><![CDATA[//remove all not portGroupEntries
+for each (key in collectionSwitch.keys){
+	if (key.indexOf("switch")==0){
+		collectionSwitch.remove(key);
+	}
+}
+portGroups=collectionSwitch.keys;
+]]></script>
+    <in-binding>
+      <bind name="collectionSwitch" type="Properties" export-name="collectionSwitch"/>
+    </in-binding>
+    <out-binding>
+      <bind name="portGroups" type="Array/string" export-name="vcPortGroups"/>
+    </out-binding>
+    <position y="328.1363636363636" x="1424.5"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item20" type="foreach">
+    <display-name><![CDATA[Foreach (Add PortGroup)]]></display-name>
+    <in-binding>
+      <bind name="switchCollection" type="Properties" export-name="collectionSwitch"/>
+      <bind name="portGroupParentID" type="string" export-name="switchID"/>
+      <bind name="portGroupPartentSwitchName" type="string" export-name="switchName"/>
+      <bind name="portGroupName" type="Array/string" export-name="*vcPortGroups"/>
+    </in-binding>
+    <out-binding/>
+    <reference type="Workflow" id="a9913ef5-70ec-4db7-a221-65ebe421f44c"/>
+    <position y="328.1363636363636" x="1284.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item16" type="link" linked-workflow-id="e33025cd-7410-460d-b30f-23e738b1123c">
+    <display-name><![CDATA[addChildren]]></display-name>
+    <in-binding>
+      <bind name="resourceKind" type="string" export-name="resourceHost"/>
+      <bind name="targetID" type="string" export-name="switchID"/>
+      <bind name="childNames" type="Array/string" export-name="hostsAdd"/>
+    </in-binding>
+    <out-binding/>
+    <position y="28.136363636363633" x="1524.5"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item10" type="custom-condition" alt-out-name="item7">
+    <display-name><![CDATA[hasHosts?]]></display-name>
+    <script encoded="false"><![CDATA[if (esxiNames.length==0){
+	System.warn("no hosts to add as children");
+	return false;
+} else {
+	return true;
+}]]></script>
+    <in-binding>
+      <bind name="esxiNames" type="Array/string" export-name="vcHosts"/>
+    </in-binding>
+    <position y="136.3181818181818" x="1084.5"/>
+  </workflow-item>
+  <workflow-item name="item9" prototype-id="system-log" out-name="item2" type="task" interaction="l">
+    <display-name><![CDATA[System log]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.log("Current Object: "+switchName);
+]]></script>
+    <in-binding>
+      <bind name="switchName" type="string" export-name="switchName"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'log']]></description>
+    <position y="146.3181818181818" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item14" type="task" script-module="com.vmware.PSO.vROPS/getvROPSAllChildrenOfType">
+    <display-name><![CDATA[getvROPSAllChildrenOfType]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.PSO.vROPS").getvROPSAllChildrenOfType(RESTHost,target,resourceKind) ;]]></script>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="target" type="string" export-name="switchID"/>
+      <bind name="resourceKind" type="string" export-name="resourceHost"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="vropsHosts"/>
+    </out-binding>
+    <position y="82.68181818181817" x="1164.5"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item4" type="custom-condition" alt-out-name="item16">
+    <display-name><![CDATA[addHosts]]></display-name>
+    <script encoded="false"><![CDATA[if (esxiHostsToAdd.length >0){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="esxiHostsToAdd" type="Array/string" export-name="hostsAdd"/>
+    </in-binding>
+    <position y="72.68181818181817" x="1444.5"/>
+  </workflow-item>
+  <workflow-item name="item16" out-name="item17" type="custom-condition" alt-out-name="item7">
+    <display-name><![CDATA[deleteHosts]]></display-name>
+    <script encoded="false"><![CDATA[if (esxiHostsToDel.length >0){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="esxiHostsToDel" type="Array/string" export-name="hostsDel"/>
+    </in-binding>
+    <position y="72.68181818181817" x="1584.5"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item7" type="link" linked-workflow-id="8013b309-b2fa-4ad2-ae84-a972255ee2b9">
+    <display-name><![CDATA[deleteSwitchChildren]]></display-name>
+    <in-binding>
+      <bind name="childNames" type="Array/string" export-name="hostsDel"/>
+      <bind name="resourceKind" type="string" export-name="resourceHost"/>
+      <bind name="targetID" type="string" export-name="switchID"/>
+    </in-binding>
+    <out-binding/>
+    <position y="82.68181818181817" x="1724.5"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item15" type="link" linked-workflow-id="e78830e1-bf54-4d4b-8572-1f29bacb01e0">
+    <display-name><![CDATA[makeLists]]></display-name>
+    <in-binding>
+      <bind name="readList" type="Array/string" export-name="vcHosts"/>
+      <bind name="existingList" type="Array/string" export-name="vropsHosts"/>
+    </in-binding>
+    <out-binding>
+      <bind name="addList" type="Array/string" export-name="hostsAdd"/>
+      <bind name="delList" type="Array/string" export-name="hostsDel"/>
+    </out-binding>
+    <position y="82.68181818181817" x="1304.5"/>
+  </workflow-item>
+  <workflow-item name="item28" out-name="item30" type="link" linked-workflow-id="1398fdd2-9487-4ae5-9297-d30c179205cf">
+    <display-name><![CDATA[deletePortGroupResources]]></display-name>
+    <in-binding>
+      <bind name="portGroups" type="Array/string" export-name="portgroupsDEL"/>
+      <bind name="resourceKind" type="string" export-name="resourcePortGroup"/>
+    </in-binding>
+    <out-binding/>
+    <position y="328.1363636363636" x="604.5"/>
+  </workflow-item>
+  <workflow-item name="item27" out-name="item29" type="link" linked-workflow-id="e78830e1-bf54-4d4b-8572-1f29bacb01e0">
+    <display-name><![CDATA[makeLists]]></display-name>
+    <in-binding>
+      <bind name="readList" type="Array/string" export-name="vcPortGroups"/>
+      <bind name="existingList" type="Array/string" export-name="vropsPortGroups"/>
+    </in-binding>
+    <out-binding>
+      <bind name="addList" type="Array/string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="delList" type="Array/string" export-name="portgroupsDEL"/>
+    </out-binding>
+    <position y="328.1363636363636" x="884.5"/>
+  </workflow-item>
+  <workflow-item name="item20" out-name="item27" type="task" script-module="com.vmware.PSO.vROPS/getvROPSAllChildrenOfType">
+    <display-name><![CDATA[getvROPSAllChildrenOfType]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.PSO.vROPS").getvROPSAllChildrenOfType(RESTHost,target,resourceKind) ;]]></script>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="target" type="string" export-name="switchID"/>
+      <bind name="resourceKind" type="string" export-name="resourcePortGroup"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="vropsPortGroups"/>
+    </out-binding>
+    <position y="328.1363636363636" x="1024.5"/>
+  </workflow-item>
+  <workflow-item name="item29" out-name="item28" type="custom-condition" alt-out-name="item30">
+    <display-name><![CDATA[del PortGroups?]]></display-name>
+    <script encoded="false"><![CDATA[if (portgroupsDEL.length>0){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="portgroupsDEL" type="Array/string" export-name="portgroupsDEL"/>
+    </in-binding>
+    <position y="318.1363636363636" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item30" type="end" end-mode="0">
+    <position y="409.0454545454545" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="0994d715-ef2b-4a33-af37-94b09fa6db6e">
+    <display-name><![CDATA[getNameAndIDFromMoref]]></display-name>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="resourceKind" type="string" export-name="resourceSwitch"/>
+      <bind name="internalID" type="string" export-name="internalID"/>
+    </in-binding>
+    <out-binding>
+      <bind name="name" type="string" export-name="switchTestName"/>
+      <bind name="vROPsID" type="string" export-name="switchID"/>
+    </out-binding>
+    <position y="146.3181818181818" x="525.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item13" type="custom-condition" alt-out-name="item19">
+    <display-name><![CDATA[sameName?]]></display-name>
+    <script encoded="false"><![CDATA[if (switchName == switchTestName) {
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="switchName" type="string" export-name="switchName"/>
+      <bind name="switchTestName" type="string" export-name="switchTestName"/>
+    </in-binding>
+    <position y="136.3181818181818" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item19" out-name="item13" type="link" linked-workflow-id="08ccb3e0-48c6-4265-bd7a-9c81e1eecdd0">
+    <display-name><![CDATA[updateSwitchName]]></display-name>
+    <in-binding>
+      <bind name="switchName" type="string" export-name="switchName"/>
+      <bind name="switchMoref" type="string" export-name="switchMoref"/>
+      <bind name="switchID" type="string" export-name="switchID"/>
+    </in-binding>
+    <out-binding/>
+    <position y="209.95454545454544" x="925.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="collection">
+      <desc><![CDATA[collection]]></desc>
+    </p-param>
+    <p-param name="switchName">
+      <desc><![CDATA[switchName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

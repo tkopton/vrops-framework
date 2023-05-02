@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCpuSpeedFromHost" result-type="number" api-version="6.0.0" id="6f4e9f18-cff8-423b-92bf-8658a2407d13" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vcExtentions">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return vcvm.summary.runtime.host.hardware.cpuInfo.hz/1000/1000; ]]></script>
+</dunes-script-module>

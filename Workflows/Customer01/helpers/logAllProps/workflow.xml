@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="50066e5c-5f49-4ba2-aad7-69e2b793a5d0" version="0.2.0" api-version="6.0.0" allowed-operations="evf" icon-id="958104c4-98f3-4be9-ad83-7bdb307f891d" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[logAllProps]]></display-name>
+  <description><![CDATA[outputs recusive all Propertiy content to the logs
+]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var toType = function(obj) {
+  return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+}
+
+
+var payloadout=new Array();
+var contextout=new Array();
+
+function getSubproperties(subject,prop){
+	for each (subkey in prop.keys) {
+		subcontent=prop.get(subkey);
+		if (toType(subcontent) == "properties"){
+			getSubproperties((subject+"/"+subkey),subcontent);
+		} else if (toType(subcontent) == "array"){
+			payloadout.push((subject+"/"+subkey) + " : " + subcontent.join(";"));
+		} else {
+			payloadout.push((subject+"/"+subkey) + " : " + subcontent);
+		}
+	}
+}
+
+System.log("## Context #####################################");
+contNames = System.getContext().parameterNames();
+for each (contName in contNames){
+	contextout.push(contName+" : "+System.getContext().getParameter(contName));
+}
+contextout.sort();
+for each (line in contextout){
+	System.log(line);
+}	
+System.log("## Payload #####################################");
+for each (key in payload.keys) {
+	content=payload.get(key);
+	if ((typeof content) == "object"){
+		getSubproperties(("/"+key),content);
+	} else {
+		payloadout.push("/"+key + " : " + content);     
+	}
+}
+
+payloadout.sort();
+for each (line in payloadout){
+	System.log(line);
+}	
+System.log("#############################################");]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="225.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

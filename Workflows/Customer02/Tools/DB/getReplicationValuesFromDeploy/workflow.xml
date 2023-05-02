@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="64fa012f-9b3d-42eb-af81-5cff8b3d9185" version="0.1.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[getReplicationValuesFromDeploy]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="deploymentID" type="string"/>
+  </input>
+  <output>
+    <param name="replicationIntervall" type="number"/>
+    <param name="ReplicationQuiess" type="boolean"/>
+  </output>
+  <attrib name="jdbcString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DbUserPass" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[get Replication Values From Deploy]]></display-name>
+    <script encoded="false"><![CDATA[sqlQuery="SELECT ReplicationRPO, ReplicationQuiescing FROM deployment WHERE DeploymentID='"+deploymentID+"'";
+var output = new Array();
+var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( jdbcString, DBUser,DbUserPass  );
+	var stat = con.createStatement();
+	var results = stat.executeQuery(sqlQuery);
+	//walk thought all rows
+	results.next();
+	replicationIntervallSTR=results.getStringAt(1);
+	replicationIntervall=parseInt(replicationIntervallSTR,10);
+	ReplicationQuiessSTR=results.getStringAt(2);
+	if (ReplicationQuiessSTR.toLowerCase()=="true"){
+		ReplicationQuiess=true;
+	} else {
+		ReplicationQuiess=false;
+	}
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+}
+]]></script>
+    <in-binding>
+      <bind name="jdbcString" type="string" export-name="jdbcString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DbUserPass" type="SecureString" export-name="DbUserPass"/>
+      <bind name="deploymentID" type="string" export-name="deploymentID"/>
+    </in-binding>
+    <out-binding>
+      <bind name="replicationIntervall" type="number" export-name="replicationIntervall"/>
+      <bind name="ReplicationQuiess" type="boolean" export-name="ReplicationQuiess"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="deploymentID">
+      <desc><![CDATA[DeploymentID]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

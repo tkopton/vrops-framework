@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVLANsfromPrettyName" result-type="Array/string" api-version="6.0.0" id="0d6023bc-3aef-4058-930d-4ccd5204c638" version="0.1.0" allowed-operations="evf" category-name="at.akhwien.db">
+  <param n="prettyName" t="string"><![CDATA[]]></param>
+  <param n="jdbcString" t="string"><![CDATA[]]></param>
+  <param n="DBUser" t="string"><![CDATA[]]></param>
+  <param n="DbUserPass" t="SecureString"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[prettyName=prettyName.split(" (")[0];
+sqlQuery="SELECT VLANID FROM Network WHERE prettyName='"+prettyName+"' ORDER BY VLANID;";
+try  {
+	var main = new JDBCConnection();
+	con = main.getConnection( jdbcString, DBUser,DbUserPass  );
+	var stat = con.createStatement();
+	var results = stat.executeQuery(sqlQuery);
+	//walk thought all rows
+	var output = new Array();
+	while ( results.next() ) {
+		output.push(results.getNumberAt(1).toString());
+	}
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+	return output;
+}]]></script>
+</dunes-script-module>

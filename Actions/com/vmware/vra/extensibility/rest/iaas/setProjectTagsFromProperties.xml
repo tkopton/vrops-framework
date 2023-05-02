@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setProjectTagsFromProperties" result-type="void" api-version="6.0.0" id="d85e984e-4bbf-4cab-83ba-93dbc45fb220" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="projectId" t="string"><![CDATA[]]></param>
+  <param n="tags" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || projectId == null) return null;
+
+var operation = "PATCH";
+var url = "/iaas/api/projects/" +  projectId + "/resource-metadata";
+
+var object = {"tags":[]};
+for each (var key in tags.keys) {
+    var tag = {"key": key,"value": tags.get(key)};
+    object.tags.push(tag);
+}
+
+var content = JSON.stringify(object);
+
+var customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+		var object = JSON.parse(contentAsString);
+	} catch (e) {
+		throw("Unable to Patch object url : " + url + "\n" + e + "\nWith Content : " + content);
+}]]></script>
+</dunes-script-module>

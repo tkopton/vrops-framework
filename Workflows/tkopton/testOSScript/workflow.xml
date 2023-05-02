@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="00d0996c-002a-4320-ab99-bf2ef73a9823" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[testOSScript]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vcVm" type="VC:VirtualMachine"/>
+    <param name="username" type="string"/>
+    <param name="password" type="SecureString"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var guest = System.getModule("com.vmware.pscoe.library.guestops").Guest(vcVm, username, password);
+var guestOps = System.getModule("com.vmware.pscoe.library.guestops").GuestOperations(guest);
+
+guestOps.setWorkingDirectory("/tmp/");
+var scriptResult = guestOps.runScript("tkopton/helloWorld.sh", "", "bash");
+var commandResult = guestOps.runCommand("mkdir /tmp/vro-test", "", "bash"); // supported environments are bash, powerShell and powerShell64
+
+// guestOps.uploadResourceElementToGuest("PSCoE/Resources/sample.json", "/tmp/pscoe/");]]></script>
+    <in-binding>
+      <bind name="vcVm" type="VC:VirtualMachine" export-name="vcVm"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vcVm">
+      <desc><![CDATA[vcVm]]></desc>
+    </p-param>
+    <p-param name="username">
+      <desc><![CDATA[username]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[password]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDeploymentsNames" result-type="Array/string" api-version="6.0.0" id="15f6be91-c383-452c-bbf7-66f3adececfc" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.deployment">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var url = "/deployment/api/deployments";
+var parameters = "sort=name%2CASC";
+return System.getModule("com.vmware.vra.extensibility.rest").getObjectsProperty(restHost,username,password, customHeaders, url, parameters, "name");]]></script>
+</dunes-script-module>

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="156e6d8b-0eae-46c4-9f98-56533d6afd1a" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[HelloWorld]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="systemtext" type="string"/>
+    <param name="servertext" type="string"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Step01]]></display-name>
+    <script encoded="false"><![CDATA[Server.log(servertext);
+
+System.log(systemtext);]]></script>
+    <in-binding>
+      <bind name="systemtext" type="string" export-name="systemtext"/>
+      <bind name="servertext" type="string" export-name="servertext"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="bdb4be98-fa7e-4265-b699-61cc536087bc">
+    <display-name><![CDATA[ByeWorld]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="systemtext">
+      <desc><![CDATA[systemtext]]></desc>
+    </p-param>
+    <p-param name="servertext">
+      <desc><![CDATA[servertext]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

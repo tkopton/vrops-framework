@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNetworksByTagsQS" result-type="Array/Any" api-version="6.0.0" id="a5044d2d-4b43-4b7a-bf2f-6a90a76cda57" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="string"><![CDATA[]]></param>
+  <param n="tags" t="Array/string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null) return null;
+
+var tagsFilters = new Array();
+for each (var tag in tags) {tagsFilters.push(getTagFilter(tag))}
+
+// Query service parameter
+var tagsFilter = tagsFilters.join(" and ");
+if (tags.length == 0) var parameters = "expand";
+else var parameters = "expand&$filter=" + encodeURIComponent(tagsFilter).replace("'", "%27");
+
+return System.getModule("com.vmware.vra.extensibility.rest.iaas").getNetworks(restHost,username,password, customHeaders, parameters);
+
+function getTagFilter(tag) {
+    return "(expandedTags.item.tag eq '*" + tag + "*'))"
+}
+
+
+
+]]></script>
+</dunes-script-module>

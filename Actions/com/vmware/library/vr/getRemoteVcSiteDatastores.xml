@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getRemoteVcSiteDatastores" result-type="Array/VR:RemoteDatastore" api-version="6.0.0" id="022d3e9e-ccab-4947-bd10-bed2fb12647e" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vr">
+  <description><![CDATA[Get the available target datastores on a remote vCenter Server site pairing.]]></description>
+  <param n="remoteSite" t="VR:VcRemoteSite"><![CDATA[Remote vSphere Site]]></param>
+  <script encoded="false"><![CDATA[return remoteSite.getDatastores()]]></script>
+</dunes-script-module>

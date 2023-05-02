@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="waitTaskEnd_Silent" result-type="void" api-version="6.0.0" id="c3fa245c-71fd-481f-8eed-667df831a53a" version="0.0.0" allowed-operations="evf" category-name="at.akhwien">
+  <description><![CDATA[Wait for a vCenter Server Task to complete.
+When the task completes, return the task result if any. ]]></description>
+  <param n="task" t="VR:Task"><![CDATA[Task to Wait for]]></param>
+  <script encoded="false"><![CDATA[while (task != null) {
+
+	var name = task.name != null ? "'" + task.name + "' " : "";
+	var state = task.getState();
+	if (state == "success") {
+		System.log("Replication Task " + name + "succeeded");
+		break;
+	}
+	else if (state == "error") {
+		throw "Replication Task " + name + "error: " + task.getErrotMessage();
+	}
+	else if (state == "running") {
+		if(task.getProgress() != null) {
+			//System.log("Task " + name + task.getProgress() + "%");
+		}
+		else {
+			//System.log("Task " + name + "in progress");
+		}
+	}
+	else if (state == "queued") {
+			//System.log("Replication Task " + name + "is queued");
+	}
+		
+	System.sleep(500);
+}
+
+if (task == null) {
+	throw "HMS Task is null";
+}]]></script>
+</dunes-script-module>

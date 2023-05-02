@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<package>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='0e1075be-fede-433d-b5f9-65b9e09121d3'&dunesName='Workflow']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='23bd80b6-4409-43a5-ba8f-cec6099d6030'&dunesName='ConfigurationElement']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Action?id='94d669b2-2ca3-40d0-8c96-e13637d6ff22'&dunesName='Action'&name='getJSONstringAsArrayOfStrings'&category='com.vmware.coe.json']]></elm>
+<used-plugin name='REST' version='2.4.0' />
+</package>

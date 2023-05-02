@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setMachineCustomPropertiesFromProperties" result-type="void" api-version="6.0.0" id="70b7c9c8-ae74-49f2-9d8e-9929f9bbdbe6" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="machineId" t="string"><![CDATA[]]></param>
+  <param n="customProperties" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || machineId == null) return null;
+
+var customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+
+var url = "/iaas/api/machines/" +  machineId;
+var object = new Object();
+
+var customPropertiesObject = {"customProperties" : customProperties};
+var content = JSON.stringify(customPropertiesObject);
+System.debug("Updated Custom properties : " + content);
+
+var operation = "PATCH";
+
+try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+		var object = JSON.parse(contentAsString);
+	} catch (e) {
+		throw("Unable to Patch object url : " + url + "\n" + e + "\nWith Content : " + content);
+}]]></script>
+</dunes-script-module>

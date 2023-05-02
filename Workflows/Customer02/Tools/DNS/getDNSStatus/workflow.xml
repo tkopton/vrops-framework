@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="d8548c21-ddf6-4d7c-9616-c8d967c2e9bc" version="0.1.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[getDNSStatus]]></display-name>
+  <position y="45.40909090909091" x="4.5"/>
+  <input>
+    <param name="deploymentId" type="string"/>
+  </input>
+  <output>
+    <param name="DNSStatusReturn" type="string"/>
+  </output>
+  <attrib name="JDBCString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUserPassword" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="DNSstatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DNSsleepTime" type="number" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="DNSSleepTime">
+    <value encoded="n"><![CDATA[15.0]]></value>
+    <description><![CDATA[Time to sleep in seconds]]></description>
+  </attrib>
+  <attrib name="DNSTimeOut" type="number" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="DNSTimeOut">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="counter" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[counter to increment]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="at.akhwien.db/getDNSStatusFromDeploymentID">
+    <display-name><![CDATA[getDNSStatusFromDeploymentID]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").getDNSStatusFromDeploymentID(JDBCString,DBUser,DBUserPassword,deploymentId) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="DNSstatus"/>
+    </out-binding>
+    <position y="55.40909090909091" x="84.5"/>
+  </workflow-item>
+  <workflow-item name="item4" prototype-id="sleep" out-name="item1" content-mode="x" type="task">
+    <display-name><![CDATA[Sleep]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+if ( sleepTime != null )  {
+	System.sleep(sleepTime*1000);
+}
+else  {
+	throw "'sleepTime' is NULL";
+}
+]]></script>
+    <in-binding>
+      <bind name="sleepTime" type="number" export-name="DNSsleepTime">
+        <description><![CDATA[Time to sleep in seconds]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Sleep a given number of seconds]]></description>
+    <position y="119.04545454545453" x="84.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item7" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[DNS Timeout]]></display-name>
+    <script encoded="false"><![CDATA[//if run time is greater then timeout setting
+if ((counter*DNSsleepTime) >= DNSTimeOut){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="DNSsleepTime" type="number" export-name="DNSsleepTime"/>
+      <bind name="DNSTimeOut" type="number" export-name="DNSTimeOut"/>
+      <bind name="counter" type="number" export-name="counter"/>
+    </in-binding>
+    <position y="109.04545454545453" x="365.0"/>
+  </workflow-item>
+  <workflow-item name="item2" prototype-id="increase-counter" out-name="item4" content-mode="x" type="task">
+    <display-name><![CDATA[Increase counter]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="counter">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="counter">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="119.04545454545453" x="224.5"/>
+  </workflow-item>
+  <workflow-item name="item6" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="109.04545454545453" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item7" prototype-id="system-error" out-name="item6" type="task" interaction="l">
+    <display-name><![CDATA[TimeOut]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+errorCode="Waiting for DNS timeout="+DNSTimeOut+"sec. Please contact your Administrator"
+DNSStatusReturn="DNS Server TimeOut :"+DNSTimeOut+"sec";
+System.error(errorCode);]]></script>
+    <in-binding>
+      <bind name="DNSTimeOut" type="number" export-name="DNSTimeOut"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+      <bind name="DNSStatusReturn" type="string" export-name="DNSStatusReturn"/>
+    </out-binding>
+    <description><![CDATA[Log the input text to the console log with level 'error']]></description>
+    <position y="119.04545454545453" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="18.136363636363633" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item3" type="task">
+    <display-name><![CDATA[write output]]></display-name>
+    <script encoded="false"><![CDATA[DNSStatusReturn=DNSstatus;]]></script>
+    <in-binding>
+      <bind name="DNSstatus" type="string" export-name="DNSstatus"/>
+    </in-binding>
+    <out-binding>
+      <bind name="DNSStatusReturn" type="string" export-name="DNSStatusReturn"/>
+    </out-binding>
+    <position y="28.136363636363633" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item0" type="switch">
+    <display-name><![CDATA[status Check]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+if (DNSstatus == "added") {
+    return "item9";
+} else if (DNSstatus.indexOf( "error" ) != -1) {
+    return "item8";
+} else if (DNSstatus == "deleted") {
+    return "item9";
+} else if (true) {
+    return "item5";
+}]]></script>
+    <in-binding>
+      <bind name="DNSstatus" type="string" export-name="DNSstatus"/>
+    </in-binding>
+    <condition name="DNSstatus" type="string" comparator="0" label="item9">added</condition>
+    <condition name="DNSstatus" type="string" comparator="1" label="item8">error</condition>
+    <condition name="DNSstatus" type="string" comparator="0" label="item9">deleted</condition>
+    <condition name="" type="boolean" comparator="6" label="item5"/>
+    <position y="55.40909090909091" x="365.0"/>
+  </workflow-item>
+  <workflow-item name="item8" prototype-id="system-error" out-name="item6" type="task" interaction="l">
+    <display-name><![CDATA[DNS Error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+errorCode="DNS return error:"+DNSstatus+". Please contact your Administrator";
+DNSStatusReturn=DNSstatus;
+System.error(errorCode);
+]]></script>
+    <in-binding>
+      <bind name="DNSstatus" type="string" export-name="DNSstatus"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+      <bind name="DNSStatusReturn" type="string" export-name="DNSStatusReturn"/>
+    </out-binding>
+    <description><![CDATA[Log the input text to the console log with level 'error']]></description>
+    <position y="73.59090909090908" x="505.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="deploymentId">
+      <desc><![CDATA[deploymentId]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

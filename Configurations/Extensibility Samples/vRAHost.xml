@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="cf442bf5-3fad-482d-a583-a9b9bc088134" version="0.0.1">
+  <display-name><![CDATA[vRAHost]]></display-name>
+  <description><![CDATA[Used by the vRA extensibility workflows]]></description>
+  <atts>
+    <att name="restHost" type="REST:RESTHost" read-only="false"/>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[]]></value>
+    </att>
+    <att name="password" type="SecureString" read-only="false"/>
+  </atts>
+</config-element>

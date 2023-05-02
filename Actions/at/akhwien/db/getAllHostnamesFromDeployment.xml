@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllHostnamesFromDeployment" result-type="Array/string" api-version="6.0.0" id="c3701062-9f4f-411e-b412-83a5fc98b91c" version="0.0.1" allowed-operations="evf" category-name="at.akhwien.db">
+  <param n="JDBCString" t="string"><![CDATA[]]></param>
+  <param n="DBUser" t="string"><![CDATA[]]></param>
+  <param n="DBUserPassword" t="SecureString"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var listVMs=new Array();
+sqlStatement="SELECT Hostname FROM deployment WHERE vRA_Status IN ('reserved','add','added');";
+var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( JDBCString, DBUser, DBUserPassword );
+	var stat = con.createStatement();
+	var results = stat.executeQuery( sqlStatement );
+	
+	while(results.next()){
+		listVMs.push(results.getStringAt(1));
+	}
+	stat.close();
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+	return listVMs;
+}]]></script>
+</dunes-script-module>

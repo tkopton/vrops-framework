@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getObjectsProperty" result-type="Array/Any" api-version="6.0.0" id="050339e8-4f16-4da8-962d-977e8a82a181" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.vra.extensibility.rest">
+  <description><![CDATA[Return an an array (I.E if property is "name" return all objects names)]]></description>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="url" t="string"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <param n="propertyName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || url == null) return null;
+
+var objects = System.getModule("com.vmware.vra.extensibility.rest").getObjects(restHost,username,password,customHeaders,url, parameters);
+System.log(JSON.stringify(objects));
+return objects.map(getProperty);
+
+
+function getProperty(property) {
+  return property[propertyName];
+}
+]]></script>
+</dunes-script-module>

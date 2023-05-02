@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="6fd275fe-36fb-4b87-a1fd-d690df980cb2" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[AquireToken]]></display-name>
+  <position y="18.636363636363633" x="45.0"/>
+  <attrib name="aquireToken" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='fff3223e-5f59-4cc7-bf58-07b96e64ef4b:a58d1a64-10a8-428a-a31d-79abaca7cf92'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="jsonBody" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vropsConfig" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='8f889f19-a6aa-40a4-87fc-dc2ab0aebd64'&dunesName='ConfigurationElement']]></value>
+  </attrib>
+  <attrib name="vropsToken" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vropsTokenValidity" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="18.136363636363633" x="604.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[callREST]]></display-name>
+    <script encoded="false"><![CDATA[requestBody = JSON.stringify(jsonBody);
+
+request = aquireToken.createRequest(null, requestBody);
+request.contentType = "application/json";
+request.setHeader("accept","application/json");
+response = request.execute();
+
+jsonObject = JSON.parse(response.contentAsString);
+vropsToken = jsonObject.token;
+vropsTokenValidity = jsonObject.validity;
+]]></script>
+    <in-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+      <bind name="aquireToken" type="REST:RESTOperation" export-name="aquireToken"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vropsToken" type="string" export-name="vropsToken"/>
+      <bind name="vropsTokenValidity" type="number" export-name="vropsTokenValidity"/>
+    </out-binding>
+    <position y="28.136363636363633" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[createJsonBody]]></display-name>
+    <script encoded="false"><![CDATA[jsonBody = {
+	"username" : "",
+	"authSource" : "",
+	"password" : "",
+	"others" : [],
+	"otherAttributes" : {
+	}
+};
+
+var userName = vropsConfig.getAttributeWithKey("userName");
+var userPassword = vropsConfig.getAttributeWithKey("userPassword");
+var authSource = vropsConfig.getAttributeWithKey("authSource");
+
+jsonBody.username = userName.value;
+jsonBody.password = userPassword.value;
+jsonBody.authSource = authSource.value;
+]]></script>
+    <in-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+      <bind name="vropsConfig" type="ConfigurationElement" export-name="vropsConfig"/>
+    </in-binding>
+    <out-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+    </out-binding>
+    <position y="28.136363636363633" x="144.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[saveToken]]></display-name>
+    <script encoded="false"><![CDATA[vropsConfig.setAttributeWithKey("token",vropsToken);
+vropsConfig.setAttributeWithKey("tokenValidity",vropsTokenValidity)]]></script>
+    <in-binding>
+      <bind name="vropsConfig" type="ConfigurationElement" export-name="vropsConfig"/>
+      <bind name="vropsToken" type="string" export-name="vropsToken"/>
+      <bind name="vropsTokenValidity" type="number" export-name="vropsTokenValidity"/>
+    </in-binding>
+    <out-binding/>
+    <position y="28.136363636363633" x="424.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

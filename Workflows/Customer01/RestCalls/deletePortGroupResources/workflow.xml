@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="1398fdd2-9487-4ae5-9297-d30c179205cf" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[deletePortGroupResources]]></display-name>
+  <description><![CDATA[This workflow deletes multiple PortGroups]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="portGroups" type="Array/string"/>
+    <param name="resourceKind" type="string"/>
+  </input>
+  <attrib name="portGroupIDS" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="foreach">
+    <display-name><![CDATA[Foreach (getResource)]]></display-name>
+    <in-binding>
+      <bind name="resourceKind" type="string" export-name="resourceKind"/>
+      <bind name="name" type="Array/string" export-name="*portGroups"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ResourceID" type="Array/string" export-name="*portGroupIDS"/>
+    </out-binding>
+    <reference type="Workflow" id="baf05ee2-4fc8-479b-a812-c9d7b6e3bfd4"/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="foreach">
+    <display-name><![CDATA[Foreach (deletePortGroupResource)]]></display-name>
+    <in-binding>
+      <bind name="target" type="string" export-name="resourceKind"/>
+      <bind name="" type="Array/string" export-name="*portGroupIDS"/>
+    </in-binding>
+    <out-binding/>
+    <reference type="Workflow" id="f037e569-f8fc-4f0f-8ab0-312e369d2247"/>
+    <position y="55.90909090909091" x="345.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="portGroups">
+      <desc><![CDATA[portGroups]]></desc>
+    </p-param>
+    <p-param name="resourceKind">
+      <desc><![CDATA[resourceKind]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

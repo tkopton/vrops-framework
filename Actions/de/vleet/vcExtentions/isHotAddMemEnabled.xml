@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isHotAddMemEnabled" result-type="boolean" api-version="6.0.0" id="ccf0d23c-4d72-4dc6-88b4-2de6b9f3d093" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vcExtentions">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return vcvm.config.memoryHotAddEnabled;]]></script>
+</dunes-script-module>

@@ -1,0 +1,49 @@
+{"SmartHome": {
+    "Climate": [
+      {"Name": "Living Room", "Properties": [
+        { "Manufacturer" : "CompanyA", "FWVersion" : "2.01" }
+        ], "Metrics": [
+          { "Temperatur" : "21", "Humidity" : "40", "BateryStatus" : "94%"}
+          ]},
+      {"Name": "Kitchen", "Properties": [
+        { "Manufacturer" : "CompanyA", "FWVersion" : "1.90" }
+        ], "Metrics": [
+          { "Temperatur" : "13", "Humidity" : "87", "BateryStatus" : "10%"}
+          ]},
+      {"Name": "Bedroom", "Properties": [
+        { "Manufacturer" : "CompanyA", "FWVersion" : "2.1" }
+        ], "Metrics": [
+          { "Temperatur" : "16", "Humidity" : "35", "BateryStatus" : "74%"}
+          ]}
+    ],
+    "Door": [
+        {"Name": "Front", "Properties": [
+          { "Manufacturer" : "CompanyA", "FWVersion" : "1.95" }
+          ], "Metrics": [
+            { "Status" : "OPEN"}
+            ]},
+        {"Name": "Garden", "Properties": [
+          { "Manufacturer" : "CompanyA", "FWVersion" : "2.1" }
+          ], "Metrics": [
+            { "Status" : "CLOSED"}
+            ]}
+      ],
+      "Lightning": [
+        {"Name": "Living Room", "Properties": [
+          { "Manufacturer" : "CompanyB", "FWVersion" : "0.91" }
+          ], "Metrics": [
+            { "Status" : "ON", "Level (%)" : "100%", "BateryStatus" : "76%"}
+            ]},
+        {"Name": "Kitchen", "Properties": [
+          { "Manufacturer" : "CompanyC", "FWVersion" : "1.00" }
+          ], "Metrics": [
+            { "Status" : "ON", "Level (%)" : "75%", "BateryStatus" : "45%"}
+            ]},
+        {"Name": "Bedroom", "Properties": [
+          { "Manufacturer" : "CompanyA", "FWVersion" : "2.90" }
+          ], "Metrics": [
+            { "Status" : "OFF", "Level (%)" : "0%", "BateryStatus" : "14%"}
+            ]}
+      ]
+  }
+}

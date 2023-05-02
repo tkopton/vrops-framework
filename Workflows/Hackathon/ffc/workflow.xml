@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item6" object-name="workflow:name=generic" id="cf6b8fd7-d79e-4fd8-b08e-5a4579910a04" version="0.0.6" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[ffc]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="name" type="string"/>
+  </input>
+  <attrib name="templateVm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:vm-2449'&dunesName='VC:VirtualMachine']]></value>
+  </attrib>
+  <attrib name="templateSnapshot" type="VC:VirtualMachineSnapshot" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:snapshot-2450'&dunesName='VC:VirtualMachineSnapshot']]></value>
+  </attrib>
+  <attrib name="folder" type="VC:VmFolder" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:group-v2444'&dunesName='VC:VmFolder']]></value>
+  </attrib>
+  <attrib name="host" type="VC:HostSystem" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:host-254'&dunesName='VC:HostSystem']]></value>
+    <description><![CDATA[Host on which to create the virtual machine]]></description>
+  </attrib>
+  <attrib name="datastore" type="VC:Datastore" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:datastore-1906'&dunesName='VC:Datastore']]></value>
+    <description><![CDATA[Datastore in which to place the delta disk(s) of the clone(s)]]></description>
+  </attrib>
+  <attrib name="pool" type="VC:ResourcePool" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:resgroup-243'&dunesName='VC:ResourcePool']]></value>
+    <description><![CDATA[Resource pool in which to create the virtual machine]]></description>
+  </attrib>
+  <attrib name="boolTrue" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Specifies whether or not the new virtual machine should be powered on after creation]]></description>
+  </attrib>
+  <attrib name="boolFalse" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Specifies whether or not to mark the new virtual machine as a template]]></description>
+  </attrib>
+  <attrib name="network" type="VC:Network" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:network-346'&dunesName='VC:Network']]></value>
+    <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+  </attrib>
+  <attrib name="ipAddress" type="string" read-only="false">
+    <value encoded="n"><![CDATA[192.168.0.233]]></value>
+    <description><![CDATA[Fixed valid IP address]]></description>
+  </attrib>
+  <attrib name="datacenter" type="VC:Datacenter" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local%2Cid:datacenter-21'&dunesName='VC:Datacenter']]></value>
+  </attrib>
+  <attrib name="newFileNames" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The newly created virtual machine]]></description>
+  </attrib>
+  <attrib name="snapshotName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Prior committing]]></value>
+    <description><![CDATA[Snapshot name. The name need not be unique for this virtual machine.]]></description>
+  </attrib>
+  <attrib name="snapshotDescription" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Prior committing]]></value>
+    <description><![CDATA[Snapshot description.]]></description>
+  </attrib>
+  <attrib name="vmSnapshot" type="VC:VirtualMachineSnapshot" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="outcome" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="task">
+    <display-name><![CDATA[copyTemplateFiles]]></display-name>
+    <script encoded="false"><![CDATA[var newFileNames = new Array() ;
+var myVcVirtualDiskSpec = new VcVirtualDiskSpec("lsiLogic","thin");
+var files = templateVm.layout.disk.shift().diskFile;
+var myVcVirtualDiskManager = datacenter.sdkConnection.virtualDiskManager;
+for each (var file in files) {
+	var source = file;
+	if (source.search("000") == -1) {
+		var target = source.replace(templateVm.name,name).replace(templateVm.name,"2_" + name);
+		System.log( "Copying file: " + source + " to new file: " + target );
+		var task = myVcVirtualDiskManager.copyVirtualDisk_Task(source,datacenter,target,datacenter,null,false);
+		var rc = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,true,1);
+		System.log( "Return Code: " + rc );
+		newFileNames.push(target);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore"/>
+      <bind name="datacenter" type="VC:Datacenter" export-name="datacenter"/>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="templateVm" type="VC:VirtualMachine" export-name="templateVm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="newFileNames" type="Array/string" export-name="newFileNames"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task">
+    <display-name><![CDATA[manipulateDiskFiles]]></display-name>
+    <script encoded="false"><![CDATA[
+var myVcDatastoreMountPathDatastorePair = new VcDatastoreMountPathDatastorePair() ;
+myVcDatastoreMountPathDatastorePair.datastore = datastore;
+myVcDatastoreMountPathDatastorePair.oldMountPath = "";
+var task = datastore.updateVirtualMachineFiles_Task([myVcDatastoreMountPathDatastorePair]);]]></script>
+    <in-binding>
+      <bind name="newFileNames" type="Array/string" export-name="newFileNames"/>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore"/>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="outcome" type="string" export-name="outcome"/>
+    </out-binding>
+    <position y="55.40909090909091" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item0" type="task">
+    <display-name><![CDATA[commitLinkedClone]]></display-name>
+    <script encoded="false"><![CDATA[// ABC]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="55.40909090909091" x="764.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item3" type="link" linked-workflow-id="988080808080808080808080808080809C8080800123417702800022547c1c312">
+    <display-name><![CDATA[Linked clone, Linux with single NIC]]></display-name>
+    <in-binding>
+      <bind name="folder" type="VC:VmFolder" export-name="folder">
+        <description><![CDATA[Virtual machine folder]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="name">
+        <description><![CDATA[New virtual machine name]]></description>
+      </bind>
+      <bind name="vm" type="VC:VirtualMachine" export-name="templateVm">
+        <description><![CDATA[Virtual machine of which to create a linked clone]]></description>
+      </bind>
+      <bind name="powerOn" type="boolean" export-name="boolTrue">
+        <description><![CDATA[Specifies whether or not the new virtual machine should be powered on after creation]]></description>
+      </bind>
+      <bind name="template" type="boolean" export-name="boolFalse">
+        <description><![CDATA[Specifies whether or not to mark the new virtual machine as a template]]></description>
+      </bind>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore">
+        <description><![CDATA[Datastore in which to store the virtual machine. If not specified, the current datastore is used]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[(Optional) Host on which to create the virtual machine]]></description>
+      </bind>
+      <bind name="pool" type="VC:ResourcePool" export-name="pool">
+        <description><![CDATA[(Optional) Resource pool in which to create the virtual machine]]></description>
+      </bind>
+      <bind name="doSysprep" type="boolean" export-name="boolFalse">
+        <description><![CDATA[Run the Sysprep operations and wait for the task to complete. Not used if the virtual machine is marked as template]]></description>
+      </bind>
+      <bind name="clientName" type="string" export-name="name">
+        <description><![CDATA[Name or prefix name of the Linux client]]></description>
+      </bind>
+      <bind name="network" type="VC:Network" export-name="network">
+        <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+      </bind>
+      <bind name="dnsServerList" type="Array/string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[(Optional) List of DNS servers for a virtual network adapter with a static IP address]]></description>
+      </bind>
+      <bind name="dnsDomain" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[(Optional) DNS domain suffix such as vmware.com]]></description>
+      </bind>
+      <bind name="dhcp" type="boolean" export-name="boolTrue">
+        <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+      </bind>
+      <bind name="gateway" type="Array/string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[(Optional) List of gateways, in order of preference]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="ipAddress">
+        <description><![CDATA[Fixed valid IP address]]></description>
+      </bind>
+      <bind name="macAddress" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[(Optional) The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+      </bind>
+      <bind name="subnetMask" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+      </bind>
+      <bind name="Snapshot" type="VC:VirtualMachineSnapshot" export-name="templateSnapshot">
+        <description><![CDATA[If null, a new snapshot shall be created]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="newVM" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[The newly created virtual machine]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Creates a linked clone of a Linux virtual machine, performs the guest operating system customization, and configures one virtual network card.]]></description>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="link" linked-workflow-id="BD80808080808080808080808080808053C180800122528313869552e41805bb1">
+    <display-name><![CDATA[Create a snapshot]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[Virtual machine of which to create a snapshot]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="snapshotName">
+        <description><![CDATA[Snapshot name. The name need not be unique for this virtual machine.]]></description>
+      </bind>
+      <bind name="description" type="string" export-name="snapshotDescription">
+        <description><![CDATA[Snapshot description.]]></description>
+      </bind>
+      <bind name="memory" type="boolean" export-name="boolFalse">
+        <description><![CDATA[If TRUE, the snapshot includes a dump of the internal state of the virtual machine (a memory dump). ]]></description>
+      </bind>
+      <bind name="quiesce" type="boolean" export-name="boolFalse">
+        <description><![CDATA[If TRUE and the virtual machine is powered on when the snapshot is taken, VMware Tools are used to quiesce the file system in the virtual machine.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshot" type="VC:VirtualMachineSnapshot" export-name="vmSnapshot">
+        <description><![CDATA[The snapshot created]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Creates a snapshot.]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="name">
+      <desc><![CDATA[name]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

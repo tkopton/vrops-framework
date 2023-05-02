@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDeploymentResourceTagsAsPropertiesByDeploymentNameAndResourceName" result-type="Properties" api-version="6.0.0" id="24ee9a52-f029-4b83-871f-bc80caf542dd" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.deployment">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="deploymentName" t="string"><![CDATA[]]></param>
+  <param n="deploymentResourceName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || deploymentName == null || deploymentResourceName == null) return null;
+
+
+var deployment = System.getModule("com.vmware.vra.extensibility.rest.deployment").getDeploymentByNameQS(restHost, username, password, deploymentName);
+var deploymentId = deployment.id;
+if (deploymentId != null) {
+    var deploymentResources = System.getModule("com.vmware.vra.extensibility.rest.deployment").getDeploymentResources(restHost, username, password, deploymentId);
+    for each (var deploymentResource in deploymentResources) {
+        if (deploymentResource.name == deploymentResourceName) {
+            var tagsProperties = new Properties();
+            var tags = deploymentResource.properties.tags;
+
+            for each (var tag in tags) {
+                tagsProperties.put(tag.key, tag.value);
+            }
+            return tagsProperties;
+        }
+    }
+}
+return null;]]></script>
+</dunes-script-module>

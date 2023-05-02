@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="783988f2-f1f8-4674-b41e-9226707ccb30" editor-version="2.0" version="0.0.12" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>Get Blueprint Name content JSON</display-name>
+    <position y="0.45454545454545325" x="25.0"/>
+    <input>
+        <param name="json" type="string"/>
+        <param name="blueprint_name" type="string"/>
+    </input>
+    <output>
+        <param name="blueprint_exist" type="string"/>
+    </output>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="0.0" x="304.5"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item0" type="task" comparator="0">
+        <display-name>Model JSON</display-name>
+        <script encoded="false">json = JSON.parse(json);
+blueprint_exist = "false";
+for each (var item in json.content){
+	if (item.name == blueprint_name){
+		blueprint_exist = "true";
+        break;
+		}
+	}
+</script>
+        <in-binding>
+            <bind name="json" type="string" export-name="json"/>
+            <bind name="blueprint_name" type="string" export-name="blueprint_name"/>
+        </in-binding>
+        <out-binding>
+            <bind name="blueprint_exist" type="string" export-name="blueprint_exist"/>
+        </out-binding>
+        <position y="9.954545454545453" x="124.5"/>
+    </workflow-item>
+</ns2:workflow>

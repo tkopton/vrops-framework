@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="dd03f5c2-73a6-44c1-8531-67d950dab8ba" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[collectInfo]]></display-name>
+  <description><![CDATA[This workflow collects all information from vCenter regarding all Cisco v1000k switches and creates a output of type Propery that contains all the infos in a structured property.
+
+collection: property
+	switchName: property
+		switchName : String
+		switchMoref : String
+		switchVerion : String
+		switchDCParentName : String
+		switchDesription : String
+		switchVendor : String
+		switchPortsConfigured : String
+		switchChildren : Array of Strings (ESXi Host Names)
+		switchPortsUsed : String
+		PortGroupName : Property
+			portGroupName : String
+			portGroupBind : String
+			portGroupTotalPorts : String
+			portGroupMoref : String
+			portGroupAllocation : String
+			portGroupUsed : String
+			portGroupVMs : String]]></description>
+  <position y="50.0" x="100.0"/>
+  <output>
+    <param name="collection" type="Properties"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[get all 1Kv info]]></display-name>
+    <script encoded="false"><![CDATA[//refresh all DvPort reads
+for each (port in VcPlugin.allDistributedVirtualPortgroups){
+ VcPlugin.refreshObjects(port);
+}
+
+// recusive function to find the DC of a given switch
+var toType = function(obj) {
+  return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+}
+
+// Function to find a parent based on its type
+function findParentbyType(current,type) {
+	if (toType(current)== type.toLowerCase()){
+		return current;
+	} else {
+		return findParentbyType(current.parent,type);
+	}
+}
+
+//create output property
+var collection = new Properties();
+
+//get all Cisco 1Kv Switches
+dvSwitchs=Server.findAllForType("Vc:DistributedVirtualSwitch");
+//create working array for switches and filter by Cisco switches
+var switch1KV = new Array();
+for each (dvSwitch in dvSwitchs) {
+	if (dvSwitch.config.productInfo.vendor.indexOf("Cisco")>=0){
+		switch1KV.push(dvSwitch);
+	}
+}
+
+// get all details from 1KV switches and fill up properties
+for each (child in switch1KV){
+	var switch1Kv = new Properties();
+	switch1Kv.put("switchName",child.name);//add switch
+	switch1Kv.put("switchMoref",child.id);//add switch
+	switch1Kv.put("switchVerion",child.config.productInfo.version);//addSwitchPorp
+	switch1Kv.put("switchDCParentName",findParentbyType(child,"VcDatacenter").name);//addSwitchPorp //addSwitchParent
+	switch1Kv.put("switchDesription",child.config.description);//addSwitchPorp
+	switch1Kv.put("switchVendor",child.config.productInfo.vendor);//addSwitchPorp
+	switch1Kv.put("switchPortsConfigured",child.config.numPorts.toString()); //addSwitchMetric
+	//get all hosts that are connected to the Switch
+	esxiHosts=child.config.host;
+	// helper for determind Cluster Name
+	var usedHost;
+	//create output Array for ESXi Names
+	var esxiHostNames= new Array();				
+	for each (esxiHost in esxiHosts){
+			esxiHostNames.push(esxiHost.config.host.name);
+			usedHost=esxiHost.config.host;
+	}
+	switch1Kv.put("switchChildren",esxiHostNames); //addSwitchChildren
+	// Find the Cluster name
+	if (usedHost == null){
+	//if no hosts then use naming conbvention for 
+		System.warn("No hosts attached to "+child.name);
+		var xpath = "xpath:name='" + child.name + "'";
+		cluster=Server.findAllForType("Vc:ClusterComputeResource",xpath)[0];
+		switch1Kv.put("switchClusterParentName",cluster.name);//addSwitchParent#
+		System.log("found cluster: "+cluster.name);
+	} else {
+	// use ESXi host to find Cluster Name
+		switch1Kv.put("switchClusterParentName",findParentbyType(usedHost,"VcClusterComputeResource").name)
+	}
+	
+	//build a map of all ports on that switch and prepare for counting
+	allPorts=child.fetchDVPorts();
+	var usedPortsPerSwitch = new Properties();
+	var vmCount=0;
+	for each (port in allPorts){
+		if (port.connectee !=null){
+		//if the port is connected
+			portType=toType(port.connectee.connectedEntity);
+			if (portType=="vcvirtualmachine"){
+			// if the port is connected to a VM
+				vmCount++;
+				var portData=new Properties();
+				//build map
+				portData.put("name",port.connectee.connectedEntity.name);
+				portData.put("portGroup",port.portgroupKey);
+				usedPortsPerSwitch.put(port.key,portData);
+			}
+		}	
+	}
+	//enter the count of used ports
+	switch1Kv.put("switchPortsUsed",vmCount.toString());//addSwitchMetric
+
+	// Walk thought all portgroups of the switch
+	for each (pg in child.portgroup){
+		var portGroup1Kv = new Properties();
+		pgName=pg.name.split(" (")[0];
+		portGroup1Kv.put("portGroupName",pgName); //add PortGroup //add Port Property
+		portGroup1Kv.put("portGroupBind",pg.config.type); //add Port Property
+		portGroup1Kv.put("portGroupTotalPorts",pg.config.numPorts.toString()); //add Port metrics
+		portGroup1Kv.put("portGroupMoref",pg.key); //add PortGroup
+		portGroup1Kv.put("portGroupAllocation","Fixed"); //add Port Property
+		//count used ports as well as create list of VMs
+		var count=0;
+		var portVMs=new Array();
+		for each (port in usedPortsPerSwitch.keys){
+			if (usedPortsPerSwitch.get(port).get("portGroup")==pg.key){
+				count++;
+				portVMs.push(usedPortsPerSwitch.get(port).get("name"));
+			}
+		}
+		portGroup1Kv.put("portGroupUsed",count.toString()); //add Port metrics
+		portGroup1Kv.put("portGroupVMs",portVMs); //addPortChildren
+		switch1Kv.put(pgName,portGroup1Kv);
+	}						
+	collection.put(child.name,switch1Kv);		
+}
+
+]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="collection" type="Properties" export-name="collection"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

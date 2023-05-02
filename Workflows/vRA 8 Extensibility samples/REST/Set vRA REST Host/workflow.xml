@@ -1,0 +1,247 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e28e9c3b-f8fc-4a21-9299-1ae736cf3997" version="0.0.1" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Set vRA REST Host]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="name" type="string"/>
+    <param name="url" type="string"/>
+    <param name="username" type="string"/>
+    <param name="password" type="SecureString"/>
+  </input>
+  <attrib name="authentication" type="string" read-only="false">
+    <value encoded="n"><![CDATA[NONE]]></value>
+  </attrib>
+  <attrib name="ignoreWarnings" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <attrib name="hostVerification" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="parallelRequestExecution" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <attrib name="authUserName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="authPassword" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="consumerKey" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="consumerSecret" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="accessToken" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="accessTokenSecret" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="connectionTimeout" type="number" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="operationTimeout" type="number" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="sessionMode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="oauth2Token" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="workstation" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="domain" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="useProxy" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="proxyHost" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="proxyPort" type="number" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="key" type="Configurator:Key" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="proxyAuthentication" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="proxyAuthUserName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="proxyAuthPassword" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="proxySessionMode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="autoUrlRedirection" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="restHost" type="REST:RESTHost" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vRAHostConfig" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='cf442bf5-3fad-482d-a583-a9b9bc088134'&dunesName='ConfigurationElement']]></value>
+  </attrib>
+  <attrib name="customHeaders" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[{}]]></value>
+  </attrib>
+  <attrib name="removedRestHost" type="rest:RESTHost" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="error" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="700.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item5" type="link" linked-workflow-id="8F8080808080808080808080808080808080808001299080088268176866967b3">
+    <display-name><![CDATA[Add a REST host]]></display-name>
+    <in-binding>
+      <bind name="name" type="string" export-name="name">
+        <description><![CDATA[Host's name]]></description>
+      </bind>
+      <bind name="url" type="string" export-name="url">
+        <description><![CDATA[Host's base URL]]></description>
+      </bind>
+      <bind name="authentication" type="string" export-name="authentication">
+        <description><![CDATA[Host's authentication type]]></description>
+      </bind>
+      <bind name="authUserName" type="string" export-name="authUserName">
+        <description><![CDATA[Authentication user name]]></description>
+      </bind>
+      <bind name="authPassword" type="SecureString" export-name="authPassword">
+        <description><![CDATA[Authentication password]]></description>
+      </bind>
+      <bind name="consumerKey" type="string" export-name="consumerKey">
+        <description><![CDATA[Consumer key]]></description>
+      </bind>
+      <bind name="consumerSecret" type="SecureString" export-name="consumerSecret">
+        <description><![CDATA[Consumer secret]]></description>
+      </bind>
+      <bind name="accessToken" type="string" export-name="accessToken">
+        <description><![CDATA[Access token]]></description>
+      </bind>
+      <bind name="accessTokenSecret" type="SecureString" export-name="accessTokenSecret">
+        <description><![CDATA[Access token secret]]></description>
+      </bind>
+      <bind name="connectionTimeout" type="number" export-name="connectionTimeout">
+        <description><![CDATA[Connection timeout]]></description>
+      </bind>
+      <bind name="operationTimeout" type="number" export-name="operationTimeout">
+        <description><![CDATA[Operation timeout]]></description>
+      </bind>
+      <bind name="sessionMode" type="string" export-name="sessionMode">
+        <description><![CDATA[Session mode]]></description>
+      </bind>
+      <bind name="oauth2Token" type="string" export-name="oauth2Token">
+        <description><![CDATA[OAuth 2.0 token]]></description>
+      </bind>
+      <bind name="workstation" type="string" export-name="workstation">
+        <description><![CDATA[Workstation  for NTLM authentication]]></description>
+      </bind>
+      <bind name="domain" type="string" export-name="domain">
+        <description><![CDATA[Domain  for NTLM authentication]]></description>
+      </bind>
+      <bind name="useProxy" type="boolean" export-name="useProxy">
+        <description><![CDATA[Use Proxy]]></description>
+      </bind>
+      <bind name="proxyHost" type="string" export-name="proxyHost">
+        <description><![CDATA[Proxy host]]></description>
+      </bind>
+      <bind name="proxyPort" type="number" export-name="proxyPort">
+        <description><![CDATA[Proxy port]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreWarnings">
+        <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+      </bind>
+      <bind name="hostVerification" type="boolean" export-name="hostVerification">
+        <description><![CDATA[Verify whether the target hostname matches the names stored inside the server's X.509 certificate]]></description>
+      </bind>
+      <bind name="key" type="Configurator:Key" export-name="key">
+        <description><![CDATA[The PrivateKeyEntry to use for client certificate authentication.]]></description>
+      </bind>
+      <bind name="proxyAuthentication" type="string" export-name="proxyAuthentication">
+        <description><![CDATA[Proxy AuthenticationType]]></description>
+      </bind>
+      <bind name="proxyAuthUserName" type="string" export-name="proxyAuthUserName">
+        <description><![CDATA[Proxy user name]]></description>
+      </bind>
+      <bind name="proxyAuthPassword" type="SecureString" export-name="proxyAuthPassword">
+        <description><![CDATA[Proxy password]]></description>
+      </bind>
+      <bind name="proxySessionMode" type="string" export-name="proxySessionMode">
+        <description><![CDATA[Proxy Session mode]]></description>
+      </bind>
+      <bind name="autoUrlRedirection" type="boolean" export-name="autoUrlRedirection">
+        <description><![CDATA[Automatically URL redirection]]></description>
+      </bind>
+      <bind name="parallelRequestExecution" type="boolean" export-name="parallelRequestExecution"/>
+    </in-binding>
+    <out-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost">
+        <description><![CDATA[The created RESTHost]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[ ]]></description>
+    <position y="60.0" x="170.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Set vRA Host configuration]]></display-name>
+    <script encoded="false"><![CDATA[vRAHostConfig.setAttributeWithKey("restHost", restHost);
+vRAHostConfig.setAttributeWithKey("username", username);
+vRAHostConfig.setAttributeWithKey("password", password);]]></script>
+    <in-binding>
+      <bind name="vRAHostConfig" type="ConfigurationElement" export-name="vRAHostConfig"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="520.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item2" catch-name="item6" throw-bind-name="error" type="task" script-module="com.vmware.vra.extensibility/getvRA8CustomHeaders">
+    <display-name><![CDATA[getvRA8CustomHeaders]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost,username,password);
+]]></script>
+    <in-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="customHeaders"/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item7" type="link" linked-workflow-id="99808080808080808080808080808080A8808080012995053491651398b094fa1">
+    <display-name><![CDATA[Remove a REST host]]></display-name>
+    <in-binding>
+      <bind name="host" type="REST:RESTHost" export-name="restHost">
+        <description><![CDATA[REST host to be removed]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="removedRestHost" type="rest:RESTHost" export-name="removedRestHost">
+        <description><![CDATA[The removed REST host]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[ ]]></description>
+    <position y="130.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item7" throw-bind-name="error" type="end" end-mode="1">
+    <in-binding/>
+    <position y="190.0" x="380.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

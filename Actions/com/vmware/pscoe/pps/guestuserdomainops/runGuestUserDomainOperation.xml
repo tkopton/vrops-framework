@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="runGuestUserDomainOperation" result-type="void" api-version="6.0.0" id="550a6d8a-f050-49ba-b0fc-36bdb60445c8" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.pps.guestuserdomainops">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="type" t="string"><![CDATA[]]></param>
+  <param n="operationInput" t="Properties"><![CDATA[]]></param>
+  <param n="disposingState" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(vm.runtime.powerState.value != "poweredOn") {
+	throw "The VM is not powered on!";
+}
+
+var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.pps.guestuserdomainops", null);
+
+var guest = System.getModule("com.vmware.pscoe.library.guestops").Guest(vm,username,password) ;
+var guestOps = System.getModule("com.vmware.pscoe.library.guestops").GuestOperations(guest) ;
+
+var typeResourceName = type;
+var commandProperties = getCommandProperties(typeResourceName);
+
+//Get the disposal operation that would be executed. Change the operation to the dispose operation in disposing.
+if(disposingState && commandProperties["disposeOperation"]) {
+	var disposeTypeResourceName = commandProperties["disposeOperation"];
+	commandProperties = getCommandProperties(disposeTypeResourceName);
+	typeResourceName = disposeTypeResourceName;
+}
+
+var commandType = commandProperties["commandType"];
+if(commandType == null) {
+	throw "No \"commandType\" found in resource element: " + typeResourceName + "!" ;
+}
+
+var command = commandProperties["command"];
+if(command == null) {
+	throw "No \"command\" found in resource element: " + typeResourceName + "!" ;
+}
+
+var filledCommand = System.getModule("com.vmware.pscoe.library.util").processTemplate(command, operationInput, null) ;
+if(commandProperties["enableOutputLog"]) {
+	logger.info("The full command to be executed is: '" + filledCommand  + "'." );
+}
+logger.info("Execute command on the VM...");
+var result = guestOps.runCommand(filledCommand, null, commandType);
+
+if(result.exitCode != 0) {
+	if(commandProperties["enableOutputLog"]) {
+		logger.info("EXIT CODE: " + result.exitCode);
+		logger.info("OUTPUT: " + result.stdOut);
+		logger.error("ERROR: " + result.stdErr);
+	}
+	throw "Command execution failed!\nExit code: " + result.exitCode ;
+}
+
+if(commandProperties["enableOutputLog"]) {
+	logger.info("EXIT CODE: " + result.exitCode);
+	logger.info("OUTPUT: " + result.stdOut);
+}
+
+
+if(commandProperties["rebootAfterSuccess"]) {
+	logger.info("Reboot the VM..."); 
+	var timeout = commandProperties["rebootTimeOut"] != null ? commandProperties["rebootTimeOut"] : 300.0;
+	var polling = 1.0;
+	//shut down the VM.
+	System.getModule("com.vmware.library.vc.vm.power").shutdownVMAndForce(vm, timeout, polling);
+	
+	//start the VM again.
+	var startTask = System.getModule("com.vmware.library.vc.vm.power").startVM(vm, null) ;
+	System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(startTask, true, polling) ;
+	System.getModule("com.vmware.library.vc.vm.tools").vim3WaitToolsStarted(vm, polling, timeout) ;
+}
+
+// Functions ************************
+function getCommandProperties(typeResourceName) {
+	var commandResourceElement = System.getModule("com.vmware.pscoe.library.util").getResourceElementByPath("PSCoE/Library/GuestUserDomainOperations", typeResourceName) ;
+	var commandResource = commandResourceElement.getContentAsMimeAttachment().content;
+
+	if(commandResource == null) {
+		throw "No resource element: " + typeResourceName + " found in folder: PSCoE/Library/GuestUserDomainOperations!";
+	}
+
+	return JSON.parse(commandResource);
+}]]></script>
+</dunes-script-module>

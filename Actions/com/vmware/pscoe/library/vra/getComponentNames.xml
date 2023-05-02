@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getComponentNames" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.vra.getComponentNames" version="2.4.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra">
+  <description><![CDATA[
+ 
+ @param {vCACCAFE:CompositeBlueprint} blueprint
+ @param {boolean} addEmpty
+]]></description>
+  <param n="blueprint" t="vCACCAFE:CompositeBlueprint"><![CDATA[]]></param>
+  <param n="addEmpty" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var arr = blueprint.getComponents().keys;
+if (addEmpty) {
+	arr.unshift("");
+}
+
+return arr;
+]]></script>
+</dunes-script-module>

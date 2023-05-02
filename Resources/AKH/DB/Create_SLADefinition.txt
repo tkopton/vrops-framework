@@ -1,0 +1,20 @@
+CREATE TABLE SLADefinition
+(
+SLA varchar(50) NOT NULL
+,ResMem int NOT NULL
+,ShareMem varchar(50) NOT NULL
+,ResCpu int NOT NULL
+,ShareCPU varchar(50) NOT NULL
+,RepIntervall int NOT NULL
+,Repquiescing varchar(50) NOT NULL
+,BackupNeeded varchar(50) NOT NULL
+,BackupLegacyAgentMissing varchar(50)
+,BackupCheck varchar(50)
+,BackupIntervall int
+,BackupRestoreTest varchar(50)
+,BackupType varchar(50)
+,BackupSystemState varchar(50)
+,AntiVirus varchar(50)
+,Monitoring varchar(50)
+,PRIMARY KEY (SLA)
+)

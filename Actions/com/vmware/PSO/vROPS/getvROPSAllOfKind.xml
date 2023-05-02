@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getvROPSAllOfKind" result-type="Array/string" api-version="6.0.0" id="ec843bcc-0c30-46ec-9bbd-33b265b695c1" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="RESTHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="resourceKind" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (resourceKind.indexOf(" ")>0){
+	resourceKind=resourceKind.replace(new RegExp("\ ","g"),"%20");
+}
+
+var allOfType=new Array;
+restURL="/api/resources?resourceKind="+resourceKind;
+var request  = RESTHost.createRequest("GET", restURL,null);
+var response = request.execute();
+restStatus=parseInt(response.statusCode);
+if (restStatus==200){
+	xmldoc=XMLManager.fromString(response.contentAsString);
+	resourceNode=xmldoc.getElementsByTagName("ops:resource");
+	for (i=0;i<resourceNode.length;i++){
+		sub=resourceNode.item(i);
+		tag=sub.getElementsByTagName("ops:name").item(0);
+		name=tag.textContent;
+		allOfType.push(tag.textContent);
+	}
+}
+return allOfType;]]></script>
+</dunes-script-module>

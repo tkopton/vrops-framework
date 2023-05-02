@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="0994d715-ef2b-4a33-af37-94b09fa6db6e" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[getNameAndIDFromMoref]]></display-name>
+  <description><![CDATA[This workflow find the correct object using the resource kind an the property (of the object) with the name internalID]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="RESTHost" type="REST:RESTHost"/>
+    <param name="internalID" type="string"/>
+    <param name="resourceKind" type="string"/>
+  </input>
+  <output>
+    <param name="name" type="string"/>
+    <param name="vROPsID" type="string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[if (resourceKind.indexOf(" ")>0){
+	resourceKind=resourceKind.replace(new RegExp("\ ","g"),"%20");
+}
+restURL="/api/resources?resourceKind="+resourceKind+"&propertyName=internalID&propertyValue="+internalID;
+var request  = RESTHost.createRequest("GET", restURL,null);
+var response = request.execute();
+restStatus=parseInt(response.statusCode);
+if (restStatus==200){
+	xmldoc=XMLManager.fromString(response.contentAsString);
+	resourceNode=xmldoc.getElementsByTagName("ops:resource").item(0);
+	if (resourceNode!=null){
+		//get ID
+		attribs=resourceNode.getAttributes();
+		vROPsID = (attribs.item(1).nodeValue);
+		//get Name
+		resourceNode=xmldoc.getElementsByTagName("ops:name").item(0);
+		name=resourceNode.textContent;
+	} else {
+		vROPsID= "no such object";
+	}
+}]]></script>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="resourceKind" type="string" export-name="resourceKind"/>
+      <bind name="internalID" type="string" export-name="internalID"/>
+    </in-binding>
+    <out-binding>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="vROPsID" type="string" export-name="vROPsID"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="RESTHost">
+      <desc><![CDATA[RESTHost]]></desc>
+    </p-param>
+    <p-param name="internalID">
+      <desc><![CDATA[internalID
+parentName-moref]]></desc>
+    </p-param>
+    <p-param name="resourceKind">
+      <desc><![CDATA[resourceKind]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

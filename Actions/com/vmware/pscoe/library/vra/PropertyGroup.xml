@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="PropertyGroup" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.vra.PropertyGroup" version="2.4.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra">
+  <description><![CDATA[
+
+ @param {vCACCAFE:VCACHost} host
+]]></description>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var CafeRestClient = System.getModule("com.vmware.pscoe.library.vra").CafeRestClient(host,
+        "com.vmware.csp.core.properties.service.api");
+var restClient = new CafeRestClient("propertygroups");
+
+function convertFromRestProperties(pg) {
+	var newPg = JSON.parse(JSON.stringify(pg));
+	newPg.properties = {};
+	for ( var name in pg.properties) {
+		newPg.properties[name] = {
+		    visibility : pg.properties[name].facets.visibility.value.value,
+		    encrypted : pg.properties[name].facets.encrypted.value.value,
+		    mandatory : pg.properties[name].facets.mandatory.value.value,
+		    value : pg.properties[name].facets.defaultValue.value.value
+		};
+	}
+	return newPg;
+}
+
+function convertToRestProperties(pg) {
+	var newPg = JSON.parse(JSON.stringify(pg));
+	newPg.properties = {};
+	for ( var name in pg.properties) {
+		var prop = pg.properties[name];
+		newPg.properties[name] = {
+			"facets" : {
+			    "visibility" : {
+			        "type" : "constant",
+			        "value" : {
+			            "type" : "boolean",
+			            "value" : prop.visibility
+			        }
+			    },
+			    "encrypted" : {
+			        "type" : "constant",
+			        "value" : {
+			            "type" : "boolean",
+			            "value" : prop.encrypted
+			        }
+			    },
+			    "mandatory" : {
+			        "type" : "constant",
+			        "value" : {
+			            "type" : "boolean",
+			            "value" : prop.mandatory
+			        }
+			    },
+			    "defaultValue" : {
+			        "type" : "constant",
+			        "value" : {
+			            "type" : "string",
+			            "value" : prop.value
+			        }
+			    }
+			}
+		};
+	}
+	return newPg;
+}
+
+var PropertyGroup = function(cr) {
+	for ( var key in cr) {
+		this[key] = cr[key];
+	}
+
+	this.getId = function() {
+		return this.id;
+	};
+
+	this.setLabel = function(label) {
+		this.label = label;
+	};
+
+	this.getLabel = function() {
+		return this.label;
+	};
+
+	this.getDescription = function() {
+		return this.description;
+	};
+
+	this.setDescription = function(description) {
+		this.description = description;
+	};
+
+	this.getProperties = function() {
+		return this.properties;
+	};
+
+	this.setProperties = function(properties) {
+		this.properties = properties;
+	};
+
+	this.save = function() {
+		if (!this.id) {
+			this.id = this.label.replace(/[^a-zA-Z0-9]/g, '');
+		}
+
+		restClient.createOrUpdate(convertToRestProperties(this));
+	};
+};
+
+PropertyGroup.get = function(name) {
+	var id = name.replace(/[^a-zA-Z0-9]/g, '');
+	var pg = restClient.get(id);
+	if (!pg) {
+		return null;
+	}
+	return new PropertyGroup(convertFromRestProperties(pg));
+};
+
+PropertyGroup.getAll = function() {
+	var propGroupJson = restClient.getAll();
+
+	if (!propGroupJson || !propGroupJson.content) {
+		return null;
+	}
+
+	var propGroups = [];
+	for (var i = 0; i < propGroupJson.content.length; i++) {
+		var pg = propGroupJson.content[i];
+		propGroups.push(new PropertyGroup(convertFromRestProperties(pg)));
+	}
+
+	return propGroups;
+};
+
+PropertyGroup.getByPrefix = function(prefix) {
+	var filter = "startswith(label, '" + prefix + "')";
+	var propGroupJson = restClient.getByFilterString(filter);
+	if (!propGroupJson || !propGroupJson.content) {
+		return null;
+	}
+
+	var propGroups = [];
+	for (var i = 0; i < propGroupJson.content.length; i++) {
+		var pg = propGroupJson.content[i];
+		propGroups.push(new PropertyGroup(convertFromRestProperties(pg)));
+	}
+
+	return propGroups;
+};
+
+PropertyGroup.getByName = function(name) {
+	var propGroups = restClient.getByFilter({
+		label : name
+	});
+
+	for (var i = 0; i < propGroups.length; i++) {
+		var pg = propGroups[i];
+		if (pg.label === name) {
+			return new PropertyGroup(convertFromRestProperties(pg));
+		}
+	}
+	return null;
+};
+
+PropertyGroup.importFrom = function (resourceElement, allTenants) {
+	return System.getModule("com.vmware.pscoe.library.vra.import.export").importVraObject(
+		host, "PropertyGroup", resourceElement, allTenants);
+};
+
+PropertyGroup.exportTo = function (label, resourceElementCategory) {
+	System.getModule("com.vmware.pscoe.library.vra.import.export").exportVraObject(
+		host, "PropertyGroup", label, resourceElementCategory);
+};
+
+return PropertyGroup;
+]]></script>
+</dunes-script-module>

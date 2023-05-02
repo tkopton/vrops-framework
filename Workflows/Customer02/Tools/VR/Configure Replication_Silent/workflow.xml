@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="d14a8838-c5fb-4eaf-83ab-2e406e369c80" version="0.1.2" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Configure Replication_Silent]]></display-name>
+  <description><![CDATA[Configure a virtual machine for replication from this site to another vSphere site.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="site" type="VR:Site"/>
+    <param name="remoteSite" type="VR:VcRemoteSite"/>
+    <param name="vm" type="VC:VirtualMachine"/>
+    <param name="datastore" type="VR:RemoteDatastore"/>
+    <param name="quiesceGuestEnabled" type="boolean"/>
+    <param name="rpo" type="number"/>
+    <param name="networkCompressionEnabled" type="boolean"/>
+    <param name="enableMPIT" type="boolean"/>
+    <param name="instancesPerDay" type="number"/>
+    <param name="numDays" type="number"/>
+  </input>
+  <output>
+    <param name="resultGroup" type="VR:VcToVcSourceGroup"/>
+  </output>
+  <attrib name="task" type="VR:Task" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Task to Wait for]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="884.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.library.vr/loginRemoteSite">
+    <display-name><![CDATA[loginRemoteSite]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vr").loginRemoteSite(remoteSite) ;]]></script>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite">
+        <description><![CDATA[Remote vSphere Site]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.library.vr.configure/configureReplicationToVc">
+    <display-name><![CDATA[configureReplicationToVc]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vr.configure").configureReplicationToVc(remoteSite,vm,datastore,rpo,quiesceGuestEnabled,networkCompressionEnabled,enableMPIT,instancesPerDay,numDays) ;]]></script>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite"/>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="datastore" type="VR:RemoteDatastore" export-name="datastore"/>
+      <bind name="rpo" type="number" export-name="rpo"/>
+      <bind name="quiesceGuestEnabled" type="boolean" export-name="quiesceGuestEnabled"/>
+      <bind name="networkCompressionEnabled" type="boolean" export-name="networkCompressionEnabled"/>
+      <bind name="enableMPIT" type="boolean" export-name="enableMPIT"/>
+      <bind name="instancesPerDay" type="number" export-name="instancesPerDay"/>
+      <bind name="numDays" type="number" export-name="numDays"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VR:Task" export-name="task"/>
+    </out-binding>
+    <position y="55.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="task" script-module="com.vmware.library.vr.configure/getConfigureReplicationToVcTaskResult">
+    <display-name><![CDATA[getConfigureReplicationToVcTaskResult]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vr.configure").getConfigureReplicationToVcTaskResult(remoteSite,task) ;]]></script>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite"/>
+      <bind name="task" type="VR:Task" export-name="task"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VR:VcToVcSourceGroup" export-name="resultGroup"/>
+    </out-binding>
+    <position y="55.40909090909091" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" type="task" script-module="at.akhwien/waitTaskEnd_Silent">
+    <display-name><![CDATA[waitTaskEnd_Silent]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("at.akhwien").waitTaskEnd_Silent(task) ;]]></script>
+    <in-binding>
+      <bind name="task" type="VR:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Wait for a vCenter Server Task to complete.
+When the task completes, return the task result if any. ]]></description>
+    <position y="55.40909090909091" x="544.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Source]]></title>
+      <p-group>
+        <title><![CDATA[Site]]></title>
+        <p-param name="site">
+          <desc><![CDATA[Site]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[VM]]></title>
+        <p-param name="vm">
+          <desc><![CDATA[Source VM]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[tree]]></p-qual>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[GetAction("com.vmware.library.vr","getVcSdkConnectionByVrSite").call( #site )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Target]]></title>
+      <p-group>
+        <title><![CDATA[Site]]></title>
+        <p-param name="remoteSite">
+          <desc><![CDATA[Site]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[#site]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Datastore]]></title>
+        <p-param name="datastore">
+          <desc><![CDATA[Target Datastore]]></desc>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VR:RemoteDatastore"><![CDATA[GetAction("com.vmware.library.vr","getRemoteVcSiteDatastores").call( #remoteSite )]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Replication Settings]]></title>
+      <p-group>
+        <title><![CDATA[Details]]></title>
+        <p-param name="rpo">
+          <desc><![CDATA[RPO in minutes]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[15.0]]></p-qual>
+          <p-qual kind="static" name="maxNumberValue" type="Number"><![CDATA[1440.0]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="number"><![CDATA[240.0]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+        </p-param>
+        <p-param name="quiesceGuestEnabled">
+          <desc><![CDATA[Guest OS quiescing]]></desc>
+        </p-param>
+        <p-param name="networkCompressionEnabled">
+          <desc><![CDATA[Network compression]]></desc>
+        </p-param>
+        <p-param name="enableMPIT">
+          <desc><![CDATA[Point in time instances]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[MPIT]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#enableMPIT]]></p-qual>
+        <p-param name="instancesPerDay">
+          <desc><![CDATA[Instances per day (multiplied by number of days should not exceed 24)]]></desc>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[1.0]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="number"><![CDATA[1.0]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="maxNumberValue" type="Number"><![CDATA[24]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+        </p-param>
+        <p-param name="numDays">
+          <desc><![CDATA[Number of days]]></desc>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[1.0]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="number"><![CDATA[1.0]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="maxNumberValue" type="Number"><![CDATA[@Math@floor(24/#instancesPerDay)]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

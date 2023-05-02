@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="03167550-d51d-4466-9fd9-7a770f40bdaa" version="1.1.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[coolMail Subsystem]]></display-name>
+  <description><![CDATA[Author: Daniel Langenhan (daniel_langenhan@yahoo.com.au)
+
+http://langenhan.info/software/coolmail.html
+
+The coolMail subsystem works by substituting a tag with an vRO value. A coolMail tag can be freely defined and must have { } winged brackets around it. For example {vm.name} or {userName}.
+
+The User just prepares a HTML template (e.g. using html-online.com) and inserts tags where later values from vRO should be displayed. This enables one for example to create very nice looking HTML email that can be used with vRealize Automation (vRA).]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="mailPayload" type="Properties"/>
+  </input>
+  <attrib name="mailSubject" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="mailTo" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="mailContent" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="mailCC" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="mailBCC" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="mailHost" type="string" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="mailServer">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtpPort" type="number" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="smtpPort">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="mailUser" type="string" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="smtpUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="mailPass" type="SecureString" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="smtpPass">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtpFromName" type="string" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="smtpFromName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtpFromMail" type="string" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="smtpFromMail">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtpSSL" type="boolean" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="smtpSSL">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtpStartTLS" type="boolean" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="smtpStartTLS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="debuggFlag" type="boolean" read-only="false" conf-id="5dcabcec-507b-4a89-9475-906b6c275007" conf-key="debugFlag">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="564.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[Construct]]></display-name>
+    <script encoded="false"><![CDATA[function exists(prop,key,alt){
+	temp=prop.get(key);
+	if (temp==null){
+		return alt;
+	} else {
+		return temp;
+	}
+}
+
+//get type of variable
+var toType = function(obj) {
+  return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+}
+
+function replace(replaceOriginal,replacTag,repaceText){
+	regex=new RegExp("\{"+replacTag+"\}","g");
+	//empty values will be replaced by a - (dash)
+	if (repaceText==null){
+		replaceOriginal=replaceOriginal.replace(regex,"&nbsp-&nbsp");
+	} else {
+		replaceOriginal=replaceOriginal.replace(regex,repaceText);
+	} 
+	return replaceOriginal;
+}
+
+//replacment function
+function complexReplace(text,replacProps){
+	for each (key in replacProps.keys){
+		if (text.indexOf("<!--{"+key+".start}-->")>=0){
+			//find beginning
+			repeatStart=text.indexOf("<!--{"+key+".start}-->");
+			//find end
+			repeatEnd=text.indexOf("<!--{"+key+".end}-->")-1;
+			//get repeat Template
+			repeatStruture=text.substring(repeatStart+15+key.length,repeatEnd);
+			var repeatText="";
+			if (toType(replacProps.get(key))== "array"){
+			//replace Arrays
+				ary=replacProps.get(key);
+				for (i=0;i<ary.length;i++){
+					//start with 1
+					temp=replace(repeatStruture,key+".counter1",i+1);
+					//start with 0
+					temp=replace(repeatStruture,key+".counter",i);
+					repeatText=repeatText+replace(temp,key+".value",ary[i]);
+				}
+			}
+			if (toType(replacProps.get(key))=="properties"){
+			//rerplace Properties
+				props=replacProps.get(key);
+				for each (propKey in props.keys){
+					temp=replace(repeatStruture,key+".name",propKey);
+					repeatText=repeatText+replace(temp,key+".value",props.get(propKey));
+				}
+			}
+			//build new text
+			textStart=text.substring(0 ,repeatStart);
+			textEnd=text.substring(repeatEnd+14+key.length,text.length);
+			text=textStart+repeatText+textEnd;
+		} else if (text.indexOf("{"+key+"}")>=0){
+			//replace everything else
+			text=replace(text,key,replacProps.get(key))
+		}
+	}
+	return text;
+}
+
+//get HTML template
+bodyTemp=mailPayload.get("mailTemplate");
+mailbody=bodyTemp.getContentAsMimeAttachment().content;
+// get all basic Mail settings
+mailTo=mailPayload.get("mailTo");
+keys=mailPayload.keys
+if (keys.indexOf("mailCC")>=0){
+	mailCC=mailPayload.get("mailCC");
+}
+if (keys.indexOf("mailBCC")>=0){
+	mailBCC=mailPayload.get("mailBCC");
+}
+//get replacemnt poperties
+mailReplacments=mailPayload.get("mailReplacements");
+//construct Subject
+mailSubject=complexReplace(mailPayload.get("subject"),mailReplacments);
+//consturct content
+mailContent=complexReplace(mailbody,mailReplacments);
+
+//Optionals
+smtpFromMail=exists(mailPayload,"fromMail",smtpFromMail);
+smtpFromName=exists(mailPayload,"fromName",smtpFromName);
+]]></script>
+    <in-binding>
+      <bind name="mailPayload" type="Properties" export-name="mailPayload"/>
+      <bind name="smtpFromName" type="string" export-name="smtpFromName"/>
+      <bind name="smtpFromMail" type="string" export-name="smtpFromMail"/>
+    </in-binding>
+    <out-binding>
+      <bind name="mailTo" type="string" export-name="mailTo"/>
+      <bind name="mailCC" type="string" export-name="mailCC"/>
+      <bind name="mailBCC" type="string" export-name="mailBCC"/>
+      <bind name="mailContent" type="string" export-name="mailContent"/>
+      <bind name="mailSubject" type="string" export-name="mailSubject"/>
+      <bind name="smtpFromName" type="string" export-name="smtpFromName"/>
+      <bind name="smtpFromMail" type="string" export-name="smtpFromMail"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[sendMail]]></display-name>
+    <script encoded="false"><![CDATA[//Create a message object
+var message = new EmailMessage();
+// set connections parameters
+message.smtpHost = mailHost;
+message.smtpPort = smtpPort;
+message.username = mailUser;
+message.password = mailPass;
+message.fromName = smtpFromName;
+message.fromAddress = smtpFromMail;
+message.useSsl=smtpSSL;
+message.useStartTls=smtpStartTLS;
+//Set email specific information
+message.toAddress = mailTo;
+message.ccAddress =mailCC;
+message.bccAddress =mailBCC;
+// the subject of the message
+message.subject = mailSubject;
+// the content together with the message type and the character set
+message.addMimePart(mailContent,"text/html; charset=UTF-8");
+// send message
+message.sendMessage();
+
+if (debuggFlag){
+	System.log("Sending Email to "+mailTo+" Subject:"+mailSubject);
+}
+
+]]></script>
+    <in-binding>
+      <bind name="mailSubject" type="string" export-name="mailSubject"/>
+      <bind name="mailTo" type="string" export-name="mailTo"/>
+      <bind name="mailContent" type="string" export-name="mailContent"/>
+      <bind name="mailCC" type="string" export-name="mailCC"/>
+      <bind name="mailBCC" type="string" export-name="mailBCC"/>
+      <bind name="mailHost" type="string" export-name="mailHost"/>
+      <bind name="smtpPort" type="number" export-name="smtpPort"/>
+      <bind name="mailUser" type="string" export-name="mailUser"/>
+      <bind name="mailPass" type="SecureString" export-name="mailPass"/>
+      <bind name="smtpFromName" type="string" export-name="smtpFromName"/>
+      <bind name="smtpFromMail" type="string" export-name="smtpFromMail"/>
+      <bind name="smtpSSL" type="boolean" export-name="smtpSSL"/>
+      <bind name="smtpStartTLS" type="boolean" export-name="smtpStartTLS"/>
+      <bind name="debuggFlag" type="boolean" export-name="debuggFlag"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="mailPayload">
+      <desc><![CDATA[mailProperties]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

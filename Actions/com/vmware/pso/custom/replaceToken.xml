@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="replaceToken" result-type="string" api-version="6.0.0" id="59bb8606-6cd7-42b9-93a5-c05d1f1dd737" version="0.0.2" allowed-operations="evf" category-name="com.vmware.pso.custom">
+  <description><![CDATA[This action will replace a string/token with the provided value.]]></description>
+  <param n="input" t="string"><![CDATA[]]></param>
+  <param n="tokenToReplace" t="string"><![CDATA[]]></param>
+  <param n="replaceString" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return (input.replace(new RegExp(tokenToReplace, "g"),replaceString));]]></script>
+</dunes-script-module>

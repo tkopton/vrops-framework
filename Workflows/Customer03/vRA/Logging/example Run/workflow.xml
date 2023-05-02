@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="9bef3656-b6e3-4981-adb5-2e01e2dae894" version="0.2.0" api-version="6.0.0" allowed-operations="evf" icon-id="c00df2ff-aa7d-4532-b59c-8c1aec65ddb1" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[example Run]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="Name" type="string"/>
+    <param name="age" type="number"/>
+    <param name="food" type="Array/string"/>
+    <param name="exclusions" type="Array/string"/>
+  </input>
+  <attrib name="payload" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[prep]]></display-name>
+    <script encoded="false"><![CDATA[var propertyValues= new Properties();
+for each (plug in Server.getAllPluginInfo()){
+	propertyValues.put(plug.name,plug.version);
+}
+
+payload = new Properties();
+payload.put("Name",Name);
+payload.put("Age",age);
+payload.put("FavoriteFood",food);
+payload.put("vROPlugins",propertyValues);
+]]></script>
+    <in-binding>
+      <bind name="Name" type="string" export-name="Name"/>
+      <bind name="age" type="number" export-name="age"/>
+      <bind name="food" type="Array/string" export-name="food"/>
+    </in-binding>
+    <out-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="4442e79f-dc72-49f9-bfcd-9dcf555fe871">
+    <display-name><![CDATA[logAllProps]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="debugFlag" type="boolean" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[(Optional) if Null it will work as YES. No will switch exit without executing]]></description>
+      </bind>
+      <bind name="exclusions" type="Array/string" export-name="exclusions"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="Name">
+      <desc><![CDATA[Your Name]]></desc>
+    </p-param>
+    <p-param name="age">
+      <desc><![CDATA[your age]]></desc>
+    </p-param>
+    <p-param name="food">
+      <desc><![CDATA[Your favorite foods (at least 2)]]></desc>
+    </p-param>
+    <p-param name="exclusions">
+      <desc><![CDATA[exclusions from the loh list (e.g. /vROPlugins/SSH )]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

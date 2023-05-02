@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateProperty" result-type="void" api-version="6.0.0" id="4f12729c-596a-433e-ad7f-41488a342c71" version="0.0.1" allowed-operations="evf" category-name="de.vleet.vra.tools">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <param n="value" t="string"><![CDATA[]]></param>
+  <param n="propertyName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[function addUpdatePropertyFromVirtualMachineEntity(vCACHost, virtualMachineEntity, propertyName, propertyValue) {
+    var propertyIsHidden = false;
+    propertyIsRuntime = false;
+    propertyIsEncrypted = false;
+    doNotUpdate = false;
+    System.getModule("com.vmware.library.vcac").addUpdatePropertyFromVirtualMachineEntity(vCACHost,virtualMachineEntity,propertyName,propertyValue,propertyIsHidden,propertyIsRuntime,propertyIsEncrypted,doNotUpdate);
+}
+
+ 
+
+vCACVm=Server.findAllForType("vCAC:VirtualMachine", "ExternalReferenceId eq '" + vcvm.id + "'")[0];
+vCACHost= Server.findAllForType("vCAC:VCACHost")[0];
+var vCACMachineEntity = vCACVm.getEntity();
+var vCACMachineEntityProperties = vCACMachineEntity.getLink(vCACHost, "VirtualMachineProperties");
+addUpdatePropertyFromVirtualMachineEntity(vCACHost, vCACMachineEntity,propertyName ,value);]]></script>
+</dunes-script-module>

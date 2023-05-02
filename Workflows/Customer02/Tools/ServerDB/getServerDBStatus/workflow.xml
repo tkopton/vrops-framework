@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item10" object-name="workflow:name=generic" id="437728df-b364-4e4b-af15-d39cc68c5e41" version="0.1.9" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[getServerDBStatus]]></display-name>
+  <position y="45.40909090909091" x="4.5"/>
+  <input>
+    <param name="deploymentId" type="string"/>
+  </input>
+  <output>
+    <param name="ServerDBStatusReturn" type="string"/>
+  </output>
+  <attrib name="JDBCString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUserPassword" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="ServerDBstatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="counter" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[counter to increment]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="ServerDBsleepTime" type="number" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="ServerDBSleepTime">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="ServerDBTimeOut" type="number" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="ServerDBTimeOut">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item4" prototype-id="sleep" out-name="item10" content-mode="x" type="task">
+    <display-name><![CDATA[Sleep]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+if ( sleepTime != null )  {
+	System.sleep(sleepTime*1000);
+}
+else  {
+	throw "'sleepTime' is NULL";
+}
+]]></script>
+    <in-binding>
+      <bind name="sleepTime" type="number" export-name="ServerDBsleepTime">
+        <description><![CDATA[Time to sleep in seconds]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Sleep a given number of seconds]]></description>
+    <position y="119.04545454545453" x="104.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item7" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[ServerDB Timeout?]]></display-name>
+    <script encoded="false"><![CDATA[//if run time is greater then timeout setting
+if ((counter*ServerDBsleepTime) >= ServerDBTimeOut){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="counter"/>
+      <bind name="ServerDBsleepTime" type="number" export-name="ServerDBsleepTime"/>
+      <bind name="ServerDBTimeOut" type="number" export-name="ServerDBTimeOut"/>
+    </in-binding>
+    <position y="109.04545454545453" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item2" prototype-id="increase-counter" out-name="item4" content-mode="x" type="task">
+    <display-name><![CDATA[Increase counter]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="counter">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="counter">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="119.04545454545453" x="224.5"/>
+  </workflow-item>
+  <workflow-item name="item6" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="109.04545454545453" x="684.5"/>
+  </workflow-item>
+  <workflow-item name="item7" prototype-id="system-error" out-name="item6" type="task" interaction="l">
+    <display-name><![CDATA[TimeOut]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+errorCode="Waiting for ServerDB timeout="+ServerDBTimeOut+"sec. Please contact your Administrator"
+ServerDBStatusReturn="ServerDB TimeOut :"+ServerDBTimeOut+"sec";
+System.error(errorCode);]]></script>
+    <in-binding>
+      <bind name="ServerDBTimeOut" type="number" export-name="ServerDBTimeOut"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+      <bind name="ServerDBStatusReturn" type="string" export-name="ServerDBStatusReturn"/>
+    </out-binding>
+    <description><![CDATA[Log the input text to the console log with level 'error']]></description>
+    <position y="119.04545454545453" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="18.136363636363633" x="684.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item3" type="task">
+    <display-name><![CDATA[write output]]></display-name>
+    <script encoded="false"><![CDATA[ServerDBStatusReturn=ServerDBstatus;]]></script>
+    <in-binding>
+      <bind name="ServerDBstatus" type="string" export-name="ServerDBstatus"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ServerDBStatusReturn" type="string" export-name="ServerDBStatusReturn"/>
+    </out-binding>
+    <position y="28.136363636363633" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item0" type="switch">
+    <display-name><![CDATA[status Check]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+if (ServerDBstatus == "added") {
+    return "item9";
+} else if (ServerDBstatus.indexOf( "error" ) != -1) {
+    return "item8";
+} else if (ServerDBstatus == "deleted") {
+    return "item9";
+} else if (true) {
+    return "item5";
+}]]></script>
+    <in-binding>
+      <bind name="ServerDBstatus" type="string" export-name="ServerDBstatus"/>
+    </in-binding>
+    <condition name="ServerDBstatus" type="string" comparator="0" label="item9">added</condition>
+    <condition name="ServerDBstatus" type="string" comparator="1" label="item8">error</condition>
+    <condition name="ServerDBstatus" type="string" comparator="0" label="item9">deleted</condition>
+    <condition name="" type="boolean" comparator="6" label="item5"/>
+    <position y="55.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item8" prototype-id="system-error" out-name="item6" type="task" interaction="l">
+    <display-name><![CDATA[ServerDB Error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+errorCode="ServerDB_Status return error:"+ServerDBstatus+". Please contact your Administrator";
+ServerDBStatusReturn=ServerDBstatus;
+System.error(errorCode);
+]]></script>
+    <in-binding>
+      <bind name="ServerDBstatus" type="string" export-name="ServerDBstatus"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+      <bind name="ServerDBStatusReturn" type="string" export-name="ServerDBStatusReturn"/>
+    </out-binding>
+    <description><![CDATA[Log the input text to the console log with level 'error']]></description>
+    <position y="73.59090909090908" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item0" type="task" script-module="at.akhwien.db/getServerDBStatusFromDeploy">
+    <display-name><![CDATA[getServerDBStatusFromDeploy]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").getServerDBStatusFromDeploy(JDBCString,DBUser,DBUserPassword,deploymentId) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="ServerDBstatus"/>
+    </out-binding>
+    <position y="55.40909090909091" x="104.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="deploymentId">
+      <desc><![CDATA[deploymentId]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

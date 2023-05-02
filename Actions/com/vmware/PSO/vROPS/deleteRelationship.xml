@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteRelationship" result-type="number" api-version="6.0.0" id="4e5ec1b3-47ff-440f-8b59-e9c822a87365" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="target" t="string"><![CDATA[]]></param>
+  <param n="RESTHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="childID" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[System.log("deleting realationship");
+restURL="/api/resources/"+target+"/relationships/children/"+childID;
+
+var request  = RESTHost.createRequest("DELETE", restURL,null);
+request.contentType = "application/xml";
+var response = request.execute();
+
+return parseInt(response.statusCode);]]></script>
+</dunes-script-module>

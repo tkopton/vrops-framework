@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="validateHotAddCpu" result-type="string" api-version="6.0.0" id="4eb27216-ccd0-48bf-b1c4-f6db14d1ef61" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vcExtentions">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <param n="sockets" t="number"><![CDATA[]]></param>
+  <param n="useHotAdd" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var message = null;
+if(useHotAdd && (sockets < System.getModule("de.vleet.vra.tools").getVCPUsFromVM(vcvm))){
+	message = "Cannot decrease CPU if hotadd is enabled. Disable hotadd or Enter a higher Value";
+}
+return message;]]></script>
+</dunes-script-module>

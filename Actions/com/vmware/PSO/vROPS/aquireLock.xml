@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="aquireLock" result-type="boolean" api-version="6.0.0" id="b01d8bb6-08bb-4793-aa80-058c916c41bb" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="objectName" t="string"><![CDATA[]]></param>
+  <param n="lockOwner" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return LockingSystem.lock(objectName , lockOwner);]]></script>
+</dunes-script-module>

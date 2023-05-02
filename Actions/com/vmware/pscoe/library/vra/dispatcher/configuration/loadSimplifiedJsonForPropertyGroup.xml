@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="loadSimplifiedJsonForPropertyGroup" result-type="string" api-version="6.0.0" id="784BF89C-E3C2-45D6-9048-8670452DAE4F" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher.configuration">
+  <description><![CDATA[Load a configuration from property group if blueprint and property group name is defined. 
+Or load a template configuration from resource element if loadTemplate is true and resource element name is given.
+
+Disclaimer: This is an experimental version of the action. Use with caution, as future versions might introduce changes that are not backward compatible.]]></description>
+  <param n="vRaEntity" t="Any"><![CDATA[]]></param>
+  <param n="propertyGroupPrefix" t="string"><![CDATA[]]></param>
+  <param n="propertyGroupName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.library.vra.dispatcher.loadSimplifiedJsonForPropertyGroup", null);
+var propGroupJson = null;
+
+var host = vCACCAFEEntitiesFinder.getHostForEntity(vRaEntity);
+
+var propertyGroupFullName = propertyGroupPrefix + propertyGroupName;
+var propertyGroup = System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").getPropertyTreeForPropertyGroup(host, propertyGroupFullName) ;
+
+var resultProps = new Properties();
+var properties = propertyGroup.get(propertyGroupFullName);
+if(!properties) {
+	logger.warn("No property group named '" + propertyGroupFullName + "' found.");
+} else {
+	var userDefinedProperties = new Properties();
+	addWfParametersProperty(resultProps, properties, propertyGroupName);
+	userDefinedProperties = aggregateObjectProperties(resultProps);
+	propGroupJson = JSON.stringify(userDefinedProperties, null, 2);
+	logger.debug("Determined JSON for property group '" + propertyGroupName + "': " + propGroupJson);
+}
+
+return propGroupJson;
+
+//Functions  ***********************
+//separate the workflow parameters in "wfParameters" property. Then call addWfIdentifierNamesProperty function.
+function  addWfParametersProperty(resultProps, originalProperties, propGroupName) {
+	for(var propName in originalProperties) {
+		if(propName.indexOf("Extensibility") == -1) {
+			var objProperty = originalProperties[propName];
+			var wfParametersProp = new Properties();
+			wfParametersProp.put("wfParameters", objProperty);
+			
+			var propNameWithoutPrefix = propName;
+			if (propName.indexOf(propGroupName) == 0)
+				propNameWithoutPrefix = propName.substring(propGroupName.length, propName.length);
+				
+			resultProps.put(propNameWithoutPrefix, wfParametersProp);
+		}
+	}
+
+	addWfIdentifierNamesProperty(resultProps, originalProperties, propGroupName);
+}
+
+//Add "wfIdentifierNames" : [provisioningWorkflow, disposingWorkflow, etc.] 
+function addWfIdentifierNamesProperty(resultProps, originalProperties, propGroupName) {
+	//Extract which the workflows relate to which object property
+	var mapWfProperties = new Properties();
+	
+	var wfProperties = originalProperties["Extensibility"]["Workflows"];
+	for(var propName in wfProperties) {
+		// Property name: PropertyGroupName+WorkflowName+ObjectPropertyName
+		if(propName.indexOf(propGroupName) == 0) {
+			var properyNameParts = propName.split("_");
+			var workflowName = properyNameParts[0].substr(propGroupName.length);
+			var objPropertyName = wfProperties[propName]["CustomPropertiesPrefix"];
+			
+			var objPropNameWithoutPrefix = objPropertyName;
+			if (objPropertyName.indexOf(propGroupName) == 0)
+				objPropNameWithoutPrefix = objPropertyName.substring(propGroupName.length, objPropertyName.length);
+				
+			if(mapWfProperties.get(objPropNameWithoutPrefix) != null) {
+				var workflows = mapWfProperties.get(objPropNameWithoutPrefix);
+				workflows.push(workflowName);
+			} else {
+				var workflows = new Array();
+				workflows.push(workflowName);
+				mapWfProperties.put(objPropNameWithoutPrefix, workflows);
+			}
+		}
+	}
+	
+	//Add "workflows" property to the object properties
+	for(var propName in mapWfProperties) {
+		var relatedWorkflows = mapWfProperties[propName];
+		var objProperty = resultProps[propName];
+		objProperty.put("wfIdentifierNames", relatedWorkflows);
+	}
+}
+
+//Filter only objects properties and aggregate the objects properties(Object_index) to property with arrays of objects
+function aggregateObjectProperties(properties) {
+	var newProperties = new Properties();
+	for(var propName in properties) {
+		if(propName.indexOf("Extensibility") == -1) {
+			//split the object name by underscore and convert it to array
+			var propNameParts = propName.split("_");
+			//fount an array element 
+			if(propNameParts.length == 2) {
+				if(newProperties.get(propNameParts[0]) != null) {
+					var propValueArray = newProperties.get(propNameParts[0]);
+					propValueArray.push(properties[propName]);
+				} else {
+					var propValueArray = new Array();
+					propValueArray.push(properties[propName]);
+					newProperties.put(propNameParts[0], propValueArray);
+				}
+			} else {
+				newProperties.put(propName, properties[propName]);
+			}
+		}
+	}
+
+	return newProperties; 
+}]]></script>
+</dunes-script-module>

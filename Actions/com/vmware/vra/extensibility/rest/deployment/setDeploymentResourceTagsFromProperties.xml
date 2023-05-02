@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setDeploymentResourceTagsFromProperties" result-type="void" api-version="6.0.0" id="bfc1ef8c-30d5-4fc5-86d3-b52801da540c" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.deployment">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="deploymentId" t="string"><![CDATA[]]></param>
+  <param n="resourceName" t="string"><![CDATA[]]></param>
+  <param n="tags" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || deploymentId == null || resourceName == null) return null;
+
+var operation = "POST";
+var url = "/deployment/api/deployments/" +  deploymentId + "/requests";
+
+var object = {
+  "actionId": "Deployment.EditTags",
+  "targetId": deploymentId,
+  "inputs": {}
+}
+
+object.inputs[resourceName] = new Array();
+for each (var key in tags.keys) {
+    var tag = {"key": key,"value": tags.get(key)};
+    object.inputs[resourceName].push(tag);
+}
+
+var content = JSON.stringify(object);
+
+var customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+		var object = JSON.parse(contentAsString);
+	} catch (e) {
+		throw("Unable to POST object url : " + url + "\n" + e + "\nWith Content : " + content);
+}]]></script>
+</dunes-script-module>

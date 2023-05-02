@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVraRefreshToken" result-type="string" api-version="6.0.0" id="8950bc62-5e8f-4259-955c-447066f0a885" version="0.4.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.config">
+  <param n="configElement" t="ConfigurationElement"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+var username = configElement.getAttributeWithKey('username')["value"]
+var password = configElement.getAttributeWithKey('password')["value"]
+var baseUrl = configElement.getAttributeWithKey('vra_host')["value"]
+
+var transientHost = RESTHostManager.createHost("DynamicRequest");
+var restHost = RESTHostManager.createTransientHostFrom(transientHost);
+restHost.url = baseUrl;
+
+
+var method = "POST"
+var template = "/csp/gateway/am/api/login?access_token"
+
+
+// create request
+var data = {"username": username, "password" : password}
+postContent = JSON.stringify(data);
+
+var request = restHost.createRequest(method, template, postContent);
+request.contentType = 'application/json';
+
+var response = request.execute();
+
+statusCode = response.statusCode;
+if(statusCode == 200)
+{
+    contentAsString = response.contentAsString;
+    var token = JSON.parse(contentAsString)['refresh_token']
+    configElement.setAttributeWithKey('refresh_token', token)
+    System.log('Updated config element ' +  configElement.name + ' with new refresh token.')
+}
+else
+{
+    System.error('Failed to retrieve new refresh token')
+}
+
+System.debug("Status code: " + statusCode);
+headers = response.getAllHeaders();
+System.debug('Headers: ' + JSON.stringify(headers,null,2))
+
+return token;]]></script>
+</dunes-script-module>

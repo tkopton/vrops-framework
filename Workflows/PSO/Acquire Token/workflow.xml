@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="55f69960-ac78-44ae-aecf-785adf6a855c" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Acquire Token]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="userName" type="string"/>
+    <param name="userPW" type="SecureString"/>
+    <param name="authenticationSource" type="string"/>
+  </input>
+  <output>
+    <param name="token" type="string"/>
+    <param name="tokenValidity" type="string"/>
+  </output>
+  <attrib name="acquireToken" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='ab7acf7b-73fb-4f03-9dbe-212681b1a641:c994adbe-d829-42ce-8bd3-947c2e3bcf45'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="jsonBody" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[createJsonBody]]></display-name>
+    <script encoded="false"><![CDATA[jsonBody = {
+	"username" : "",
+	"authSource" : "",
+	"password" : "",
+	"others" : [],
+	"otherAttributes" : {
+	}
+};
+
+jsonBody.username = userName;
+jsonBody.password = userPW;
+jsonBody.authSource = authenticationSource;
+
+]]></script>
+    <in-binding>
+      <bind name="userName" type="string" export-name="userName"/>
+      <bind name="userPW" type="SecureString" export-name="userPW"/>
+      <bind name="authenticationSource" type="string" export-name="authenticationSource"/>
+    </in-binding>
+    <out-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[executeRequest]]></display-name>
+    <script encoded="false"><![CDATA[System.log(JSON.stringify(jsonBody));
+requestBody = JSON.stringify(jsonBody);
+
+request = acquireToken.createRequest(null, requestBody);
+request.contentType = "application/json";
+request.setHeader("accept","application/json");
+response = request.execute();
+
+System.log(response.statusCode);
+System.log(response.contentAsString);]]></script>
+    <in-binding>
+      <bind name="acquireToken" type="REST:RESTOperation" export-name="acquireToken"/>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="345.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="userName">
+      <desc><![CDATA[userName]]></desc>
+    </p-param>
+    <p-param name="userPW">
+      <desc><![CDATA[userPW]]></desc>
+    </p-param>
+    <p-param name="authenticationSource">
+      <desc><![CDATA[authenticationSource]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

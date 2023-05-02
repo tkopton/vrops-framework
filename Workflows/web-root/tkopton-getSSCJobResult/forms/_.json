@@ -1,0 +1,1 @@
+{"schema":{"sscJobId":{"id":"sscJobId","type":{"dataType":"decimal"},"label":"sscJobId","constraints":{"required":false}}},"layout":{"pages":[{"id":"page_lf72pyjh","title":"General","sections":[{"id":"section_tvyrktq8","fields":[{"id":"sscJobId","display":"decimalField","signpostPosition":"right-middle","state":{"visible":true,"read-only":false}}]}]}]},"itemId":""}

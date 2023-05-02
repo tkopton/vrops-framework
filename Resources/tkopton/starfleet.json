@@ -1,0 +1,116 @@
+{
+  "StarFleet": {
+      "Ships": [
+          {
+              "Name": "Enterprise",
+              "Properties": [
+                  {
+                      "Class": "Galaxy",
+                      "Registry": "NCC-1701-D",
+                      "Captain": "Picard"
+                  }
+              ],
+              "Metrics": [
+                  {
+                      "CurrentSpeed": "9",
+                      "ShieldStatus": "100"
+                  }
+              ]
+          },
+          {
+              "Name": "Voyager",
+              "Properties": [
+                  {
+                      "Class": "Intrepid",
+                      "Registry": "NCC-74656",
+                      "Captain": "Janeway"
+                  }
+              ],
+              "Metrics": [
+                  {
+                      "CurrentSpeed": "9",
+                      "ShieldStatus": "90"
+                  }
+              ]
+          },
+          {
+              "Name": "Defiant",
+              "Properties": [
+                  {
+                      "Class": "Defiant",
+                      "Registry": "NX-74205",
+                      "Captain": "Worf"
+                  }
+              ],
+              "Metrics": [
+                  {
+                      "CurrentSpeed": "7",
+                      "ShieldStatus": "80"
+                  }
+              ]
+          }
+      ],
+      "Planets": [
+          {
+              "Name": "United Earth",
+              "Properties": [
+                  {
+                      "Capital": "San Francisco, Paris",
+                      "Founded": "2150",
+                      "MajorSpecies": "Humans"
+                  }
+              ],
+              "Metrics": [
+                  {
+                      "Population": "0"
+                  }
+              ]
+          },
+          {
+              "Name": "Vulcan",
+              "Properties": [
+                  {
+                      "Capital": "ShiKahr",
+                      "Founded": "400",
+                      "MajorSpecies": "Vulcanians"
+                  }
+              ],
+              "Metrics": [
+                  {
+                      "Population": "0"
+                  }
+              ]
+          },
+          {
+              "Name": "Andorian Empire",
+              "Properties": [
+                  {
+                      "Capital": "Andor",
+                      "Founded": "0000",
+                      "MajorSpecies": "Andorians"
+                  }
+              ],
+              "Metrics": [
+                  {
+                      "Population": "0"
+                  }
+              ]
+          },
+          {
+              "Name": "Tellar",
+              "Properties": [
+                  {
+                      "Capital": "Tellar Prime",
+                      "Founded": "0000",
+                      "MajorSpecies": "Tellarites"
+                  }
+              ],
+              "Metrics": [
+                  {
+                      "Population": "0"
+                  }
+              ]
+          }
+      ]
+  }
+}

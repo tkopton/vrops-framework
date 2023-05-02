@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getConfigurationElement" result-type="ConfigurationElement" api-version="6.0.0" id="2b94c059-3344-463b-9c56-4a8667b180c4" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.pspps.customhostname">
+  <param n="categoryPath" t="string"><![CDATA[]]></param>
+  <param n="configName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var category = Server.getConfigurationElementCategoryWithPath(categoryPath);
+for each (var c in category.configurationElements) {
+	if (c.name == configName) {
+		return c;
+	}
+}
+return null;]]></script>
+</dunes-script-module>

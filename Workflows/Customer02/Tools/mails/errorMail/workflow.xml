@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1" version="0.1.16" api-version="6.0.0" allowed-operations="evf" icon-id="ae044b0f-7eb2-47cf-9431-7558a34a434e" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[errorMail]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+    <param name="errorMessage" type="string"/>
+    <param name="vmhostname" type="string"/>
+    <param name="usage" type="string"/>
+    <param name="desciption" type="string"/>
+    <param name="reservationName" type="string"/>
+    <param name="ip" type="string"/>
+    <param name="gateway" type="string"/>
+    <param name="deploymentName" type="string"/>
+  </input>
+  <attrib name="mailtemplate" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='482be007-10f4-4c81-aec4-274bb2fc09a6'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <attrib name="mailPayload" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="AdminMailAddr" type="string" read-only="false" conf-id="67caba2e-abde-43be-a9d7-5925d43d3094" conf-key="AdminMailAddr">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="544.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="03167550-d51d-4466-9fd9-7a770f40bdaa">
+    <display-name><![CDATA[coolMail Subsystem]]></display-name>
+    <in-binding>
+      <bind name="mailPayload" type="Properties" export-name="mailPayload"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Author: Daniel Langenhan (daniel_langenhan@yahoo.com.au)
+
+http://langenhan.info/software/coolmail.html
+
+The coolMail subsystem works by substituting a tag with an vRO value. A coolMail tag can be freely defined and must have { } winged brackets around it. For example {vm.name} or {userName}.
+
+The User just prepares a HTML template (e.g. using html-online.com) and inserts tags where later values from vRO should be displayed. This enables one for example to create very nice looking HTML email that can be used with vRealize Automation (vRA).]]></description>
+    <position y="55.40909090909091" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[prep mail payload]]></display-name>
+    <script encoded="false"><![CDATA[var mailPayload= new Properties();
+mailPayload.put("mailTo",AdminMailAddr);
+mailPayload.put("subject","vRA-Workflow error: {errorMessage}");
+mailPayload.put("mailTemplate",mailtemplate);
+vmProps=payload.machine.properties;
+var mailReplacements= new Properties();
+mailReplacements.put("errorMessage",errorMessage);
+mailReplacements.put("cafe.root.request.id",vmProps.get("__Cafe.Root.Request.Id")); 
+mailReplacements.put("componentId",vmProps.get("VirtualMachine.Cafe.Blueprint.Component.Id"));
+mailReplacements.put("lifecycleState.state",payload.lifecycleState.state);
+mailReplacements.put("lifecycleState.phase",payload.lifecycleState.phase);
+mailReplacements.put("akh.shortHostname",vmProps.get("akh.shortHostname"));
+mailReplacements.put("asd_requestedBy",System.getContext().getParameter("__asd_requestedBy"));
+
+mailReplacements.put("asd_requestid",System.getContext().getParameter("__asd_catalogRequestId"));
+mailReplacements.put("deploymentname",deploymentName);
+
+mailReplacements.put("asd_requestedFor",System.getContext().getParameter(" __asd_requestedFor"));
+mailReplacements.put("akh.SLA",vmProps.get("akh.SLA"));
+mailReplacements.put("akh.prettyName",vmProps.get("akh.prettyName")); 
+mailReplacements.put("request.reason",vmProps.get("__request_reason"));
+mailReplacements.put("akh.vlanselect",vmProps.get("akh.vlanselect"));
+mailReplacements.put("clonefrom",vmProps.get("__clonefrom"));
+mailReplacements.put("virtualMachine.Storage.Name",vmProps.get("VirtualMachine.Storage.Name"));
+
+if ((desciption==null)||(desciption=="")){
+		mailReplacements.put("Notes",vmProps.get("__Notes"));
+} else {
+		mailReplacements.put("Notes",desciption);
+}
+if ((usage==null)||(usage=="")){
+	mailReplacements.put("akh.usage",vmProps.get("akh.usage"));
+} else {
+	mailReplacements.put("akh.usage",usage);
+}
+if ((gateway==null)||(gateway=="")){
+	mailReplacements.put("gateway",vmProps.get("VirtualMachine.Network0.Gateway"));
+} else {
+	mailReplacements.put("gateway",gateway);
+}
+if ((vmhostname==null)||(vmhostname=="")){
+	mailReplacements.put("vmhostname",payload.machine.name);
+} else {
+	mailReplacements.put("vmhostname",vmhostname);
+}
+if ((reservationName==null)||(reservationName=="")){
+	mailReplacements.put("akh.rechenzentrum",vmProps.get("akh.rechenzentrum"));	
+} else {
+	mailReplacements.put("akh.rechenzentrum",reservationName);
+}
+if ((ip==null)||(ip=="")){
+	mailReplacements.put("ip",vmProps.get("VirtualMachine.Network0.Address"));
+} else {
+	mailReplacements.put("ip",ip);
+}
+mailPayload.put("mailReplacements",mailReplacements);
+]]></script>
+    <in-binding>
+      <bind name="AdminMailAddr" type="string" export-name="AdminMailAddr"/>
+      <bind name="desciption" type="string" export-name="desciption"/>
+      <bind name="errorMessage" type="string" export-name="errorMessage"/>
+      <bind name="gateway" type="string" export-name="gateway"/>
+      <bind name="ip" type="string" export-name="ip"/>
+      <bind name="mailtemplate" type="ResourceElement" export-name="mailtemplate"/>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="reservationName" type="string" export-name="reservationName"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="vmhostname" type="string" export-name="vmhostname"/>
+      <bind name="deploymentName" type="string" export-name="deploymentName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="mailPayload" type="Properties" export-name="mailPayload"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+    <p-param name="errorMessage">
+      <desc><![CDATA[errorMessage]]></desc>
+    </p-param>
+    <p-param name="vmhostname">
+      <desc><![CDATA[vmhostname]]></desc>
+    </p-param>
+    <p-param name="usage">
+      <desc><![CDATA[usage]]></desc>
+    </p-param>
+    <p-param name="desciption">
+      <desc><![CDATA[desciption]]></desc>
+    </p-param>
+    <p-param name="reservationName">
+      <desc><![CDATA[reservationName]]></desc>
+    </p-param>
+    <p-param name="ip">
+      <desc><![CDATA[ip]]></desc>
+    </p-param>
+    <p-param name="gateway">
+      <desc><![CDATA[gateway]]></desc>
+    </p-param>
+    <p-param name="deploymentName">
+      <desc><![CDATA[deploymentName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

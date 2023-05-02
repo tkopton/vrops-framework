@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getMachineByNameQS" result-type="Any" api-version="6.0.0" id="377360df-5314-4c31-a34b-e6b6e5cac696" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="string"><![CDATA[]]></param>
+  <param n="projectName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || machineName == null) return null;
+
+// Query service parameter
+var nameFilter = "name eq '" + machineName + "'";
+var parameters = "$filter=" + encodeURIComponent(nameFilter);//.replace("'", "%27");
+var machines = System.getModule("com.vmware.vra.extensibility.rest.iaas").getMachines(restHost,username,password, customHeaders, parameters);
+if (machines.length == 1) return machines[0];
+if (machines.length == 0) return null;
+
+// More Machines returned than expected !
+System.warn("getProjectByNameQS returned " +  projects.length + " projects");
+return null;
+
+]]></script>
+</dunes-script-module>

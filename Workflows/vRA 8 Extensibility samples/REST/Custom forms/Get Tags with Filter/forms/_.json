@@ -1,0 +1,1 @@
+{"schema":{"tagKey":{"id":"tagKey","type":{"dataType":"string"},"label":"tagKey"}},"layout":{"pages":[{"id":"page_52t08fi5","title":"General","sections":[{"id":"section_duhm4oq1","fields":[{"id":"tagKey","display":"textField","state":{"visible":true,"read-only":false}}]}]}]},"itemId":""}

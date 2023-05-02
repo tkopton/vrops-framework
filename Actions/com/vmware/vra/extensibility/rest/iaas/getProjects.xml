@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getProjects" result-type="Array/Any" api-version="6.0.0" id="d035bd9b-7804-4810-8d52-0b82336642f4" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null) return null;
+
+var url = "/iaas/api/projects"
+return System.getModule("com.vmware.vra.extensibility.rest.iaas").getIaasObjects(restHost,username,password,customHeaders,url, parameters);]]></script>
+</dunes-script-module>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getOrganizationNames" result-type="Array/string" api-version="6.0.0" id="01359322-cb05-4a92-a2c3-f6c648e634e7" version="0.0.1" allowed-operations="evf" category-name="com.vmware.coe.itop">
+  <description><![CDATA[Returns an array of strings containing the valid Organization Names.]]></description>
+  <param n="auth_user" t="string"><![CDATA[iTop API Username]]></param>
+  <param n="auth_pwd" t="SecureString"><![CDATA[iTop API Password]]></param>
+  <param n="restOperation" t="REST:RESTOperation"><![CDATA[REST Operation Object]]></param>
+  <param n="activeOnly" t="boolean"><![CDATA[Return Only Active Organizations]]></param>
+  <script encoded="false"><![CDATA[if (auth_user == null || auth_pwd == null || restOperation == null) return null;
+var key = "SELECT Organization";
+if (activeOnly){
+	key += " WHERE Organization.status='Active'";
+}
+
+var data = new data("core/get","Organization", key, "name");
+
+var inputData = JSON.stringify(data);
+//System.log("JSON Input DATA : " + inputData);
+var content = "";
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, content);
+//set the request content type
+request.contentType = "application/json";
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+if ( response.statusCode >= 400 ) {
+	throw "HTTPError: status code: " + response.statusCode;
+}	
+
+var jsonResponse = JSON.parse(response.contentAsString);
+//var requestCode = jsonResponse.code;
+//var requestMessage = jsonResponse.message;
+
+var organizationNamesArray = new Array();
+for each (obj in jsonResponse.objects){
+	var objFields = obj.fields;
+	organizationNamesArray.push(obj.fields.name);
+	//System.log("Name: "+obj.fields.name);	
+}
+return organizationNamesArray;
+
+function data(operation,className,key,outPutFields)
+{
+	this["operation"]=operation;
+	this["class"]=className;
+	this["key"]=key;
+	this["output_fields"]=outPutFields;
+}]]></script>
+</dunes-script-module>

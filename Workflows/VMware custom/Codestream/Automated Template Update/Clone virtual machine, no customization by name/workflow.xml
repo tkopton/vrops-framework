@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="Workflow:name=generic" id="8fee1d2a-5e0c-4ce7-a3b8-8b8230203f95" version="0.2.7" api-version="6.0.0" allowed-operations="vfe" editor-version="1.6" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Clone virtual machine, no customization by name]]></display-name>
+  <description><![CDATA[Clones a virtual machine without changing anything except the virtual machine UUID]]></description>
+  <position y="30.0" x="180.0"/>
+  <input>
+    <param name="newvmname" type="string">
+      <description><![CDATA[Name of the new virtual machine]]></description>
+    </param>
+    <param name="vmname" type="string"/>
+  </input>
+  <output>
+    <param name="newVM" type="VC:VirtualMachine">
+      <description><![CDATA[Newly created virtual machine]]></description>
+    </param>
+  </output>
+  <attrib name="task" type="VC:Task" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Task to await]]></description>
+  </attrib>
+  <attrib name="progress" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Log progress while waiting for the task to complete]]></description>
+  </attrib>
+  <attrib name="pollRate" type="number" read-only="false">
+    <value encoded="n"><![CDATA[10.0]]></value>
+    <description><![CDATA[Polling rate for the task state, in seconds]]></description>
+  </attrib>
+  <attrib name="thinProvision" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[If TRUE, empty virtual disk space is not reserved]]></description>
+  </attrib>
+  <attrib name="pool" type="VC:ResourcePool" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Resource pool to which to attach this virtual machine]]></description>
+  </attrib>
+  <attrib name="host" type="VC:HostSystem" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Destination host for the virtual machine. If not specified, the current host is used]]></description>
+  </attrib>
+  <attrib name="datastore" type="VC:Datastore" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Datastore in which to put the virtual machine. If not specified, the current datastore is used]]></description>
+  </attrib>
+  <attrib name="template" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Specifies whether or not to mark the new virtual machine as a template]]></description>
+  </attrib>
+  <attrib name="powerOn" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Specifies whether or not to power on the new virtual machine]]></description>
+  </attrib>
+  <attrib name="vmFolder" type="VC:VmFolder" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='vcenter01.internal.kopton.eu%2Cid:group-v139032'&dunesName='VC:VmFolder']]></value>
+    <description><![CDATA[Virtual machine folder]]></description>
+  </attrib>
+  <attrib name="vm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Virtual machine or template to clone]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="" type="task" script-module="com.vmware.library.vc.basic/cloneVM">
+    <display-name><![CDATA[cloneVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").cloneVM(vm,vmFolder,name,powerOn,template,datastore,host,pool,thinProvision) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[The Source Virtual Machine or Template for the Clone Operation]]></description>
+      </bind>
+      <bind name="vmFolder" type="VC:VmFolder" export-name="vmFolder">
+        <description><![CDATA[The location of the new virtual machine.]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="newvmname">
+        <description><![CDATA[The name of the new virtual machine.]]></description>
+      </bind>
+      <bind name="powerOn" type="boolean" export-name="powerOn">
+        <description><![CDATA[Specifies whether or not the new VirtualMachine should be powered on after creation.]]></description>
+      </bind>
+      <bind name="template" type="boolean" export-name="template">
+        <description><![CDATA[Specifies whether or not the new virtual machine should be marked as a template.]]></description>
+      </bind>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore">
+        <description><![CDATA[The datastore where the virtual machine should be located. If not specified, the current datastore is used. ]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[The datastore where the virtual machine should be located. If not specified, the current datastore is used.]]></description>
+      </bind>
+      <bind name="pool" type="VC:ResourcePool" export-name="pool">
+        <description><![CDATA[The resource pool to which this virtual machine should be attached.]]></description>
+      </bind>
+      <bind name="thinProvision" type="boolean" export-name="thinProvision">
+        <description><![CDATA[If TRUE, empty virtual disk space is not reserved.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VC:Task" export-name="task"/>
+    </out-binding>
+    <description><![CDATA[Creates a clone of this virtual machine. If the virtual machine is used as a template, this method corresponds to the deploy command. 
+Any % (percent) character used in this name parameter must be escaped, unless it is used to start an escape sequence. Clients may also escape any other characters in this name parameter. 
+The privilege required on the source virtual machine depends on the source and destination types: 
+	- source is virtual machine, destination is virtual machine - VirtualMachine.Provisioning.Clone 
+	- source is virtual machine, destination is template - VirtualMachine.Provisioning.CreateTemplateFromVM
+	- source is template, destination is virtual machine - VirtualMachine.Provisioning.DeployTemplate 
+	- source is template, destination is template - VirtualMachine.Provisioning.CloneTemplate 
+If customization is requested in the CloneSpec, then the VirtualMachine.Provisioning.Customize privilege must also be held on the source virtual machine.]]></description>
+    <position y="155.4090909090909" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" catch-name="" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="pollRate" type="number" export-name="pollRate">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="newVM"/>
+    </out-binding>
+    <description><![CDATA[Wait a VIM 3 Task to end.
+When task ended, return the ]]></description>
+    <position y="209.95454545454544" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <in-binding/>
+    <position y="263.59090909090907" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="link" linked-workflow-id="2af170ae-2f4a-42a1-a02a-6d9f9702e5cf">
+    <display-name><![CDATA[Get virtual machine by name]]></display-name>
+    <in-binding>
+      <bind name="criteria" type="string" export-name="vmname">
+        <description><![CDATA[Search criteria. Regular expressions supported.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="vms" type="Array/VC:VirtualMachine">
+        <description><![CDATA[Virtual machines found]]></description>
+      </bind>
+      <bind name="vmobject" type="VC:VirtualMachine" export-name="vm"/>
+    </out-binding>
+    <description><![CDATA[Returns a list of virtual machines from all registered vCenter Server hosts that match the provided expression.]]></description>
+    <position y="91.77272727272727" x="145.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

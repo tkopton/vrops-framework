@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getResourceElementByPath" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.util.getResourceElementByPath" version="2.11.2" allowed-operations="evf" category-name="com.vmware.pscoe.library.util">
+  <description><![CDATA[
+]]></description>
+  <param n="categoryPath" t="Any"><![CDATA[]]></param>
+  <param n="elementName" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[System.log("Looking for Resource Element Category: " + categoryPath + " and element: " + elementName);
+var category = Server.getResourceElementCategoryWithPath(categoryPath);
+
+for (var i in category.resourceElements) {
+	var resourceElement = category.resourceElements[i];
+	if (resourceElement.name == elementName) {
+		return resourceElement;
+	}
+}
+
+System.error('Cannot find resource element at category [' + categoryPath + '] with name [' + elementName + ']');
+return null;
+]]></script>
+</dunes-script-module>

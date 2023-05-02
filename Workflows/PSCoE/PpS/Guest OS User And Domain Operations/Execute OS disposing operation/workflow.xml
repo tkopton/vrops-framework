@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="88f1d818-c936-4c93-8e89-1704a4e92c48" version="1.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Execute OS disposing operation]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vCenterVm" type="VC:VirtualMachine"/>
+    <param name="vmUsername" type="string"/>
+    <param name="vmPassword" type="SecureString"/>
+    <param name="type" type="string"/>
+    <param name="operationInput" type="Properties"/>
+  </input>
+  <attrib name="disposingState" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <attrib name="scrambleVals" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="unscrambledNames" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="unscrambledOperationInputs" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="unscrambledVals" type="Array/SecureString" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="804.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.pscoe.pps.guestuserdomainops/runGuestUserDomainOperation">
+    <display-name><![CDATA[runGuestUserDomainOperation]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.pscoe.pps.guestuserdomainops").runGuestUserDomainOperation(vm,username,password,type,operationInput,disposingState) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vCenterVm"/>
+      <bind name="username" type="string" export-name="vmUsername"/>
+      <bind name="password" type="SecureString" export-name="vmPassword"/>
+      <bind name="type" type="string" export-name="type"/>
+      <bind name="operationInput" type="Properties" export-name="unscrambledOperationInputs"/>
+      <bind name="disposingState" type="boolean" export-name="disposingState"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="task">
+    <display-name><![CDATA[Select scrambled operations]]></display-name>
+    <script encoded="false"><![CDATA[scrambleNames = [];
+scrambleVals = [];
+for(var opName in operationInput) {
+	if(opName == "userPassword" || opName == "domainPassword") {
+		scrambleNames.push(opName);
+		scrambleVals.push(operationInput[opName]);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="operationInput" type="Properties" export-name="operationInput"/>
+    </in-binding>
+    <out-binding>
+      <bind name="scrambleVals" type="Array/string" export-name="scrambleVals"/>
+      <bind name="scrambleNames" type="Array/string" export-name="unscrambledNames"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="task">
+    <display-name><![CDATA[Unscramble Operations Passwords]]></display-name>
+    <script encoded="false"><![CDATA[unscrambledOperationInputs = new Properties();
+for(var opName in operationInput) {
+	var indexScrambled = unscrambledNames.indexOf(opName);
+	if(indexScrambled != -1) {	
+		unscrambledOperationInputs.put(opName, unscrambledVals[indexScrambled]);
+	} else {
+		unscrambledOperationInputs.put(opName, operationInput[opName]);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="operationInput" type="Properties" export-name="operationInput"/>
+      <bind name="unscrambledVals" type="Array/SecureString" export-name="unscrambledVals"/>
+      <bind name="unscrambledNames" type="Array/string" export-name="unscrambledNames"/>
+    </in-binding>
+    <out-binding>
+      <bind name="unscrambledOperationInputs" type="Properties" export-name="unscrambledOperationInputs"/>
+    </out-binding>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item3" type="foreach">
+    <display-name><![CDATA[Foreach (Unscramble Mini)]]></display-name>
+    <in-binding>
+      <bind name="pass" type="Array/string" export-name="*scrambleVals"/>
+    </in-binding>
+    <out-binding>
+      <bind name="passOut" type="Array/SecureString" export-name="*unscrambledVals"/>
+    </out-binding>
+    <reference type="Workflow" id="6a8bc68b-ef75-45b7-8786-9bfa1dc76852"/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vmUsername">
+      <desc><![CDATA[vmUsername]]></desc>
+    </p-param>
+    <p-param name="vmPassword">
+      <desc><![CDATA[vmPassword]]></desc>
+    </p-param>
+    <p-param name="type">
+      <desc><![CDATA[type]]></desc>
+    </p-param>
+    <p-param name="operationInput">
+      <desc><![CDATA[operationInput]]></desc>
+    </p-param>
+    <p-param name="vCenterVm">
+      <desc><![CDATA[vCenterVm]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

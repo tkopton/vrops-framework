@@ -1,0 +1,393 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item9" object-name="workflow:name=generic" id="f9bc2604-516d-493c-9059-49f7257c19bd" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[CreateCustomObjects]]></display-name>
+  <position y="0.0" x="25.0"/>
+  <input>
+    <param name="adapterKind" type="string"/>
+    <param name="adapterKindKey" type="string">
+      <description><![CDATA[AdapterKindKey]]></description>
+    </param>
+    <param name="resourceKind1" type="string"/>
+    <param name="resourceKind2" type="string"/>
+    <param name="resourceKind3" type="string"/>
+  </input>
+  <attrib name="vropsConfig" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='8f889f19-a6aa-40a4-87fc-dc2ab0aebd64'&dunesName='ConfigurationElement']]></value>
+  </attrib>
+  <attrib name="tokenRemainigVaidity" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Remaining validity of the vROps token in minutes]]></description>
+  </attrib>
+  <attrib name="newObjectsJSONFile" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='d95cd307-7af8-4aa6-b39f-8e0ba8319d40'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <attrib name="createResourceCall" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='fff3223e-5f59-4cc7-bf58-07b96e64ef4b:d2d9e88b-25ff-46e2-8cef-58b92c88b035'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="jsonBody" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="newResources1" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="newResources2" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="numberResource1" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="numberResource2" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="creatingResource1" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="creatingResource2" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="encodedAdapterKind" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="creatingResource3" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="newResources3" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="numberResource3" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[checkToken]]></display-name>
+    <script encoded="false"><![CDATA[var vropsTokenValidity = vropsConfig.getAttributeWithKey("tokenValidity");
+
+if (vropsTokenValidity.value != null)
+{
+	var dateNow = new Date();
+	var diff = vropsTokenValidity.value - dateNow.getTime();
+	tokenRemainigVaidity = diff / 1000 / 60;
+} else
+{
+	tokenRemainigVaidity = 0;
+}
+
+
+
+]]></script>
+    <in-binding>
+      <bind name="vropsConfig" type="ConfigurationElement" export-name="vropsConfig"/>
+    </in-binding>
+    <out-binding>
+      <bind name="tokenRemainigVaidity" type="number" export-name="tokenRemainigVaidity"/>
+    </out-binding>
+    <position y="9.954545454545453" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item8" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[token valid?]]></display-name>
+    <script encoded="false"><![CDATA[if (tokenRemainigVaidity >= 15) return true;
+return false;]]></script>
+    <in-binding>
+      <bind name="tokenRemainigVaidity" type="number" export-name="tokenRemainigVaidity"/>
+    </in-binding>
+    <position y="0.45454545454545325" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item8" type="link" linked-workflow-id="6fd275fe-36fb-4b87-a1fd-d690df980cb2">
+    <display-name><![CDATA[AquireToken]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="119.04545454545453" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item6" type="task">
+    <display-name><![CDATA[createJSONBody]]></display-name>
+    <script encoded="false"><![CDATA[jsonBody = {
+		"description": "New entry for the Star Trek Universe",
+		"creationTime": null,
+		"resourceKey": {
+		"name": "",
+		"adapterKindKey": "",
+		"resourceKindKey": ""
+	},
+		"resourceStatusStates": [],
+		"dtEnabled": true,
+		"monitoringInterval": 5
+	};
+
+
+if (creatingResource1) {
+	jsonBody.resourceKey.name = newResources1[numberResource1-1];
+	jsonBody.resourceKey.adapterKindKey = adapterKindKey;
+	jsonBody.resourceKey.resourceKindKey = resourceKind1;
+	numberResource1--;
+}
+
+if (creatingResource2) {
+	jsonBody.resourceKey.name = newResources2[numberResource2-1];
+	jsonBody.resourceKey.adapterKindKey = adapterKindKey;
+	jsonBody.resourceKey.resourceKindKey = resourceKind2;
+	numberResource2--;
+}
+
+if (creatingResource3) {
+	jsonBody.resourceKey.name = newResources3[numberResource3-1];
+	jsonBody.resourceKey.adapterKindKey = adapterKindKey;
+	jsonBody.resourceKey.resourceKindKey = resourceKind3;
+	numberResource3--;
+}
+
+]]></script>
+    <in-binding>
+      <bind name="adapterKindKey" type="string" export-name="adapterKindKey"/>
+      <bind name="creatingResource1" type="boolean" export-name="creatingResource1"/>
+      <bind name="creatingResource2" type="boolean" export-name="creatingResource2"/>
+      <bind name="creatingResource3" type="boolean" export-name="creatingResource3"/>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+      <bind name="newResources1" type="Array/string" export-name="newResources1"/>
+      <bind name="newResources2" type="Array/string" export-name="newResources2"/>
+      <bind name="newResources3" type="Array/string" export-name="newResources3"/>
+      <bind name="numberResource1" type="number" export-name="numberResource1"/>
+      <bind name="numberResource2" type="number" export-name="numberResource2"/>
+      <bind name="numberResource3" type="number" export-name="numberResource3"/>
+      <bind name="resourceKind1" type="string" export-name="resourceKind1"/>
+      <bind name="resourceKind2" type="string" export-name="resourceKind2"/>
+      <bind name="resourceKind3" type="string" export-name="resourceKind3"/>
+    </in-binding>
+    <out-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+      <bind name="numberResource1" type="number" export-name="numberResource1"/>
+      <bind name="numberResource2" type="number" export-name="numberResource2"/>
+      <bind name="numberResource3" type="number" export-name="numberResource3"/>
+    </out-binding>
+    <position y="64.5" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item2" type="task">
+    <display-name><![CDATA[callREST]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Adding properties... " + JSON.stringify(jsonBody));
+
+var params = [encodedAdapterKind];
+var token = vropsConfig.getAttributeWithKey("token").value;
+var request = createResourceCall.createRequest(params, JSON.stringify(jsonBody));
+
+request.contentType = "application/json";
+request.setHeader("accept","application/json");
+request.setHeader("Authorization","vRealizeOpsToken " + token);
+
+System.log("###############");
+System.log(request.content);
+System.log(request.fullUrl);
+
+
+var response = request.execute();
+
+if(response.statusCode >= 400) {
+	System.log(response.contentAsString);
+	throw "HTTPError: status code: " + response.statusCode;
+}
+
+]]></script>
+    <in-binding>
+      <bind name="createResourceCall" type="REST:RESTOperation" export-name="createResourceCall"/>
+      <bind name="encodedAdapterKind" type="string" export-name="encodedAdapterKind"/>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+      <bind name="vropsConfig" type="ConfigurationElement" export-name="vropsConfig"/>
+    </in-binding>
+    <out-binding/>
+    <position y="9.954545454545453" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="task">
+    <display-name><![CDATA[newObjecstInfo]]></display-name>
+    <script encoded="false"><![CDATA[template = newObjectsJSONFile.getContentAsMimeAttachment();
+jsonObject = JSON.parse(template.content);
+
+var objects1 = jsonObject.SmartHome["Climate"];
+var objects2 = jsonObject.SmartHome["Door"];
+var objects3 = jsonObject.SmartHome["Lightning"];
+
+var properties;
+var metrics;
+
+newResources1 = new Array();
+newResources2 = new Array();
+newResources3 = new Array();
+
+for (object1 in objects1)
+{
+	System.log(objects1[object1].Name);
+	
+	newResources1.push(objects1[object1].Name);
+	
+	properties = objects1[object1].Properties;
+	metrics = objects1[object1].Metrics;
+	
+	for (property in properties)
+	{
+		System.log(objects1[object1].Properties[property].Manufacturer);
+		System.log(objects1[object1].Properties[property].FWVersion);
+	}
+	
+	for (metric in metrics)
+	{
+		System.log(objects1[object1].Metrics[metric].Temperatur);
+		System.log(objects1[object1].Metrics[metric].Humidity);
+		System.log(objects1[object1].Metrics[metric].BateryStatus);
+	}
+}
+
+for (object2 in objects2)
+{
+	System.log(objects2[object2].Name);
+	
+	newResources2.push(objects2[object2].Name);
+	
+	properties = objects2[object2].Properties;
+	metrics = objects2[object2].Metrics;
+	
+	for (property in properties)
+	{
+		System.log(objects2[object2].Properties[property].Manufacturer);
+		System.log(objects2[object2].Properties[property].FWVersion);
+	}
+	
+	for (metric in metrics)
+	{
+		System.log(objects2[object2].Metrics[metric].Status);
+	}
+}
+
+for (object3 in objects3)
+{
+	System.log(objects3[object2].Name);
+	
+	newResources3.push(objects3[object3].Name);
+	
+	properties = objects3[object3].Properties;
+	metrics = objects3[object3].Metrics;
+	
+	for (property in properties)
+	{
+		System.log(objects3[object3].Properties[property].Manufacturer);
+		System.log(objects3[object3].Properties[property].FWVersion);
+	}
+	
+	for (metric in metrics)
+	{
+		System.log(objects3[object3].Metrics[metric].Status);
+		System.log(objects3[object3].Metrics[metric].Level);
+		System.log(objects3[object3].Metrics[metric].BateryStatus);
+	}
+}
+
+numberResource1 = newResources1.length;
+numberResource2 = newResources2.length;
+numberResource3 = newResources3.length;
+
+
+
+
+
+]]></script>
+    <in-binding>
+      <bind name="newObjectsJSONFile" type="ResourceElement" export-name="newObjectsJSONFile"/>
+      <bind name="newResources1" type="Array/string" export-name="newResources1"/>
+      <bind name="newResources2" type="Array/string" export-name="newResources2"/>
+      <bind name="newResources3" type="Array/string" export-name="newResources3"/>
+    </in-binding>
+    <out-binding>
+      <bind name="newResources1" type="Array/string" export-name="newResources1"/>
+      <bind name="newResources2" type="Array/string" export-name="newResources2"/>
+      <bind name="newResources3" type="Array/string" export-name="newResources3"/>
+      <bind name="numberResource1" type="number" export-name="numberResource1"/>
+      <bind name="numberResource2" type="number" export-name="numberResource2"/>
+      <bind name="numberResource3" type="number" export-name="numberResource3"/>
+    </out-binding>
+    <position y="9.954545454545453" x="264.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item5" type="custom-condition" alt-out-name="item7">
+    <display-name><![CDATA[more objects?]]></display-name>
+    <script encoded="false"><![CDATA[if(creatingResource1 == true || creatingResource2 == true || creatingResource3 == true) {
+	return true;
+} else {
+	return false;
+}
+
+
+]]></script>
+    <in-binding>
+      <bind name="creatingResource1" type="boolean" export-name="creatingResource1"/>
+      <bind name="creatingResource2" type="boolean" export-name="creatingResource2"/>
+      <bind name="creatingResource3" type="boolean" export-name="creatingResource3"/>
+    </in-binding>
+    <position y="109.04545454545453" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item7" type="end" end-mode="0">
+    <position y="109.04545454545453" x="964.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item0" type="task">
+    <display-name><![CDATA[calculatingJob]]></display-name>
+    <script encoded="false"><![CDATA[if(numberResource1 > 0) {
+	creatingResource1 = true;
+	creatingResource2 = false;
+	creatingResource3 = false
+} else {
+	creatingResource1 = false;
+}
+
+if(numberResource2 > 0) {
+	creatingResource2 = true;
+	creatingResource1 = false;
+	creatingResource3 = false
+} else {
+	creatingResource2 = false;
+}
+
+if(numberResource3 > 0) {
+	creatingResource3 = true;
+	creatingResource1 = false;
+	creatingResource2 = false
+} else {
+	creatingResource3 = false;
+}
+]]></script>
+    <in-binding>
+      <bind name="numberResource1" type="number" export-name="numberResource1"/>
+      <bind name="numberResource2" type="number" export-name="numberResource2"/>
+      <bind name="numberResource3" type="number" export-name="numberResource3"/>
+    </in-binding>
+    <out-binding>
+      <bind name="creatingResource1" type="boolean" export-name="creatingResource1"/>
+      <bind name="creatingResource2" type="boolean" export-name="creatingResource2"/>
+      <bind name="creatingResource3" type="boolean" export-name="creatingResource3"/>
+    </out-binding>
+    <position y="119.04545454545453" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item3" type="task" script-module="com.vmware.pso.utils/urlEncode">
+    <display-name><![CDATA[urlEncode]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.pso.utils").urlEncode(str) ;]]></script>
+    <in-binding>
+      <bind name="str" type="string" export-name="adapterKind">
+        <description><![CDATA[String to encode]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="encodedAdapterKind"/>
+    </out-binding>
+    <position y="9.954545454545453" x="124.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="adapterKind">
+      <desc><![CDATA[adapterKind]]></desc>
+    </p-param>
+    <p-param name="adapterKindKey">
+      <desc><![CDATA[AdapterKindKey]]></desc>
+    </p-param>
+    <p-param name="resourceKind1">
+      <desc><![CDATA[newRessourceKind1]]></desc>
+    </p-param>
+    <p-param name="resourceKind2">
+      <desc><![CDATA[newRessourceKind2]]></desc>
+    </p-param>
+    <p-param name="resourceKind3">
+      <desc><![CDATA[resourceKind3]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

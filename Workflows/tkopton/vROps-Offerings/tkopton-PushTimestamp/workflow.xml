@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="3bb85afa-1937-4c53-bba0-4cdcbf2844e6" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[tkopton-PushTimestamp]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <attrib name="restOp" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='96d5a662-47b3-4e3c-911b-869420b6ea85:2a822ff0-9012-49a5-83d6-c2951576c8d1'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="vropsUserName" type="string" read-only="false" conf-id="39f63a77-6d8e-4bf8-854e-94fc228f2269" conf-key="vropsUserName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vropsUserPassword" type="SecureString" read-only="false" conf-id="39f63a77-6d8e-4bf8-854e-94fc228f2269" conf-key="vropsUserPassword"/>
+  <attrib name="vropsConfig" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="600.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Do some preparation]]></display-name>
+    <script encoded="false"><![CDATA[//get category
+var category = Server.getConfigurationElementCategoryWithPath("tkopton");
+
+//get _all_ the elements
+var elements = category.configurationElements;
+var result = [];
+
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+    System.log("Found configuration element '" + elements[i].name + "'");
+    if (elements[i].name == "vrops") {
+        System.log("bingo");
+        vropsConfig = elements[i];
+    }
+}]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="vropsConfig" type="ConfigurationElement" export-name="vropsConfig"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.tkopton/refreshVropsToken">
+    <display-name><![CDATA[refreshVropsToken]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton").refreshVropsToken(restOp,vropsUserName,vropsUserPassword,vropsConfig);
+]]></script>
+    <in-binding>
+      <bind name="restOp" type="REST:RESTOperation" export-name="restOp"/>
+      <bind name="vropsUserName" type="string" export-name="vropsUserName"/>
+      <bind name="vropsUserPassword" type="SecureString" export-name="vropsUserPassword"/>
+      <bind name="vropsConfig" type="ConfigurationElement" export-name="vropsConfig"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" export-name=""/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[Do some work]]></display-name>
+    <script encoded="false"><![CDATA[System.log(vropsTokenValue);]]></script>
+    <in-binding>
+      <bind name="vropsTokenValue" type="string"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="420.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

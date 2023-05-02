@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="019c21a9-4027-4aa2-a788-9f96bdccb021" version="0.0.0">
+  <display-name><![CDATA[Smoke Test vROps REST Operations]]></display-name>
+  <atts>
+    <att name="AddRelationships" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f686ae3c-bc85-4d47-a854-c26026cf30bd:0f2014c1-3bf2-40e3-bc51-7cb3d58d9090'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="CreateResource" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f686ae3c-bc85-4d47-a854-c26026cf30bd:18c2ad0c-2cc4-446c-b9c1-b8deef8c3202'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="AddStatsUsingPushAdapterKind" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f686ae3c-bc85-4d47-a854-c26026cf30bd:fb5a9f0b-ca1f-4c1d-87cd-fed63a6a3b1e'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="AddPropertiesUsingPushAdapterKind" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:4ecdf8b5-a5b2-41b9-bd84-8079b1ead786'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="GetResources" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:ab38e711-859a-4092-aca0-74b321f3b013'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="AddStats" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:2a545293-1117-4f41-8995-1c8a377b50a8'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="DeleteResource" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:aafc9c14-85c6-4749-bb6a-3bb2314c631e'&dunesName='REST:RESTOperation']]></value>
+    </att>
+  </atts>
+</config-element>

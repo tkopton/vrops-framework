@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createCustomPropertiesForParameters" result-type="void" api-version="6.0.0" id="30E6C3CD-8319-45C4-BBFF-12C94E3E3B55" version="0.0.2" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher.configuration">
+  <description><![CDATA[Creates custom properties in a property group for all parameters. Used to create properties for input and output parameter of a workflow.]]></description>
+  <param n="globalProps" t="Array/string"><![CDATA[]]></param>
+  <param n="staticProps" t="Array/string"><![CDATA[]]></param>
+  <param n="params" t="Any"><![CDATA[]]></param>
+  <param n="defaultValues" t="Properties"><![CDATA[]]></param>
+  <param n="customPropertiesPrefix" t="string"><![CDATA[]]></param>
+  <param n="profileName" t="string"><![CDATA[]]></param>
+  <param n="propertyGroup" t="Any"><![CDATA[]]></param>
+  <param n="commonPropertyGroup" t="Any"><![CDATA[]]></param>
+  <param n="replaceExistingProps" t="boolean"><![CDATA[]]></param>
+  <param n="encryptedProps" t="Array/string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.library.vra.dispatcher.createCustomPropertiesForParameters", null);
+var PropertyIterator = System.getModule("com.vmware.pscoe.library.vra.dispatcher").PropertyIterator()
+
+for each (var param in params) {
+	var isEncrypted = false;
+	if (param.type == "SecureString" || (encryptedProps && encryptedProps.indexOf(param.name) > -1)) {
+		isEncrypted = true;
+	}
+	
+	if (isStatic(param.name)) {
+		continue;
+	}
+	logger.debug("Processing param: " + param.name + " type: " + param.type);
+	var propName = profileName + ".Properties." + param.name;
+	var prof = propertyGroup;
+	if (isGlobal(param.name)) {
+		prof = commonPropertyGroup;
+		propName = "Extensibility.Properties." + param.name;	
+	} else if (customPropertiesPrefix && customPropertiesPrefix != "") {
+		propName = customPropertiesPrefix + "." + param.name;
+	}
+
+	if (defaultValues){
+		if(defaultValues.get(param.name) != null) {
+		
+			var defValue = defaultValues.get(param.name);
+			new PropertyIterator(propName, defValue).forEach(function(name, value){
+				var nameParts = name.split(".");
+				var attributeName = nameParts[nameParts.length - 1];
+				var isAttrEncrypted = isEncrypted || (encryptedProps && encryptedProps.indexOf(attributeName) > -1);
+				System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+					prof,name,value,true,false,isAttrEncrypted, replaceExistingProps);
+			})
+		}
+	} else {
+		if (param.type.indexOf("Array") == 0){
+			propName += ".0";
+		} else if (param.type.indexOf("Properties") == 0) {
+			propName += ".key";
+		}
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+			prof,propName,"",true,false,isEncrypted, replaceExistingProps);
+	}
+}
+
+function isGlobal(name) {
+	return globalProps.indexOf(name) > -1
+}
+function isStatic(name) {
+	return staticProps.indexOf(name) > -1;
+}]]></script>
+</dunes-script-module>

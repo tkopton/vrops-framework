@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteResource" result-type="number" api-version="6.0.0" id="0942633b-6cfc-4431-b912-6bc6e543276b" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="target" t="string"><![CDATA[]]></param>
+  <param n="RESTHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[System.log("deleting Resource");
+restURL="/api/resources/"+target;
+
+var request  = RESTHost.createRequest("DELETE", restURL,null);
+request.contentType = "application/xml";
+var response = request.execute();
+
+return parseInt(response.statusCode);]]></script>
+</dunes-script-module>

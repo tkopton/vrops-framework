@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getTagByKey" result-type="Array/string" api-version="6.0.0" id="d5453735-6aff-4d53-ab98-c29fa973fd50" version="1.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.presentation">
+  <param n="tagKey" t="string"><![CDATA[Tag key to filter on]]></param>
+  <script encoded="false"><![CDATA[var configPath = "vra_config";
+var configName = "vra_credentials";
+var restHost = System.getModule("com.vmware.util").getRestHostFromConfig(configPath, configName, "vra_resthost")
+var accessToken = System.getModule("com.vmware.vra.extensibility.config").getVraAccessToken();
+var bearer = "Bearer " + accessToken;
+var customHeaders = new Properties();
+customHeaders.put("Authorization", bearer);
+
+if (tagKey) {
+    System.log("filtering by tag key " + tagKey)
+	var tagObject = getObjectFromUrl(encodeURI("/iaas/api/tags?$filter=key eq " + tagKey));
+	if (tagObject != null) {
+       var tagItems = tagObject['content']
+	}
+}
+
+tagArray = [];
+
+for(var i = 0; i < tagItems.length; i++){
+    System.debug(tagItems[i].key + ":" + tagItems[i].value)
+    tagArray.push(tagItems[i].key + ":" + tagItems[i].value)
+}
+
+return tagArray;
+
+function getObjectFromUrl(url) {
+	return System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,null,null, customHeaders, url);
+}
+]]></script>
+</dunes-script-module>

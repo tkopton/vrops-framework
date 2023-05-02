@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPropertyGroupsByPrefix" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.vra.getPropertyGroupsByPrefix" version="2.4.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra">
+  <description><![CDATA[
+ 
+ @param {boolean} returnShortName
+ @param {Any} vRaEntity
+ @param {String} filterPropertyGroupPrefix
+]]></description>
+  <param n="returnShortName" t="boolean"><![CDATA[]]></param>
+  <param n="vRaEntity" t="Any"><![CDATA[]]></param>
+  <param n="filterPropertyGroupPrefix" t="String"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var filteredShortPropertyGroups = [];
+var host = vCACCAFEEntitiesFinder.getHostForEntity(vRaEntity);
+var PropertyGroup = System.getModule("com.vmware.pscoe.library.vra").PropertyGroup(host);
+
+var filter = {};
+filter.label = filterPropertyGroupPrefix;
+
+var propGroups = PropertyGroup.getByPrefix(filterPropertyGroupPrefix);
+
+for (var i = 0; i < propGroups.length; i++) {
+	var pg = propGroups[i];
+	var propertyGroupName = pg.label;
+
+	if (returnShortName) {
+		propertyGroupName = propertyGroupName.replace(filterPropertyGroupPrefix, '');
+	}
+
+	filteredShortPropertyGroups.push(propertyGroupName);
+}
+
+return filteredShortPropertyGroups.sort();
+]]></script>
+</dunes-script-module>

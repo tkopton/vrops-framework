@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item4" object-name="Workflow:name=generic" id="06a9b249-3054-4982-a8fa-6cde9b764e55" version="1.0.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Resolve iTop Helpdesk Request]]></display-name>
+  <description><![CDATA[This workflow marks the selected Helpdesk request as resolved with the chosen resolution code.]]></description>
+  <position y="0.0" x="85.0"/>
+  <input>
+    <param name="refId" type="string"/>
+    <param name="outPutFields" type="string">
+      <description><![CDATA[Comma delimited list of fields to be returned (returns all if left blank)]]></description>
+    </param>
+    <param name="service" type="string"/>
+    <param name="resolutionCode" type="string"/>
+    <param name="serviceSubcategory" type="string"/>
+    <param name="comment" type="string"/>
+    <param name="organization" type="string"/>
+  </input>
+  <output>
+    <param name="statusCode" type="number">
+      <description><![CDATA[Status code of the HTTP request]]></description>
+    </param>
+    <param name="contentLength" type="number">
+      <description><![CDATA[Length of the request response]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[Response headers]]></description>
+    </param>
+    <param name="contentAsString" type="string">
+      <description><![CDATA[Response content as string]]></description>
+    </param>
+    <param name="requestCode" type="string"/>
+    <param name="requestMessage" type="string"/>
+    <param name="fieldsArray" type="Array/string"/>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="statusCodeAttribute" type="number" read-only="false"/>
+  <attrib name="restOperation" type="REST:RESTOperation" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="restOperation">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[REST operation to be used for the call]]></description>
+  </attrib>
+  <attrib name="resolutionCodes" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[#{#string#assistance#;#string#bug fixed#;#string#hardware repair#;#string#other#;#string#software patch#;#string#system update#;#string#training#}#]]></value>
+  </attrib>
+  <attrib name="requestField" type="string" read-only="false">
+    <value encoded="n"><![CDATA[start_date]]></value>
+    <description><![CDATA[Field to return]]></description>
+  </attrib>
+  <attrib name="startDate" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="auth_user" type="string" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_user">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <attrib name="auth_pwd" type="SecureString" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_pwd">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item3" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[REST call]]></display-name>
+    <script encoded="false"><![CDATA[if (outPutFields == null || outPutFields.length == 0) var outPutFields = "*";
+var content = "";
+
+var resolutionDate = System.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss");
+var resolutionDelay = resolveDelay(startDate,resolutionDate);
+
+var requestFields = new jsonFields(service,resolutionCode,comment, resolutionDate, resolutionDelay);
+var data = new data("core/update","UserRequest", "SELECT UserRequest WHERE ref = '"+refId+"'", outPutFields, comment, requestFields);
+
+var inputData = JSON.stringify(data);
+//System.log("JSON Input DATA : " + inputData);
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, content);
+//set the request content type
+request.contentType = "application/json";
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+//System.log("Response: " + response);
+statusCodeAttribute = response.statusCode;
+//System.log("Status code: " + statusCodeAttribute);
+contentLength = response.contentLength;
+headers = response.getAllHeaders();
+contentAsString = response.contentAsString;
+//System.log("Content as string: " + contentAsString);
+//System.log("");
+System.log("==== Attempt to retrieve values ====");
+var jsonResponse = JSON.parse(contentAsString);
+var requestCode = jsonResponse.code;
+var requestMessage = jsonResponse.message;
+System.log("Code: "+requestCode);
+System.log("Message: "+requestMessage);
+
+for each (obj in jsonResponse.objects){
+	var objFields = obj.fields;
+	var fieldsArray = System.getModule("com.vmware.coe.json").getJSONstringAsArrayOfStrings(JSON.stringify(objFields));
+	for each (field in fieldsArray){
+		System.log(field.split('":"')[0] + ": " + field.split('":"')[1]);
+	}
+}
+
+function data(operation,className,key,outPutFields,comment,requestFields)
+{
+	this["operation"]=operation;
+	this["class"]=className;
+	this["key"]=key;
+	this["output_fields"]=outPutFields;
+	this["comment"]=comment;
+	this["fields"]=requestFields;
+	}
+
+function jsonFields(service,resolutionCode,comment, resolutionDate, resolutionDelay)
+{
+	this["service_name"]=service;
+	this["resolution_code"]=resolutionCode;
+	this["solution"]=comment;
+	this["status"]="resolved"; // hard coding since this workflow is Resolving Requests
+	this["resolution_date"] = resolutionDate;
+	this["ttr"] = resolutionDelay;
+	this["time_spent"] = resolutionDelay;
+}
+
+function resolveDelay (startDate,endDate){
+	var startMark = System.getDateFromFormat(startDate);
+	var endMark = System.getDateFromFormat(resolutionDate);
+	var resolutionDelayTime = (Date.parse(endMark) - Date.parse(startMark))/1000;
+	return resolutionDelayTime; // returns the delay time in seconds
+}]]></script>
+    <in-binding>
+      <bind name="auth_user" type="string" export-name="auth_user"/>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd"/>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+      <bind name="refId" type="string" export-name="refId"/>
+      <bind name="outPutFields" type="string" export-name="outPutFields"/>
+      <bind name="service" type="string" export-name="service"/>
+      <bind name="resolutionCode" type="string" export-name="resolutionCode"/>
+      <bind name="serviceSubcategory" type="string" export-name="serviceSubcategory"/>
+      <bind name="comment" type="string" export-name="comment"/>
+      <bind name="startDate" type="string" export-name="startDate"/>
+    </in-binding>
+    <out-binding>
+      <bind name="statusCode" type="number" export-name="statusCode"/>
+      <bind name="contentLength" type="number" export-name="contentLength"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="contentAsString" type="string" export-name="contentAsString"/>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+      <bind name="requestCode" type="string" export-name="requestCode"/>
+      <bind name="requestMessage" type="string" export-name="requestMessage"/>
+      <bind name="fieldsArray" type="Array/string" export-name="fieldsArray"/>
+    </out-binding>
+    <position y="109.95454545454544" x="45.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="209.04545454545453" x="85.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="154.5" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[Check status code]]></display-name>
+    <script encoded="false"><![CDATA[if ( statusCodeAttribute != 200 ) {
+	throw "HTTPError: status code: " + statusCodeAttribute;
+} else {
+	return true;
+}	]]></script>
+    <in-binding>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+    </in-binding>
+    <position y="154.5" x="45.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="task" script-module="com.vmware.coe.itop/getUserRequestFieldFromRef">
+    <display-name><![CDATA[getUserRequestFieldFromRef]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.coe.itop").getUserRequestFieldFromRef(auth_user,auth_pwd,restOperation,refId,requestField) ;]]></script>
+    <in-binding>
+      <bind name="auth_user" type="string" export-name="auth_user">
+        <description><![CDATA[iTOP API Username]]></description>
+      </bind>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd">
+        <description><![CDATA[iTOP API Password]]></description>
+      </bind>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation">
+        <description><![CDATA[REST Operation]]></description>
+      </bind>
+      <bind name="refId" type="string" export-name="refId">
+        <description><![CDATA[Request ID (IE: R-000012)]]></description>
+      </bind>
+      <bind name="requestField" type="string" export-name="requestField">
+        <description><![CDATA[Field to return]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="startDate"/>
+    </out-binding>
+    <description><![CDATA[Returns the first returned value for the given request field. For example, get the start_date for Helpdesk Request R-000029]]></description>
+    <position y="55.40909090909091" x="45.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Resolve Helpdesk Request]]></title>
+      <p-group>
+        <title><![CDATA[Request Details]]></title>
+        <p-param name="refId">
+          <desc><![CDATA[Reference ID (IE: R-000012): ]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="outPutFields">
+          <desc><![CDATA[Comma delimited list of fields to be returned (returns all if left blank)]]></desc>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[ref, status]]></p-qual>
+        </p-param>
+        <p-param name="resolutionCode">
+          <desc><![CDATA[Resolution Code]]></desc>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[#resolutionCodes]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[assistance]]></p-qual>
+        </p-param>
+        <p-param name="organization">
+          <desc><![CDATA[Organization]]></desc>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.coe.itop","getOrganizationNames").call( #auth_user , #auth_pwd , #restOperation , false )]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[false]]></p-qual>
+        </p-param>
+        <p-param name="service">
+          <desc><![CDATA[Service]]></desc>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.coe.itop","getServicesForOrganizationName").call( #auth_user , #auth_pwd , #restOperation , #organization )]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="comment">
+          <desc><![CDATA[Solution]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="serviceSubcategory">
+          <desc><![CDATA[Service Subcategory]]></desc>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.coe.itop","getServiceSubcategoriesForServiceName").call( #auth_user , #auth_pwd , #restOperation , #service )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

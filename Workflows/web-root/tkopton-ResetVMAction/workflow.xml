@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e7fedff0-4c2e-4d58-ae35-b436303d9349" version="0.1.0" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[tkopton-ResetVMAction]]></display-name>
+  <position y="50.0" x="60.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine"/>
+    <param name="vrops_alert_id" type="string"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <runtime><![CDATA[python:3.7]]></runtime>
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[import json
+
+def handler(context, inputs):
+    jsonOut=json.dumps(inputs, separators=(',', ':'))
+    print("Inputs were {0}".format(jsonOut))
+    print("Let's do some Ops work!")
+
+    outputs = {
+      "status": "done"
+    }
+
+    return outputs
+]]></script>
+    <in-binding>
+      <bind name="alertID" type="string" export-name="vrops_alert_id"/>
+      <bind name="objectName" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="140.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="20ba81b4-abc1-4a4d-a4f7-0c58a42c0460" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[RestartHttpdService]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="ipAddress" type="string"/>
+  </input>
+  <attrib name="restOp" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='b4562cc0-cd51-4c18-a34a-815ffd42cc32:aef0fa37-fd02-46bc-8c93-b544b63950d6'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var workflow = Server.getWorkflowWithId("A18080808080808080808080808080808080808001299080088268176866967b3");
+var inputs = new Properties();
+var content = {
+    "extra_vars": "",
+    "job_tags": "",
+    "limit": ipAddress,
+    "inventory": 2
+};
+
+var strContent = JSON.stringify(content);
+inputs.put("content", strContent);
+inputs.put("restOperation", restOp);
+inputs.put("defaultContentType", "application/json");
+System.log("ip addr: " + ipAddress);
+if(ipAddress != "" || !ipAddress){
+    var token = workflow.execute(inputs);
+}
+
+var outputs = token.getOutputParameters();
+System.log("Outputs: " + outputs);]]></script>
+    <in-binding>
+      <bind name="ipAddress" type="string" export-name="ipAddress"/>
+      <bind name="restOp" type="REST:RESTOperation" export-name="restOp"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="170.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

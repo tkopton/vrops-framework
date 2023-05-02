@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="73ad4352-77a8-444d-8348-13eab75c570a" version="0.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[ForceDataCollection]]></display-name>
+  <description><![CDATA[Forces data collection of all compute resources.]]></description>
+  <position y="50.0" x="100.0"/>
+  <attrib name="host" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='93c62794-f3fd-4046-886a-1e1b04108970'&dunesName='vCAC:VCACHost']]></value>
+    <description><![CDATA[vCAC host]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var modelName = 'ManagementModelEntities.svc';
+var entitySetName = 'DataCollectionStatuses';
+
+//Read a list of entities
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(host.id, modelName, entitySetName, null, null);
+
+
+for each (entity in entities) {
+	var entityKey = entity.keyString;
+	System.log("Updating entity with key: " + entityKey);
+	
+	var links = null;
+	var headers = null;
+	var updateProperties = {
+		"LastCollectedTime":null
+	};
+	
+	vCACEntityManager.updateModelEntityBySerializedKey(host.id, modelName, entitySetName, entityKey, updateProperties, links, headers);
+}]]></script>
+    <in-binding>
+      <bind name="host" type="vCAC:VCACHost" export-name="host"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

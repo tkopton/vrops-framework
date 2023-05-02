@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" version="0.0.0">
+  <display-name><![CDATA[config.DB]]></display-name>
+  <atts>
+    <att name="JDBCString" type="string" read-only="false">
+      <value encoded="n"><![CDATA[jdbc:jtds:sqlserver://v01sql14.routine.akhwien.at:1433/ConfigDB_V01VRA97]]></value>
+      <description><![CDATA[jdbc:jtds:sqlserver://central-02.vleet.local:1433/ConfigDB;domain=vleet.local;useNTLMv2=true]]></description>
+    </att>
+    <att name="DBUser" type="string" read-only="false">
+      <value encoded="n"><![CDATA[ZVRACDB ]]></value>
+    </att>
+    <att name="DBUserPassword" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+  </atts>
+</config-element>

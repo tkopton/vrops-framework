@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPropertiesFromVCVMquiet" result-type="Properties" api-version="6.0.0" id="7c4136c4-096d-4c3e-84b0-851b32f6b563" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vra.tools">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[//get Infrahost
+var infraHost = Server.findAllForType("vCAC:VCACHost")[0];
+//search for VCAC VM
+virtualMachine=Server.findAllForType("vCAC:VirtualMachine", "ExternalReferenceId eq '" + vcvm.id + "'")[0];
+
+
+//read properties
+//form VCAC ACTIOBN: getPropertiesFromVirtualMachine
+var properties = new Properties();
+properties.put("VirtualMachineID", virtualMachine.virtualMachineID);
+
+
+var virtualMachineEntity = vCACEntityManager.readModelEntity(infraHost.id, "ManagementModelEntities.svc", "VirtualMachines", properties, null);
+var vmProperties = new Properties();
+
+var virtualMachinePropertiesEntities = virtualMachineEntity.getLink(infraHost, "VirtualMachineProperties");
+for each (var virtualMachinePropertiesEntity in virtualMachinePropertiesEntities) {
+	var propertyName = virtualMachinePropertiesEntity.getProperty("PropertyName");
+	var propertyValue = virtualMachinePropertiesEntity.getProperty("PropertyValue");
+	//System.log("Found property " + propertyName + " = " + propertyValue);
+	vmProperties.put(propertyName, propertyValue);
+}
+return vmProperties;]]></script>
+</dunes-script-module>

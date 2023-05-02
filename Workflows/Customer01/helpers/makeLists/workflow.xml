@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e78830e1-bf54-4d4b-8572-1f29bacb01e0" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[makeLists]]></display-name>
+  <description><![CDATA[This workflows creates an ADD (array of string) and a DELETE (array of string) list from two lists (array of string). It will find what entries are new and what entries are missing.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="readList" type="Array/string"/>
+    <param name="existingList" type="Array/string"/>
+  </input>
+  <output>
+    <param name="addList" type="Array/string"/>
+    <param name="delList" type="Array/string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[create List]]></display-name>
+    <script encoded="false"><![CDATA[//copy (create new) array 
+function copyArray(source,target){
+	for each (item in source){
+			target.push(item);
+	}
+}
+
+//prep output
+var addtempList=new Array;
+var deltempList=new Array;
+//crate two new lists
+copyArray(readList,addtempList);
+copyArray(existingList,deltempList);
+// walk thought the input lists and check on changes
+for each (item in readList){
+	indexDel=deltempList.indexOf(item);
+	if (indexDel>=0){
+		indexAdd=addtempList.indexOf(item);
+		addtempList.splice(indexAdd,1);
+		deltempList.splice(indexDel,1);
+	}	
+}
+addList=addtempList;
+delList=deltempList;]]></script>
+    <in-binding>
+      <bind name="readList" type="Array/string" export-name="readList"/>
+      <bind name="existingList" type="Array/string" export-name="existingList"/>
+    </in-binding>
+    <out-binding>
+      <bind name="addList" type="Array/string" export-name="addList"/>
+      <bind name="delList" type="Array/string" export-name="delList"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="readList">
+      <desc><![CDATA[readList]]></desc>
+    </p-param>
+    <p-param name="existingList">
+      <desc><![CDATA[existingList]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

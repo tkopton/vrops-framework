@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getTopicIsBlockable" result-type="boolean" api-version="6.0.0" id="d5b3118a-55cf-4e53-aa60-6bb472c6e117" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.eventBroker">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="eventTopicId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null) return null;
+
+var object = System.getModule("com.vmware.vra.extensibility.rest.eventBroker").getTopic(restHost,username,password, customHeaders, null, eventTopicId);
+return object.blockable;]]></script>
+</dunes-script-module>

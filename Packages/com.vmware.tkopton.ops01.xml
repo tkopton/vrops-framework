@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<package>
+<description><![CDATA[Contains the SQL Adapter Workflow]]></description>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='06ea5edb-c998-44f6-916b-6ef7ee39c403'&dunesName='Workflow']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Action?id='91718c0c-6286-4463-a35b-12d6e44c8b99'&dunesName='Action'&name='tk_vROps_getToken'&category='com.vmware.tkopton.vropsframework']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Action?id='d4266af3-750f-4d3a-9a23-d80f1b049d66'&dunesName='Action'&name='tk_vROps_startAdapterInstamce_02'&category='com.vmware.tkopton.vropsframework']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='e546ee88-936b-46ae-9542-96a28413a5a8'&dunesName='Workflow']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Action?id='ed12c5d0-c4c7-4beb-ba3c-7e0a86c41394'&dunesName='Action'&name='tk_vROps_startAdapterInstamce'&category='com.vmware.tkopton.vropsframework']]></elm>
+<used-plugin name='REST' version='2.5.0' />
+</package>

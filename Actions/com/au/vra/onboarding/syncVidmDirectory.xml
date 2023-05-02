@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="syncVidmDirectory" result-type="string" api-version="6.0.0" id="11d19e6b-c643-4f7a-ab76-e0503591b903" version="0.3.0" allowed-operations="evf" category-name="com.au.vra.onboarding">
+  <script encoded="false"><![CDATA[//For Debugging Purposes
+System.debug("Action Called: syncVidmDirectory");
+
+//Create vRSLCM REST Host
+var restHost = System.getModule("com.au.vra.onboarding").getVrslcmRestHost();
+
+const configPath = 'vra_config';
+const configName = 'vidm_credentials';
+const baseUrlKey = 'hostname';
+const usernameKey = "username";
+const passKey = "password";
+const dirKey = "directoryId"
+for each(var configElement in Server.getConfigurationElementCategoryWithPath(configPath).configurationElements)
+{
+	if(configElement.name == configName){
+        const hostname = configElement.getAttributeWithKey(baseUrlKey)['value'];
+        const username = configElement.getAttributeWithKey(usernameKey)['value']
+        const password = configElement.getAttributeWithKey(passKey)['value'];
+        const directoryId = configElement.getAttributeWithKey(dirKey)['value'];
+        break;
+	}
+}
+
+const requestParams = {
+  "directoryConfigId": directoryId,
+  "directoryType": "ActiveDirectory",
+  "isGetBeforeUpdate": true,
+  "isTenantConfiguredByPath": true,
+  "vidmAdminPassword": password,
+  "vidmAdminUser": username,
+  "vidmHost": hostname
+}
+
+//Create API Request to get fabric networks by cloud accounts
+var method = "POST"
+
+var template = "/lcm/authzn/api/idp/dirConfigs/syncprofile/sync";
+
+var request = restHost.createRequest(method, template,JSON.stringify(requestParams));
+request.contentType = 'application/json';
+
+// execute request
+var response = request.execute();
+
+if(response.statusCode != 200) {
+  throw("VIDM Sync request was not successful.");
+}
+
+const requestId = JSON.parse(response.contentAsString).vmid;
+System.debug("Requestid:" + requestId);
+var state = getVrslcmRequestState(requestId);
+var checkCount = 0;
+//We want to wait till the request is done before we continue;
+while(state != "COMPLETED" && state != "FAILED"){
+    System.debug("Status:" + state);
+    if(checkCount > 100){
+        //Then something went wrong, the sync should take 10 mins
+        throw("There was an error with the request to sync vIDM.")
+    }
+    System.sleep(5000);
+    state = getVrslcmRequestState(requestId);
+    checkCount ++;
+}
+
+if(state === "FAILED") {
+    throw("There was an error with the request to sync vIDM NSWHEALTH Directory.")
+}
+
+const result = response.contentAsString;
+
+return result;
+
+
+function getVrslcmRequestState(requestId){
+    const method = "GET";
+    const template = "/lcm/request/api/requests/" + requestId;
+    var restHost = System.getModule("com.au.vra.onboarding").getVrslcmRestHost();
+    var request = restHost.createRequest(method, template);
+    var response = request.execute();
+    if(response.statusCode != 200) {
+        throw("VRSLCM request was not successful.");
+    }
+    var res = JSON.parse(response.contentAsString)
+    System.debug(response.contentAsString)
+    return res.state;
+
+
+}]]></script>
+</dunes-script-module>

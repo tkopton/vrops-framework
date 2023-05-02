@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="refreshVropsToken" result-type="boolean" api-version="6.0.0" id="1687d620-9b3f-4199-bf47-f43aeade5b6d" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.tkopton">
+  <param n="restOp" t="REST:RESTOperation"><![CDATA[]]></param>
+  <param n="vropsUserName" t="string"><![CDATA[]]></param>
+  <param n="vropsUserPassword" t="SecureString"><![CDATA[]]></param>
+  <param n="vropsConfig" t="ConfigurationElement"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[jsonBody = {
+  "username": "",
+  "authSource": "",
+  "password": "",
+  "others": [],
+  "otherAttributes": {}
+};
+
+jsonBody.username = vropsUserName;
+jsonBody.password = vropsUserPassword;
+jsonBody.authSource = "Local";
+
+var requestBody = JSON.stringify(jsonBody);
+var request = restOp.createRequest(null, requestBody);
+
+request.setHeader("Accept", "application/json");
+request.setHeader("Content-Type", "application/json");
+
+var response = request.execute();
+var jsonObject = JSON.parse(response.contentAsString);
+var vropsNewToken = jsonObject.token;
+var vropsNewTokenValidity = jsonObject.validity;
+
+System.log(vropsNewToken);
+System.log(vropsNewTokenValidity);
+
+vropsConfig.setAttributeWithKey("vropsTokenValue", vropsNewToken);
+vropsConfig.setAttributeWithKey("vropsTokenValidity", vropsNewTokenValidity);
+
+]]></script>
+</dunes-script-module>

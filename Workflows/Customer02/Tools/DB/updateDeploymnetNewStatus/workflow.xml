@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item5" object-name="workflow:name=generic" id="0ba0754b-c99e-4698-becf-ad96c71f40a1" version="0.1.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[updateDeploymnetNewStatus]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <attrib name="JDBCString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUserPassword" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="deploymentId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vCenter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBresult" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="vcvm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vcacvm" type="vCAC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="1084.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item3" type="task" script-module="de.vleet.vra.tools/geVCACVMfromVCVM">
+    <display-name><![CDATA[geVCACVMfromVCVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("de.vleet.vra.tools").geVCACVMfromVCVM(vcvm) ;]]></script>
+    <in-binding>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="vCAC:VirtualMachine" export-name="vcacvm"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item4" type="task">
+    <display-name><![CDATA[getVM]]></display-name>
+    <script encoded="false"><![CDATA[vmName = payload.get("machine").get("name");
+vcvm = Server.findAllForType("VC:VirtualMachine", "xpath:name='" + vmName + "'")[0];
+deploymentId=payload.machine.properties.get("__Cafe.Root.Request.Id");
+]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="task" script-module="de.vleet.vcExtentions/getvCenterFQDNFromVCVM">
+    <display-name><![CDATA[getvCenterFQDNFromVCVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("de.vleet.vcExtentions").getvCenterFQDNFromVCVM(vcvm) ;]]></script>
+    <in-binding>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="vCenter"/>
+    </out-binding>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="at.akhwien.db/updateStatusNewinDeployment">
+    <display-name><![CDATA[updateStatusNewinDeployment]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").updateStatusNewinDeployment(JDBCString, DBUser, DBUserPassword, deploymentId, vCenter) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="vCenter" type="string" export-name="vCenter"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" export-name="DBresult"/>
+    </out-binding>
+    <position y="55.90909090909091" x="645.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

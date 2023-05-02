@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="0a82f348-23eb-4c12-a903-cb3488bea199" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[InstallJavaServer]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vRAVirtualMachine" type="VC:VirtualMachine"/>
+  </input>
+  <output>
+    <param name="scriptOutput" type="string"/>
+  </output>
+  <attrib name="host" type="PowerShell:PowerShellHost" read-only="false" conf-id="883e653d-d32d-4df4-bebd-3480822db49e" conf-key="PowerShellScriptingHostDay2">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='0495b430-415b-4871-8bff-84080aff93fb'&dunesName='PowerShell:PowerShellHost']]></value>
+    <description><![CDATA[PowerShell host]]></description>
+  </attrib>
+  <attrib name="externalScript" type="string" read-only="false">
+    <value encoded="n"><![CDATA[c:\batch\install-JavaServer.ps1]]></value>
+    <description><![CDATA[Path to .ps1 file]]></description>
+  </attrib>
+  <attrib name="arguments" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Script parameters]]></description>
+  </attrib>
+  <attrib name="PSreturn" type="PowerShell:PowerShellRemotePSObject" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Script execution result]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item1" out-name="item3" catch-name="item3" throw-bind-name="errorCode" type="link" linked-workflow-id="A3818080808080808080808080808080B180808001304933636362ce882292c2a">
+    <display-name><![CDATA[Invoke an external script]]></display-name>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host">
+        <description><![CDATA[PowerShell host]]></description>
+      </bind>
+      <bind name="externalScript" type="string" export-name="externalScript">
+        <description><![CDATA[Path to .ps1 file]]></description>
+      </bind>
+      <bind name="arguments" type="string" export-name="arguments">
+        <description><![CDATA[Script parameters]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="output" type="PowerShell:PowerShellRemotePSObject" export-name="PSreturn">
+        <description><![CDATA[Script execution result]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Runs an external .ps1 script on a PowerShell host.]]></description>
+    <position y="55.40909090909091" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[prep Argument]]></display-name>
+    <script encoded="false"><![CDATA[//-startip 10.126.13.20 -endip 10.126.13.240 -hostname v01buf66 -id deplaoyment
+arguments=" -hostname "+vRAVirtualMachine.name;
+System.log(arguments);]]></script>
+    <in-binding>
+      <bind name="vRAVirtualMachine" type="VC:VirtualMachine" export-name="vRAVirtualMachine"/>
+    </in-binding>
+    <out-binding>
+      <bind name="arguments" type="string" export-name="arguments"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item5" type="task">
+    <display-name><![CDATA[convert Obj]]></display-name>
+    <script encoded="false"><![CDATA[//System.log("psReturn:"+PSreturn.getRootObject());
+//System.log("errorCode:"+errorCode);
+if ((errorCode==null)||(errorCode=="")){
+	IPAMoutput=PSreturn.getRootObject();
+} else {
+	IPAMoutput=errorCode;
+}
+]]></script>
+    <in-binding>
+      <bind name="PSreturn" type="PowerShell:PowerShellRemotePSObject" export-name="PSreturn"/>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+    </in-binding>
+    <out-binding>
+      <bind name="IPAMoutput" type="string" export-name="scriptOutput"/>
+      <bind name="scriptOutput" type="string" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="55.40909090909091" x="444.5"/>
+  </workflow-item>
+  <workflow-item name="item5" type="end" end-mode="0">
+    <position y="45.40909090909091" x="604.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vRAVirtualMachine">
+      <desc><![CDATA[vRAVirtualMachine]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

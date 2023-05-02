@@ -1,0 +1,14 @@
+CREATE TABLE Network
+(
+VLANID int NOT NULL
+,prettyName varchar(50) NOT NULL
+,SwitchingBlock varchar(50) NOT NULL
+,vlanName varchar(50) NOT NULL
+,DNSSufix varchar(50) NOT NULL
+,Network varchar(50) NOT NULL
+,Subnet int NOT NULL
+,Gateway varchar(50) NOT NULL
+,StartIP int NOT NULL
+,EndIP int NOT NULL
+,PRIMARY KEY (VLANID )
+)

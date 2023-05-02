@@ -1,0 +1,6 @@
+INSERT INTO SLADefinition VALUES ('Produktion-L1',30,'high',15,'high',5,'TRUE','TRUE','TRUE','FALSE','24','FALSE','VMware not VSS snapshot based','FALSE','TM DeepSecurity','TRUE'),
+('Produktion-L2',15,'High',10,'High',60,'TRUE','TRUE','TRUE','FALSE','24','FALSE','VMware not VSS snapshot based','FALSE','TM DeepSecurity','TRUE'),
+('Produktion-L3',10,'high',5,'high',240,'TRUE','TRUE','TRUE','FALSE','24','FALSE','VMware not VSS snapshot based','FALSE','TM DeepSecurity','TRUE'),
+('Schulung',0,'normal',0,'normal',0,'FALSE','FALSE',NULL,NULL,NULL,NULL,NULL,NULL,'TM DeepSecurity','FALSE'),
+('Entwicklung',0,'Low',0,'Low',0,'FALSE','FALSE',NULL,NULL,NULL,NULL,NULL,NULL,'TM DeepSecurity','FALSE'),
+('Test',0,'Low',0,'low',0,'FALSE','FALSE',NULL,NULL,NULL,NULL,NULL,NULL,'TM DeepSecurity','FALSE');

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addUpdateBuildProfileProperty" result-type="Any" api-version="6.0.0" id="5327E794-B33A-4BA5-9330-A3855140B654" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher.configuration">
+  <param n="profile" t="Any"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <param n="value" t="string"><![CDATA[]]></param>
+  <param n="isHidden" t="boolean"><![CDATA[]]></param>
+  <param n="isMandatory" t="boolean"><![CDATA[]]></param>
+  <param n="isEncrypted" t="boolean"><![CDATA[]]></param>
+  <param n="shouldUpdate" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (!profile.getProperties()[name] || shouldUpdate) {
+	
+	profile.getProperties()[name] = {
+		"visibility" : !isHidden,
+		"encrypted" : isEncrypted,
+		"mandatory" : false,
+		value: value
+	}
+}
+return profile;]]></script>
+</dunes-script-module>

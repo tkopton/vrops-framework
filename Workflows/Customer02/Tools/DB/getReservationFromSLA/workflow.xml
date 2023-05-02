@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="6504f0ca-0238-4053-ab15-645055e6b20d" version="0.1.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[getReservationFromSLA]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="sla" type="string"/>
+  </input>
+  <output>
+    <param name="memRes" type="number"/>
+    <param name="cpuRes" type="number"/>
+    <param name="memSet" type="string"/>
+    <param name="cpuSet" type="string"/>
+  </output>
+  <attrib name="jdbcString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DbUserPass" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[get Reservation From SLA]]></display-name>
+    <script encoded="false"><![CDATA[sqlQuery="SELECT ResMem, ShareMem, ResCpu, ShareCPU FROM SLADefinition WHERE SLA='"+sla+"'";
+var output = new Array();
+var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( jdbcString, DBUser,DbUserPass  );
+	var stat = con.createStatement();
+	var results = stat.executeQuery(sqlQuery);
+	//walk thought all rows
+	results.next();
+	memRes=results.getStringAt(1);
+	memSet=results.getStringAt(2);
+	cpuRes=results.getStringAt(3);
+	cpuSet=results.getStringAt(4);
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+}]]></script>
+    <in-binding>
+      <bind name="jdbcString" type="string" export-name="jdbcString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DbUserPass" type="SecureString" export-name="DbUserPass"/>
+      <bind name="sla" type="string" export-name="sla"/>
+    </in-binding>
+    <out-binding>
+      <bind name="memRes" type="number" export-name="memRes"/>
+      <bind name="cpuRes" type="number" export-name="cpuRes"/>
+      <bind name="memSet" type="string" export-name="memSet"/>
+      <bind name="cpuSet" type="string" export-name="cpuSet"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="sla">
+      <desc><![CDATA[sla]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Production_L1#;#string#Production_L2#;#string#Production_L3#;#string#Entwicklung#;#string#Schulung#;#string#Test#}#]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,450 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="078bbaf9-49d3-49e6-9c47-3e518d218d14" version="0.0.14" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create Host Details Input in vROPs]]></display-name>
+  <description><![CDATA[This workflow illustrates how to loop across an array.
+
+This workflow is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.]]></description>
+  <position y="0.0" x="85.0"/>
+  <input>
+    <param name="singleHost" type="VC:HostSystem"/>
+  </input>
+  <attrib name="host" type="VC:HostSystem" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual machine]]></description>
+  </attrib>
+  <attrib name="hosts" type="Array/VC:HostSystem" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Array of VMs]]></description>
+  </attrib>
+  <attrib name="number" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[Counter variable]]></description>
+  </attrib>
+  <attrib name="results" type="Array/Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="username" type="string" read-only="false">
+    <value encoded="n"><![CDATA[root]]></value>
+    <description><![CDATA[Username]]></description>
+  </attrib>
+  <attrib name="hostNameOrIP" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Hostname or IP address of the SSH host]]></description>
+  </attrib>
+  <attrib name="port" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Target port]]></description>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[8BK56V4DX77U61M72Q65O31I21TC06229FM469A49DIA50CB5FT466E172Z9025676I6C6861FQB63E23FK3137E48U29201FAI829F91CN6E30F82Q138353FGFC9B66AVB70BEAFJ4736AC7K584BAF3J98361CBO26263C7I115C699LB6D9495P210496EVC7A52E9P550CB75Q27F7E31S]]></value>
+    <description><![CDATA[Password]]></description>
+  </attrib>
+  <attrib name="cmd" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The SSH command to run]]></description>
+  </attrib>
+  <attrib name="passwordAuthentication" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Sets authentication to password or key file]]></description>
+  </attrib>
+  <attrib name="path" type="Path" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Path to the private key]]></description>
+  </attrib>
+  <attrib name="passphrase" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Private key pass-phrase]]></description>
+  </attrib>
+  <attrib name="encoding" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The encoding to be used. Leave this field empty to use the default system encoding. (Example values: "UTF-8", "ISO-8859-1"...)]]></description>
+  </attrib>
+  <attrib name="networkCoredumpResult" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Result of running the SSH command]]></description>
+  </attrib>
+  <attrib name="networkCoredumpCommand" type="string" read-only="false">
+    <value encoded="n"><![CDATA[esxcli system coredump network check]]></value>
+  </attrib>
+  <attrib name="coredumpPartitionCommand" type="string" read-only="false">
+    <value encoded="n"><![CDATA[esxcli system coredump partition list | grep -i true]]></value>
+  </attrib>
+  <attrib name="coredumpPartitionResult" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="restHost" type="REST:RESTHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='10a7f01a-7823-4396-9de6-981206481b5b'&dunesName='REST:RESTHost']]></value>
+  </attrib>
+  <workflow-item name="item1" out-name="item9" type="task">
+    <display-name><![CDATA[Details for vROPs]]></display-name>
+    <script encoded="false"><![CDATA[if (host != null)
+{
+	try
+	{
+		var localUsers="";
+		var propCount;
+		var isLocalUserAvailable = false;
+		var hostCount ;
+		var hostProp = new Properties();
+		hostProp.put("Name",host.name);
+		var users = host.configManager.hostAccessManager.retrieveHostAccessControlEntries();
+		var i=1;
+		for each(var user in users)
+		{
+			var outPut = user.principal;
+			
+			if(outPut != undefined && outPut != "dcui" && outPut != "root" && outPut != 'vpxuser')
+			{
+				System.log("Local User "+i+" : " + outPut);
+				localUsers += outPut +",";
+				isLocalUserAvailable =true;
+				i++;
+			}
+		}
+		
+		var certExpireDate =  host.ConfigManager.CertificateManager.CertificateInfo.notAfter;
+		var certSubject = host.ConfigManager.CertificateManager.CertificateInfo.subject;
+		
+		var isSelfSigned = false;
+		if ( certSubject.match(/vmc/g)== "vmc")
+			isSelfSigned = true;
+		hostProp.put("LocalUserAvailable",(isLocalUserAvailable==true)?localUsers:false);
+		hostProp.put("CertExpireDate",Date.parse(certExpireDate));
+		hostProp.put("CertExpireDateInNumber",certExpireDate);
+		d = new Date(Date.parse(certExpireDate));
+		hostProp.put("CertExpireDateReverse",d); 
+		hostProp.put("IsSelfSigned", isSelfSigned)
+		hostProp.put("CoredumEnable",(networkCoredumpResult.match(/not/g)=="not")?false:true);
+		var partition = coredumpPartitionResult.match(/true/g);
+		hostProp.put("IsCoredumPartitionAvailable",(partition=='true,true')?true:false);
+		if (results== null)
+			results = [hostProp];
+		else
+			results.push(hostProp);
+		System.log("Host Details Collected Count : ");
+		System.log( results.length);
+	}catch (e)
+	{
+		System.log("Error While geting Host (" + host.name + ") details : " + e);
+	}
+	
+	System.log("I'm Here");
+}
+
+	]]></script>
+    <in-binding>
+      <bind name="hosts" type="Array/VC:HostSystem" export-name="hosts"/>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="number" type="number" export-name="number"/>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+      <bind name="outputText" type="string" export-name="networkCoredumpResult"/>
+      <bind name="networkCoredumpResult" type="string" export-name="networkCoredumpResult"/>
+      <bind name="coredumpPartitionResult" type="string" export-name="coredumpPartitionResult"/>
+    </in-binding>
+    <out-binding>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+    </out-binding>
+    <position y="73.59090909090908" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item7" type="task">
+    <display-name><![CDATA[Get Host Details]]></display-name>
+    <script encoded="false"><![CDATA[
+host = hosts[number];
+if (host !=null)
+{
+	System.log("Get Details from the host : " + host.name);
+	hostNameOrIP = host.name;
+	username = "root";
+}
+
+
+]]></script>
+    <in-binding>
+      <bind name="hosts" type="Array/VC:HostSystem" export-name="hosts"/>
+      <bind name="number" type="number" export-name="number"/>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+    </in-binding>
+    <out-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="hosts" type="Array/VC:HostSystem" export-name="hosts"/>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+      <bind name="number" type="number" export-name="number"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="hostNameOrIP" type="string" export-name="hostNameOrIP"/>
+      <bind name="cmd" type="string" export-name="cmd"/>
+    </out-binding>
+    <position y="9.954545454545453" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item4" type="custom-condition" alt-out-name="item3">
+    <display-name><![CDATA[More Host?]]></display-name>
+    <script encoded="false"><![CDATA[return(number < hosts.length);]]></script>
+    <in-binding>
+      <bind name="hosts" type="Array/VC:HostSystem" export-name="hosts"/>
+      <bind name="number" type="number" export-name="number"/>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+    </in-binding>
+    <position y="0.0" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item6" type="end" end-mode="0">
+    <position y="118.13636363636363" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item0" prototype-id="increase-counter" out-name="item5" content-mode="x" type="task">
+    <display-name><![CDATA[Go to Next host]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="number">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="number">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="73.59090909090908" x="604.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item5" type="task">
+    <display-name><![CDATA[Get All Hosts]]></display-name>
+    <script encoded="false"><![CDATA[hosts = VcPlugin.allHostSystems;
+host = singleHost;
+
+
+if(host!=null && host.name !=null && host.name !="")
+{
+	System.log("Single host is  selected");
+	hosts = [host];
+}
+]]></script>
+    <in-binding>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+      <bind name="singleHost" type="VC:HostSystem" export-name="singleHost"/>
+    </in-binding>
+    <out-binding>
+      <bind name="hosts" type="Array/VC:HostSystem" export-name="hosts"/>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[Virtual machine]]></description>
+      </bind>
+    </out-binding>
+    <position y="9.954545454545453" x="225.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item6" type="task">
+    <display-name><![CDATA[Display Results]]></display-name>
+    <script encoded="false"><![CDATA[
+System.log("***** Details of the Host entered in vROPS ***** : ");
+System.log(results.length);
+for each (var prop in results)
+{
+	for each( var key in prop.keys)
+	{
+		System.log(key + " : " + prop[key]);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+    </in-binding>
+    <out-binding/>
+    <position y="73.59090909090908" x="365.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item8" type="task">
+    <display-name><![CDATA[Check Network Coredump ]]></display-name>
+    <script encoded="false"><![CDATA[if (host != null)
+{
+	var session = null;
+	try {
+		if (port) {
+			session = new SSHSession(hostNameOrIP, username, port);
+		} else {
+			System.log("A port value is not provided! Using default port 22");
+			session = new SSHSession(hostNameOrIP, username);
+		}
+	
+		if (passwordAuthentication){
+			System.log("Connecting with password");
+		} else {
+			if (path == null || path == ""){
+				System.log("using default");
+				path = defaultKeyPairPath;
+			}
+			System.log("Connecting with key pair (" + path + ")");
+			password = passphrase;
+		}
+	
+		session.connectWithPasswordOrIdentity(passwordAuthentication, password, path);
+		System.log("Connected!");
+	
+		System.log("Executing '" + networkCoredumpCommand + "' using encoding '" + (encoding ? encoding : "Default System Encoding") + "'");
+		session.setEncoding(encoding);
+		session.executeCommand(networkCoredumpCommand, true);
+	
+		networkCoredumpResult = session.getOutput();
+		//error = session.getError();
+		//exitCode = session.exitCode;
+	
+		System.log("Output: '" + networkCoredumpResult + "'");
+		//System.log("Error: '" + error + "'");
+		//System.log("Exit code: '" + exitCode + "'");
+	
+	} catch (e) {
+		//throw "Unable to execute command: " + e;
+		System.log("Unable to execute command : " + e);
+	} finally {
+		if (session) {
+			session.disconnect();
+		}
+	}
+}]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="hostNameOrIP" type="string" export-name="hostNameOrIP"/>
+      <bind name="port" type="number" export-name="port"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="passwordAuthentication" type="boolean" export-name="passwordAuthentication"/>
+      <bind name="path" type="Path" export-name="path"/>
+      <bind name="passphrase" type="SecureString" export-name="passphrase"/>
+      <bind name="encoding" type="string" export-name="encoding"/>
+      <bind name="networkCoredumpCommand" type="string" export-name="networkCoredumpCommand"/>
+    </in-binding>
+    <out-binding>
+      <bind name="networkCoredumpResult" type="string" export-name="networkCoredumpResult"/>
+    </out-binding>
+    <position y="9.954545454545453" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item1" type="task">
+    <display-name><![CDATA[Check Coredump partition]]></display-name>
+    <script encoded="false"><![CDATA[if (host != null)
+{
+	var session = null;
+	try {
+		if (port) {
+			session = new SSHSession(hostNameOrIP, username, port);
+		} else {
+			System.log("A port value is not provided! Using default port 22");
+			session = new SSHSession(hostNameOrIP, username);
+		}
+	
+		if (passwordAuthentication){
+			System.log("Connecting with password");
+		} else {
+			if (path == null || path == ""){
+				System.log("using default");
+				path = defaultKeyPairPath;
+			}
+			System.log("Connecting with key pair (" + path + ")");
+			password = passphrase;
+		}
+	
+		session.connectWithPasswordOrIdentity(passwordAuthentication, password, path);
+		System.log("Connected!");
+	
+		System.log("Executing '" + coredumpPartitionCommand + "' using encoding '" + (encoding ? encoding : "Default System Encoding") + "'");
+		session.setEncoding(encoding);
+		session.executeCommand(coredumpPartitionCommand, true);
+	
+		coredumpPartitionResult = session.getOutput();
+		//error = session.getError();
+		//exitCode = session.exitCode;
+	
+		System.log("Output: '" + coredumpPartitionResult + "'");
+		//System.log("Error: '" + error + "'");
+		//System.log("Exit code: '" + exitCode + "'");
+	
+	} catch (e) {
+		//throw "Unable to execute command: " + e;
+		System.log("Unable to execute command : " + e);
+	} finally {
+		if (session) {
+			session.disconnect();
+		}
+	}
+}]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="hostNameOrIP" type="string" export-name="hostNameOrIP"/>
+      <bind name="port" type="number" export-name="port"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="passwordAuthentication" type="boolean" export-name="passwordAuthentication"/>
+      <bind name="path" type="Path" export-name="path"/>
+      <bind name="passphrase" type="SecureString" export-name="passphrase"/>
+      <bind name="encoding" type="string" export-name="encoding"/>
+      <bind name="coredumpPartitionCommand" type="string" export-name="coredumpPartitionCommand"/>
+    </in-binding>
+    <out-binding>
+      <bind name="coredumpPartitionResult" type="string" export-name="coredumpPartitionResult"/>
+    </out-binding>
+    <position y="9.954545454545453" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item0" type="task">
+    <display-name><![CDATA[Execute API Call]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Executing vROPs API Call ");
+
+try
+{
+	var hostName = host.name;
+	
+	var operationUrl ="/suite-api/api/resources?resourceKind=hostsystem&name=" + hostName;
+	var request = restHost.createRequest("GET", operationUrl, "");
+	request.contentType = "application/json";
+	request.setHeader("Accept","application/json");
+	var response = request.execute();
+	var obj = JSON.parse(response.contentAsString);
+	var hostIdentifier = obj.resourceList[0].identifier;
+	System.log("Identifier : " + hostIdentifier);
+	var resourceCategory = Server.getResourceElementCategoryWithPath("WestBank");
+	var requestBody = System.getModule("com.vmware.vra.gef").getResourceElementContent("WestBank","vRopsComplaince.json");
+	var requestObj = JSON.parse(requestBody);
+	var d = new Date();
+	var hostInfo = BuildArrayFromProperties(results[number]);
+	for(var i=0; i<requestObj["property-content"].length;i++)
+	{
+		requestObj["property-content"][i].timestamps =  [Date.parse(d)];
+		if(requestObj["property-content"][i].statKey.match(/date/g)!= "date") 
+		{
+			requestObj["property-content"][i].values =  [hostInfo[i]];
+		}
+		else 
+		{
+			// Need to update the expire date number
+			System.log("Date : " + hostInfo[i]);
+			System.log("Date In Number : " + Date.parse(hostInfo[i]));
+			requestObj["property-content"][i].data =  [Date.parse(hostInfo[i])];
+		}
+	}
+	
+	operationUrl = "/suite-api/api/resources/"+ hostIdentifier +"/properties";
+	request = restHost.createRequest("POST", operationUrl, JSON.stringify(requestObj));
+	request.contentType = "application/json";
+	request.setHeader("Accept","application/json");
+	response = request.execute();
+	System.log("response: " + response.statusCode);
+}
+catch (e)
+{
+	System.log("Error While executing API call :  "+ e);
+}
+function BuildArrayFromProperties(hostDetail)
+{
+	var infos = [hostDetail["CoredumEnable"],hostDetail["IsCoredumPartitionAvailable"],hostDetail["IsSelfSigned"],hostDetail["CertExpireDate"],hostDetail["LocalUserAvailable"]];
+	return infos;
+}
+]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="results" type="Array/Properties" export-name="results"/>
+      <bind name="number" type="number" export-name="number"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+    </in-binding>
+    <out-binding/>
+    <position y="73.59090909090908" x="805.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="singleHost">
+      <desc><![CDATA[singleHost]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

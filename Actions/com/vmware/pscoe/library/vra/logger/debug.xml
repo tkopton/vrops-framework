@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="debug" result-type="void" api-version="6.0.0" id="com.vmware.pscoe.library.vra.logger.debug" version="2.4.3" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.logger">
+  <description><![CDATA[
+]]></description>
+  <param n="logObject" t="Any"><![CDATA[]]></param>
+  <param n="message" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.pscoe.library.vra.logger").log(logObject,message,"debug");
+]]></script>
+</dunes-script-module>

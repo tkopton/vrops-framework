@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-policy name="tkopton-SNMP Trap" type="0" api-version="6.0.0" id="f2c993b1-01ea-448d-ab66-21c0be082623" version="0.0.1" allowed-operations="vfe">
+  <attribute type="Array/Properties" name="trapData" read-only="false">
+    <value encoded="n"><![CDATA[[]]]></value>
+  </attribute>
+  <item tag="device" type="0" sdkType="SNMP:SnmpDevice">
+    <event type="OnTrap" kind="trigger" active="false">
+      <script encoded="false"><![CDATA[//get the SNMP data out of the Policy 
+var key = event.getValue("key"); 
+var snmpResult = SnmpService.retrievePolicyData(key); 
+// convert the SNMPSnmpResult into Array of Property 
+trapData = System.getModule("com.vmware.library.snmp").processSnmpResult(snmpResult); ]]></script>
+    </event>
+  </item>
+</dunes-policy>

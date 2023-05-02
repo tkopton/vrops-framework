@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="readFile" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.filesystem.readFile" version="1.0.2" allowed-operations="evf" category-name="com.vmware.pscoe.library.filesystem">
+  <description><![CDATA[
+]]></description>
+  <param n="fileName" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var CustomFile = System.getModule("com.vmware.pscoe.library.filesystem").CustomFile();	
+var file = new CustomFile(fileName);
+return file.read();
+]]></script>
+</dunes-script-module>

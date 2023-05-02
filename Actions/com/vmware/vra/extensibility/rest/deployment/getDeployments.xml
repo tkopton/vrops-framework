@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDeployments" result-type="Array/Any" api-version="6.0.0" id="a0edd966-243b-47e0-91bb-d47781acc1c1" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.deployment">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Basic version returning as many deployments as the default paging allows
+// More advanced version is possible making multiple paged REST calls to get all deployments
+// /deployment/api/projects/{projectId}/deployment-count
+
+if (restHost == null || username == null || password == null) return null;
+
+var url = "/deployment/api/deployments"
+var contentObject = System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,username,password,null,url, parameters);
+return contentObject.content;]]></script>
+</dunes-script-module>

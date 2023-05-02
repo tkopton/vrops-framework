@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="119b0e4f-040d-4d1f-bb7a-07dbd5338347" version="0.0.3">
+  <display-name><![CDATA[Custom Hostname Configuration]]></display-name>
+  <atts>
+    <att name="maxNameGenerationAttempts" type="number" read-only="false">
+      <value encoded="n"><![CDATA[3.0]]></value>
+      <description><![CDATA[Number of attempts at generating a name which passes all validation before erroring out.]]></description>
+    </att>
+    <att name="shouldAutofillIndexes" type="boolean" read-only="false">
+      <description><![CDATA[Indicates whether the solution should try to reuse indexes that have become vacant.]]></description>
+    </att>
+    <att name="startIndex" type="number" read-only="false">
+      <value encoded="n"><![CDATA[0.0]]></value>
+      <description><![CDATA[Global start index for all blueprints.]]></description>
+    </att>
+    <att name="name-nextIndex" type="number" read-only="false">
+      <value encoded="n"><![CDATA[6.0]]></value>
+    </att>
+    <att name="mand01u1f1s1p1o1f1nextIndex" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="bp0stbvwenlnextIndex" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+  </atts>
+</config-element>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="propertiesToTagsObject" result-type="Array/Any" api-version="6.0.0" id="19412ae9-d892-48d3-92db-f03a309a67ff" version="0.0.0" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="tags" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var tagsArray = new Array();
+if (tags == null) return tagsArray;
+
+for each (var key in tags.keys) {
+    var tag = {"key": key,"value": tags.get(key)};
+    tagsArray.push(tag);
+}
+
+return tagsArray;]]></script>
+</dunes-script-module>

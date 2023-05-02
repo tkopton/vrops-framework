@@ -1,0 +1,74 @@
+<table>
+<tbody>
+<tr>
+<td>
+<p><img src="http://vleet.de/images/logo.svg" alt="vleet Logo" height="80" /></p>
+</td>
+</tr>
+<tr>
+<td>
+<p>Dear {id.name},</p>
+<p>welcome to CoolMail by Daniel Langenhan,</p>
+<p>This software is free to use and to be enjoyed. We are happy to recive feedback and ideas for improvemnet.</p>
+<table style="width: 80%;">
+<tbody>
+<tr>
+<td style="background-color: #e6f2ff;">CoolMail Download</td>
+<td><a href="http://coolmail.vleet.de">coolmail.vleet.de</a></td>
+</tr>
+<tr>
+<td style="background-color: #e6f2ff;">Documentation</td>
+<td><a href="http://coolmail.vleet.de">coolmail.vleet.de</a></td>
+</tr>
+<tr>
+<td style="background-color: #e6f2ff;">Feedback</td>
+<td><a href="mailto:daniel.langenhan@vleet.de">daniel.langenhan@vleet.de</a></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>
+<p>Here are teh values you entered into the CoolMail test workflow in your vRealize Orchestrator.</p>
+<p>First we have some things you entered, such as your name <strong>"{id.name}"</strong> and the reason you are trying out coolMail <strong>"{id.try}"</strong></p>
+<p>Secondly we have a table that fills up with the array you entered:</p>
+<table style="width: 80%;" border="1" cellspacing="2" cellpadding="2">
+<tbody>
+<tr>
+<td style="background-color: #e6f2ff;"><strong>Array Counter</strong></td>
+<td style="background-color: #e6f2ff;"><strong>Array Value</strong></td>
+</tr>
+<!--{repeat.start}-->
+<tr>
+<td>{repeat.counter}</td>
+<td>{repeat.value}</td>
+</tr>
+<!--{repeat.end}--></tbody>
+</table>
+<p>last but not least we have a table that shows two value that are derived from properties. In this case all the plugins and their version that are installed on your vRO.</p>
+<p>&nbsp;</p>
+<table style="width: 80%;" border="1" cellspacing="2" cellpadding="2">
+<tbody>
+<tr>
+<td style="background-color: #e6f2ff;"><strong>Plugin</strong></td>
+<td style="background-color: #e6f2ff;"><strong>Version</strong></td>
+</tr>
+<!--{plugins.start}-->
+<tr>
+<td>{plugins.name}</td>
+<td>{plugins.value}</td>
+</tr>
+<!--{plugins.end}--></tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>

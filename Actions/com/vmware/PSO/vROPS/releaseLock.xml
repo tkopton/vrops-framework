@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="releaseLock" result-type="void" api-version="6.0.0" id="40f0d5bf-10de-4aaf-b61a-2d1caf872869" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="objectName" t="string"><![CDATA[]]></param>
+  <param n="lockOwner" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[LockingSystem.unlock(objectName , lockOwner);]]></script>
+</dunes-script-module>

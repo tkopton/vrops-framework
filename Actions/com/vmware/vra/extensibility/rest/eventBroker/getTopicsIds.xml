@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getTopicsIds" result-type="Array/string" api-version="6.0.0" id="fa549b42-453f-48ae-b7db-8df006f12915" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.eventBroker">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Default page size is 20, totalNumber is 43 in 8.2
+var parameters = encodeURI("$orderby=name asc");
+var objects = System.getModule("com.vmware.vra.extensibility.rest.eventBroker").getTopics(restHost,username,password, customHeaders, parameters);
+return System.getModule("com.vmware.vra.extensibility.rest").getObjectsProperty(objects, "id");]]></script>
+</dunes-script-module>

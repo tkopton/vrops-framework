@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="assigns_a_vCenter_Tag_to_a_VM" result-type="string" api-version="6.0.0" id="d3a1c045-5e27-4dcb-8f41-2293b7f0d992" version="0.0.0" category-name="com.vmware.cse.vapi">
+  <param n="endpoint" t="VAPI:VAPIEndpoint"><![CDATA[VAPI Endpoint]]></param>
+  <param n="tagId" t="string"><![CDATA[ID of the vCenter Tag]]></param>
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM to which tag will be assigned]]></param>
+  <script encoded="false"><![CDATA[// VMware vRealize Orchestrator action sample
+//
+// This sample assigns a vCenter Tag to a VM
+// 
+// For vRO/VAPI 7.0+
+//
+// Action Inputs:
+// endpoint - VAPIEndpoint - VAPI Endpoint
+// tagId - string - ID of the vCenter Tag
+// vm - VC:VirtualMachine - VM to which tag will be assigned
+//
+// Return type: void
+
+//Prep VM VAPI reference object
+var vapiVm = new com_vmware_vapi_std_dynamic__ID() ;
+vapiVm.id = vm.id;
+vapiVm.type = "VirtualMachine";
+ 
+//Associate VM to tag:
+var client = endpoint.client();
+var assocService = new com_vmware_cis_tagging_tag__association(client);
+assocService.attach(tagId , vapiVm)]]></script>
+</dunes-script-module>

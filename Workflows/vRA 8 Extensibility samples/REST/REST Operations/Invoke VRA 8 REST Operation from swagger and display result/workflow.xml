@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item4" object-name="workflow:name=generic" id="c6367457-c155-4461-80be-03935d4ac8d3" version="0.0.1" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Invoke VRA 8 REST Operation from swagger and display result]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="restHost" type="REST:RESTHost"/>
+    <param name="operation" type="string"/>
+    <param name="url" type="string"/>
+    <param name="content" type="string"/>
+    <param name="username" type="string"/>
+    <param name="password" type="SecureString"/>
+    <param name="service" type="string"/>
+    <param name="parameters" type="Array/string"/>
+  </input>
+  <attrib name="customHeaders" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[{}]]></value>
+  </attrib>
+  <attrib name="serviceSwaggerProp" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[{11:57:Code Stream=string#/pipeline/api/swagger/v2/api-docs?group=2019-10-17
+9:63:Blueprint=string#/blueprint/api/swagger/swagger-api-docs?group=2019-09-12
+9:48:Approvals=string#/approval/api/swagger/swagger/v2/api-docs
+8:32:Identity=string#/identity/doc/v3/api-docs
+10:46:Relocation=string#/relocation/api/swagger/ui/swagger.json
+7:67:Catalog=string#/deployment/api/swagger/swagger/v2/api-docs?group=2020-08-25
+27:25:Infrastructure as a Service=string#/iaas/api/swagger/
+}]]></value>
+  </attrib>
+  <attrib name="contentAsString" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="defaultRestHost" type="REST:RESTHost" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="restHost"/>
+  <attrib name="defaultUsername" type="string" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="defaultPassword" type="SecureString" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="password"/>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="640.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task" script-module="com.vmware.vra.extensibility/invokeRestOperation">
+    <display-name><![CDATA[invokeRestOperation]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost,operation,url,content,customHeaders,parameters);
+]]></script>
+    <in-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="operation" type="string" export-name="operation"/>
+      <bind name="url" type="string" export-name="url"/>
+      <bind name="content" type="string" export-name="content"/>
+      <bind name="customHeaders" type="Properties" export-name="customHeaders"/>
+      <bind name="parameters" type="Array/string" export-name="parameters"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="contentAsString"/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item3" type="task" script-module="com.vmware.vra.extensibility/getvRA8CustomHeaders">
+    <display-name><![CDATA[getvRA8CustomHeaders]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost,username,password);
+]]></script>
+    <in-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="customHeaders"/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="240.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

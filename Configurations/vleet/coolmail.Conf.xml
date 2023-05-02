@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="5dcabcec-507b-4a89-9475-906b6c275007" version="0.0.0">
+  <display-name><![CDATA[coolmail.Conf]]></display-name>
+  <atts>
+    <att name="mailServer" type="string" read-only="false">
+      <value encoded="n"><![CDATA[mail.akhwien.at]]></value>
+    </att>
+    <att name="smtpPass" type="SecureString" read-only="false"/>
+    <att name="smtpUser" type="string" read-only="false">
+      <value encoded="n"><![CDATA[]]></value>
+    </att>
+    <att name="smtpPort" type="number" read-only="false">
+      <value encoded="n"><![CDATA[25.0]]></value>
+    </att>
+    <att name="smtpFromName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[v01vra97]]></value>
+    </att>
+    <att name="smtpSSL" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[false]]></value>
+    </att>
+    <att name="smtpFromMail" type="string" read-only="false">
+      <value encoded="n"><![CDATA[zvra@akhwien.at]]></value>
+    </att>
+    <att name="smtpStartTLS" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[false]]></value>
+    </att>
+    <att name="debugFlag" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[false]]></value>
+    </att>
+  </atts>
+</config-element>

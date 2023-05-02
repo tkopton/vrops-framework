@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="53beae0e-6d90-44c9-8afa-644788b5559a" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Config Elements]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="configCategoryPath" type="string"/>
+  </input>
+  <attrib name="configElelemts" type="Array/ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.tkopton/getConfigElement">
+    <display-name><![CDATA[getConfigElement]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.tkopton").getConfigElement(configCategoryPath) ;]]></script>
+    <in-binding>
+      <bind name="configCategoryPath" type="string" export-name="configCategoryPath"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/ConfigurationElement" export-name="configElelemts"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Numer of config elements: " + configElelemts.length);
+
+for (i = 0; i < configElelemts.length; i++) {
+	for (j = 0; j < configElelemts[i].attributes.length; j++) {
+		System.log("Attribute = " + configElelemts[i].attributes[j].name + " Value = " + configElelemts[i].attributes[j].value);
+	}
+}
+
+	]]></script>
+    <in-binding>
+      <bind name="configElelemts" type="Array/ConfigurationElement" export-name="configElelemts"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="configCategoryPath">
+      <desc><![CDATA[configCategoryPath]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

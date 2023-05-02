@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="616b129f-ba2b-4ba0-bd29-badd2f2abffa" version="0.0.1" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Job Status from Salt Stack Call]]></display-name>
+  <description><![CDATA[Call a Salt Stack Config Server via RPC API]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="saltHost" type="string">
+      <description><![CDATA[Salt Stack Config Host in format: https://<fqdn or IP>]]></description>
+    </param>
+    <param name="username" type="string">
+      <description><![CDATA[Username of the Salt Stack Config Server]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Password of the Salt Stack Config Server. Must have the access to call the method]]></description>
+    </param>
+    <param name="validateSSL" type="boolean">
+      <description><![CDATA[Should be set to false]]></description>
+    </param>
+    <param name="jobId" type="string"/>
+  </input>
+  <attrib name="response" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[{}]]></value>
+    <description><![CDATA[Response of the Salt Stack Call]]></description>
+  </attrib>
+  <attrib name="obj1" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj2" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj3" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj4" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj5" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj6" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj7" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj8" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj9" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj10" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="hasReturn" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="delay" type="number" read-only="false">
+    <value encoded="n"><![CDATA[10.0]]></value>
+  </attrib>
+  <attrib name="hasErrors" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="minionId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="executionTime" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="errorMessage" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="command" type="string" read-only="false">
+    <value encoded="n"><![CDATA[cmd.get_cmd_details]]></value>
+    <description><![CDATA[Format:
+<interface><method>
+eg. cmd.route_cmd
+all methods without ()
+e.g. get_versions instead of get_versions()]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="920.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task" script-module="com.vmware.pso.drv.demo/callSalt">
+    <display-name><![CDATA[callSalt]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.pso.drv.demo").callSalt(saltHost,username,password,validateSSL,command,obj1,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10);
+]]></script>
+    <in-binding>
+      <bind name="saltHost" type="string" export-name="saltHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="validateSSL" type="boolean" export-name="validateSSL"/>
+      <bind name="command" type="string" export-name="command">
+        <description><![CDATA[<interface>.<method> without()]]></description>
+      </bind>
+      <bind name="obj1" type="string" export-name="obj1">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj2" type="string" export-name="obj2">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj3" type="string" export-name="obj3">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj4" type="string" export-name="obj4">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj5" type="string" export-name="obj5">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj6" type="string" export-name="obj6">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj7" type="string" export-name="obj7">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj8" type="string" export-name="obj8">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj9" type="string" export-name="obj9">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj10" type="string" export-name="obj10">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="response"/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[Prepare Inputs]]></display-name>
+    <script encoded="false"><![CDATA[var parameters = ["jid=" + '"' + jobId + '"'] 
+if(parameters != null && parameters.length !=0){
+    if(parameters.length > 10){
+        throw("Maximal 10 parameters allowed.")
+    }else{
+        obj1 = getObj(parameters[0])
+        obj2 = getObj(parameters[1])
+        obj3 = getObj(parameters[2])
+        obj4 = getObj(parameters[3])
+        obj5 = getObj(parameters[4])
+        obj6 = getObj(parameters[5])
+        obj7 = getObj(parameters[6])
+        obj8 = getObj(parameters[7])
+        obj9 = getObj(parameters[8])
+        obj10 = getObj(parameters[8])
+    }
+}
+System.warn("obj: " + obj1)
+System.warn("obj: " + obj2)
+function getObj (parameter){
+    if(parameter != null && parameter != ""){
+        if(parameter.indexOf("=") != -1){
+            var tmp = parameter.split("=")
+            var key = tmp[0]
+            if(key.indexOf('"') != -1){
+
+            }else{
+                key = '"' + key + '"'
+            }
+            var value = tmp[1]
+            return '{' + key + ':' + value + '}'
+        }else{
+            throw('Parameters must be in format: parameter=parameter_value. eg. job_uuid="1234567890"')
+        }
+    }else{
+        return "{}"
+    }
+}]]></script>
+    <in-binding>
+      <bind name="jobId" type="string" export-name="jobId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="obj1" type="string" export-name="obj1"/>
+      <bind name="obj2" type="string" export-name="obj2"/>
+      <bind name="obj3" type="string" export-name="obj3"/>
+      <bind name="obj4" type="string" export-name="obj4"/>
+      <bind name="obj5" type="string" export-name="obj5"/>
+      <bind name="obj6" type="string" export-name="obj6"/>
+      <bind name="obj7" type="string" export-name="obj7"/>
+      <bind name="obj8" type="string" export-name="obj8"/>
+      <bind name="obj9" type="string" export-name="obj9"/>
+      <bind name="obj10" type="string" export-name="obj10"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item5" type="task">
+    <display-name><![CDATA[Get Job ID]]></display-name>
+    <script encoded="false"><![CDATA[if(response){
+    var result = response.response[1].results[0]
+    if(!result){
+        hasReturn = false
+    }else{
+        hasReturn = result.has_return
+        hasErrors = result.has_errors
+        minionId = result.minion_id
+        executionTime = result.alter_time
+        System.warn("Has Return: " + hasReturn)
+    }
+}]]></script>
+    <in-binding>
+      <bind name="response" type="Properties" export-name="response"/>
+    </in-binding>
+    <out-binding>
+      <bind name="hasReturn" type="boolean" export-name="hasReturn"/>
+      <bind name="hasErrors" type="boolean" export-name="hasErrors"/>
+      <bind name="minionId" type="string" export-name="minionId"/>
+      <bind name="executionTime" type="string" export-name="executionTime"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="400.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item7" type="condition" alt-out-name="item8" comparator="0">
+    <display-name><![CDATA[Has Return?]]></display-name>
+    <script encoded="false"><![CDATA[// Generated by the system, cannot be edited
+return (hasReturn === true);]]></script>
+    <in-binding>
+      <bind name="hasReturn" type="boolean" export-name="hasReturn"/>
+    </in-binding>
+    <out-binding/>
+    <condition name="hasReturn" type="boolean" comparator="0" label="null"/>
+    <description><![CDATA[Custom decision based on a custom script.]]></description>
+    <position y="50.0" x="540.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item9" type="condition" alt-out-name="item10" comparator="0">
+    <display-name><![CDATA[Has Errors?]]></display-name>
+    <script encoded="false"><![CDATA[// Generated by the system, cannot be edited
+return (hasErrors === false);]]></script>
+    <in-binding>
+      <bind name="hasErrors" type="boolean" export-name="hasErrors"/>
+    </in-binding>
+    <out-binding/>
+    <condition name="hasErrors" type="boolean" comparator="1" label="null"/>
+    <description><![CDATA[Custom decision based on a custom script.]]></description>
+    <position y="50.0" x="660.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item1" type="link" linked-workflow-id="38c58a78-0460-4b5c-b449-c754042d8501">
+    <display-name><![CDATA[Improve Sleep]]></display-name>
+    <in-binding>
+      <bind name="delay" type="number" export-name="delay">
+        <description><![CDATA[Time to wait (seconds)]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[ ]]></description>
+    <position y="120.0" x="400.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item0" type="task">
+    <display-name><![CDATA[out]]></display-name>
+    <script encoded="false"><![CDATA[System.log("The Job with Id: " + jobId + " has been finished with no errors.")
+System.log("Interface.methode: " + command)
+System.log("Minion ID: " + minionId)
+System.log("Execution Time: " + executionTime)
+]]></script>
+    <in-binding>
+      <bind name="command" type="string" export-name="command"/>
+      <bind name="jobId" type="string" export-name="jobId"/>
+      <bind name="hasErrors" type="boolean" export-name="hasErrors"/>
+      <bind name="executionTime" type="string" export-name="executionTime"/>
+      <bind name="minionId" type="string" export-name="minionId"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="780.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item11" catch-name="item11" throw-bind-name="errorMessage" type="task">
+    <display-name><![CDATA[error]]></display-name>
+    <script encoded="false"><![CDATA[errorMessage = "The Job with ID: " + jobId + " finished with errors."]]></script>
+    <in-binding>
+      <bind name="jobId" type="string" export-name="jobId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorMessage" type="string" export-name="errorMessage"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="115.0" x="660.0"/>
+  </workflow-item>
+  <workflow-item name="item11" throw-bind-name="errorMessage" type="end" end-mode="1">
+    <in-binding/>
+    <position y="170.0" x="700.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

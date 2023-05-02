@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getTagsNames" result-type="Array/string" api-version="6.0.0" id="88371f24-1e71-4400-9935-b838d3364800" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.cse.vapi">
+  <param n="vc" t="VC:SdkConnection"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var endpoint = VAPIManager.findEndpoint("https://"+ vc.id + "/api");
+var client = endpoint.client();
+var service = new com_vmware_cis_tagging_tag(client);
+var list = service.list();
+
+var tagsNames = new Array();
+for each (var tagId in list) {
+    tagsNames.push(service.get(tagId).name);  
+}
+
+return tagsNames;]]></script>
+</dunes-script-module>

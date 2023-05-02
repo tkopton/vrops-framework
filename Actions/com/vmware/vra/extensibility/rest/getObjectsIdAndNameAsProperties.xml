@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getObjectsIdAndNameAsProperties" result-type="Properties" api-version="6.0.0" id="97bec983-9e8b-41ac-9df9-66bb188f57e9" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.vra.extensibility.rest">
+  <description><![CDATA[Return a properties object with object id for key and the object name for value. Used for Service Broker dropdowns]]></description>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="url" t="string"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || url == null) return null;
+
+var objects = System.getModule("com.vmware.vra.extensibility.rest").getObjects(restHost,username,password,customHeaders,url, parameters);
+
+var properties = new Properties();
+
+for each (var object in objects) {
+    properties.put(object.id, object.name);
+}
+return properties;]]></script>
+</dunes-script-module>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getUserRequestFieldFromRef" result-type="string" api-version="6.0.0" id="881ab8b9-3a6e-4995-8f74-a5d91be84024" version="0.0.1" allowed-operations="evf" category-name="com.vmware.coe.itop">
+  <description><![CDATA[Returns the first returned value for the given request field. For example, get the start_date for Helpdesk Request R-000029]]></description>
+  <param n="auth_user" t="string"><![CDATA[iTOP API Username]]></param>
+  <param n="auth_pwd" t="SecureString"><![CDATA[iTOP API Password]]></param>
+  <param n="restOperation" t="REST:RESTOperation"><![CDATA[REST Operation]]></param>
+  <param n="refId" t="string"><![CDATA[Request ID (IE: R-000012)]]></param>
+  <param n="requestField" t="string"><![CDATA[Field to return]]></param>
+  <script encoded="false"><![CDATA[if (auth_user == null || auth_pwd == null || restOperation == null || refId == null || requestField == null) return null;
+
+var data = new data("core/get","UserRequest", "SELECT UserRequest WHERE ref = '"+refId+"'", requestField);
+var inputData = JSON.stringify(data);
+//System.log("JSON Input DATA : " + inputData);
+var content = "";
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, content);
+request.contentType = "application/json";
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+//System.log("Response: " + response);
+statusCodeAttribute = response.statusCode;
+System.log("Status code: " + statusCodeAttribute);
+contentAsString = response.contentAsString;
+//System.log("Content as string: " + contentAsString);
+var jsonResponse = JSON.parse(contentAsString);
+
+for each (obj in jsonResponse.objects){
+	System.log("Class: "+obj["class"]);
+	System.log("Ref: "+obj.fields.ref);
+	var objFields = obj.fields;
+	var fieldsArray = System.getModule("com.vmware.coe.json").getJSONstringAsArrayOfStrings(JSON.stringify(objFields));
+	for each (field in fieldsArray){
+		return System.getModule("com.vmware.pso.custom").replaceToken(field.split('":"')[1],'"','');
+	}
+}
+
+function data(operation,className,key,outPutFields)
+{
+	this["operation"]=operation;
+	this["class"]=className;
+	this["key"]=key;
+	this["output_fields"]=outPutFields;
+}]]></script>
+</dunes-script-module>

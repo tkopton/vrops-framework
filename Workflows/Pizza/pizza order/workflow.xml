@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="3318d2ed-6a55-4bc0-8745-e7ed42054dbf" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[pizza order]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="pizza" type="string">
+      <description><![CDATA[Choose your pizza]]></description>
+    </param>
+    <param name="toppingOne" type="string">
+      <description><![CDATA[Choose additional topping one]]></description>
+    </param>
+    <param name="toppingTwo" type="string">
+      <description><![CDATA[Choose additional topping two]]></description>
+    </param>
+    <param name="toppingThree" type="string">
+      <description><![CDATA[Choose additional topping three]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="1e76c22a-dd16-4be7-9fcd-25005bbb3d6f">
+    <display-name><![CDATA[send mail]]></display-name>
+    <in-binding>
+      <bind name="toppingTwo" type="string" export-name="toppingTwo"/>
+      <bind name="toppingOne" type="string" export-name="toppingOne"/>
+      <bind name="toppingThree" type="string" export-name="toppingThree"/>
+      <bind name="pizzaName" type="string" export-name="pizza"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="pizza">
+      <desc><![CDATA[Choose your pizza]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("sandbox","getPizzas").call()]]></p-qual>
+    </p-param>
+    <p-param name="toppingOne">
+      <desc><![CDATA[Choose additional topping one]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("sandbox","getToppings").call()]]></p-qual>
+    </p-param>
+    <p-param name="toppingTwo">
+      <desc><![CDATA[Choose additional topping two]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("sandbox","getToppings").call()]]></p-qual>
+    </p-param>
+    <p-param name="toppingThree">
+      <desc><![CDATA[Choose additional topping three]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("sandbox","getToppings").call()]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

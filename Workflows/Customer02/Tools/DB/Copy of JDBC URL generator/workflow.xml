@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="Workflow:name=generic" id="ce9922dc-db04-4cd7-b848-cbc0005b1184" version="0.1.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Copy of JDBC URL generator]]></display-name>
+  <description><![CDATA[Sollicits information to generate a connection URL for JDBC database connections. The workflow emits the connection string it generates as output via the system log, and confirms the string can create a connection to the specified database.]]></description>
+  <position y="0.0" x="160.0"/>
+  <input>
+    <param name="dbServer" type="string">
+      <description><![CDATA[Database server name / IP address]]></description>
+    </param>
+    <param name="dbPort" type="string">
+      <description><![CDATA[DAtabase port number]]></description>
+    </param>
+    <param name="dbName" type="string">
+      <description><![CDATA[Database name]]></description>
+    </param>
+    <param name="dbInstance" type="string">
+      <description><![CDATA[Database instance name]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Password]]></description>
+    </param>
+    <param name="user" type="string">
+      <description><![CDATA[Username]]></description>
+    </param>
+    <param name="dbDomain" type="string">
+      <description><![CDATA[Database domain name]]></description>
+    </param>
+    <param name="dbType" type="string">
+      <description><![CDATA[Database type]]></description>
+    </param>
+    <param name="useNTLMv2" type="boolean">
+      <description><![CDATA[Use NTLMv2 Windows authentication]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="jdbcString" type="string"/>
+    <param name="dbUser" type="string"/>
+    <param name="dbUserPass" type="SecureString"/>
+  </output>
+  <attrib name="url" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[JDBC connection URL]]></description>
+  </attrib>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="218.13636363636363" x="165.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[build url string]]></display-name>
+    <script encoded="false"><![CDATA[switch( dbType ) {
+	case "SQL Server/MSDE":
+		//Microsoft SQL Server
+		if(dbPort == null || dbPort == "")
+		{
+			dbPort="1433"; 
+		}
+		var url = "jdbc:jtds:sqlserver://"+dbServer+":"+dbPort+"/"+dbName;
+		// Add an Instance if value exists:
+		if(dbInstance != null && dbInstance != "")
+		{
+			url = url + ";instance="+dbInstance;
+		}
+		// Add a Domain if value exists:
+		if(dbDomain != null && dbDomain != "")
+		{
+			url = url + ";domain="+dbDomain; 
+		}
+		// Use NTLMv2 Windows authentication
+		if(useNTLMv2) {
+			url = url + ";useNTLMv2=true";
+		}
+		break;
+	case "Oracle":
+		// Oracle
+		if(dbPort == null || dbPort == "")
+		{
+			dbPort="1521"; 
+		}
+		var url = "jdbc:oracle:thin:@" + dbServer + ":" + dbPort + ":" + dbName;
+		break;
+	case "Postgres":
+		if(dbPort == null || dbPort == "")
+		{
+			dbPort="5432"; 
+		}
+		var url = "jdbc:postgresql://"+dbServer+":"+dbPort+"/"+dbName;
+		break;
+	case "mySQL":
+		if(dbPort == null || dbPort == "")
+		{
+			dbPort="3306"; 
+		}
+		var url = "jdbc:mysql://" + dbServer + ":" + dbPort +  "/" + dbName;
+		break;
+}
+System.log("Connection String: "+url);]]></script>
+    <in-binding>
+      <bind name="dbServer" type="string" export-name="dbServer"/>
+      <bind name="dbPort" type="string" export-name="dbPort"/>
+      <bind name="dbName" type="string" export-name="dbName"/>
+      <bind name="dbInstance" type="string" export-name="dbInstance"/>
+      <bind name="dbDomain" type="string" export-name="dbDomain"/>
+      <bind name="dbType" type="string" export-name="dbType"/>
+      <bind name="useNTLMv2" type="boolean" export-name="useNTLMv2">
+        <description><![CDATA[Use NTLMv2 Windows authentication]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="url" type="string" export-name="url"/>
+    </out-binding>
+    <position y="60.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="link" linked-workflow-id="81808080808080808080808080808080AF8680800117924212373419438ed48b5">
+    <display-name><![CDATA[Test connection]]></display-name>
+    <in-binding>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="url" type="string" export-name="url"/>
+      <bind name="user" type="string" export-name="user"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Test JDBC connection]]></description>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[output]]></display-name>
+    <script encoded="false"><![CDATA[jdbcString=url;
+dbUser=user;
+dbUserPass=password;]]></script>
+    <in-binding>
+      <bind name="url" type="string" export-name="url"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="user" type="string" export-name="user"/>
+    </in-binding>
+    <out-binding>
+      <bind name="jdbcString" type="string" export-name="jdbcString"/>
+      <bind name="dbUser" type="string" export-name="dbUser"/>
+      <bind name="dbUserPass" type="SecureString" export-name="dbUserPass"/>
+    </out-binding>
+    <position y="164.5" x="125.0"/>
+  </workflow-item>
+  <presentation>
+    <desc><![CDATA[Enter as much of the information below as possible. Once complete, submit and review the logs to get your connection url. You may then use the connection url in your own DB integrations.]]></desc>
+    <p-group>
+      <title><![CDATA[General]]></title>
+      <desc><![CDATA[All fields are required here except for dbPort. If port number is not specified, the following defaults will be used:<br>
+PostgreSQL: 5432<br>
+SQL Server/MSDE: 1433<br>
+Oracle: 1521<br>
+MySQL: 3306 <br>
+]]></desc>
+      <p-param name="dbType">
+        <desc><![CDATA[Please select the type of database]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#SQL Server/MSDE#;#string#Oracle#;#string#Postgres#;#string#mySQL#}#]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="dbServer">
+        <desc><![CDATA[Database server name / IP address]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="dbName">
+        <desc><![CDATA[Database name]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="dbPort">
+        <desc><![CDATA[Database port (if necessary)]]></desc>
+      </p-param>
+      <p-param name="user">
+        <desc><![CDATA[Username]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="password">
+        <desc><![CDATA[Password]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-group>
+    <p-group>
+      <title><![CDATA[Microsoft]]></title>
+      <desc><![CDATA[Microsoft specific details: Instance name may be needed. Additionally, the domain name is needed if using Windows Authentication.]]></desc>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#dbType=="SQL Server/MSDE"]]></p-qual>
+      <p-param name="dbInstance">
+        <desc><![CDATA[Database instance name]]></desc>
+      </p-param>
+      <p-param name="dbDomain">
+        <desc><![CDATA[Database domain name]]></desc>
+      </p-param>
+      <p-param name="useNTLMv2">
+        <desc><![CDATA[Use NTLMv2 Windows authentication]]></desc>
+        <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[false]]></p-qual>
+      </p-param>
+    </p-group>
+  </presentation>
+</workflow>

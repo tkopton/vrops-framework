@@ -1,0 +1,1 @@
+{"layout":{"pages":[{"id":"page_1","title":"General","sections":[{"id":"section_0","fields":[{"id":"delay","display":"decimalField"}]}]}]},"schema":{"delay":{"type":{"dataType":"decimal","isMultiple":false},"label":"Time to wait (seconds)","id":"delay","constraints":{}}}}

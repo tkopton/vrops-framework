@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="TemplateValidator" result-type="void" api-version="6.0.0" id="2c42f077-a9af-4d8a-9537-3b8048ed9b05" version="0.0.3" allowed-operations="evf" category-name="com.vmware.pscoe.pspps.customhostname.validation">
+  <description><![CDATA[Validations for custom hostname generation. The validations will be applied for the hostname template and hostname string in the installation/configuration and provisioning phases.]]></description>
+  <script encoded="false"><![CDATA[var TemplateValidator = (function(){
+	// private members
+	var defaultTemplateValue = "VirtualMachineName-";
+	
+	function applyDefaultSettings(hostnameTemplate) {
+		if(!hostnameTemplate) { 
+			System.log("Cannot use empty hostname template. A default value will be applied: " + defaultTemplateValue); 
+			hostnameTemplate = defaultTemplateValue;
+		}
+		return hostnameTemplate;
+	}
+	function validateOverflow(hostnameTemplate){
+		if( hostnameTemplate.indexOf("################") > -1 ) {
+			throw "Cannot use templates with values bigger than 9.(9)*10^15"; 
+		}
+	}
+	function specialCharactersConfiguration(hostnameTemplate) {
+		if(!(/^[a-zA-Z0-9-_.{}\#]*$/.test(hostnameTemplate))) { 
+		    throw 'Hostname template contains illegal characters. Allowed symbols: "a-z", "A-Z", "0-9", ".", "-" and "_"';
+		}
+	}
+	function specialCharactersProvisioning(hostname) {
+		if(!(/^[a-zA-Z0-9-_.]*$/.test(hostname))) { 
+		    throw 'Hostname contains illegal characters. Allowed symbols: "a-z", "A-Z", "0-9", ".", "-" and "_"';
+		}
+	}
+	
+	function prepareTemplate(hostnameTemplate) {
+		hostnameTemplate = applyDefaultSettings(hostnameTemplate);
+		validateOverflow(hostnameTemplate);
+		specialCharactersConfiguration(hostnameTemplate);
+		return hostnameTemplate;
+	}
+	function prepareHostname(hostname) {
+		specialCharactersProvisioning(hostname);
+		return hostname;
+	}
+	// public API
+	return  {
+		validateTemplate: function (hostnameTemplate){
+			return prepareTemplate(hostnameTemplate);
+		},
+		validateHostname: function (hostname){
+			return prepareHostname(hostname);
+		}	
+	}	
+
+})();
+
+return TemplateValidator;]]></script>
+</dunes-script-module>

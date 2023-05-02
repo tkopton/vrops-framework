@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="f427bb03-72e7-43ce-98d9-445de852a3b5" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[executeRESTCall]]></display-name>
+  <description><![CDATA[This workflow executes a REST call using a Resource element (XML) and replaces the content {tag} with information
+
+restURL (string)
+restTarget (string)
+restTemplate (string)
+restType (String)
+restContentType (String)
+restReplacements (properties)
+	{replacment string},value
+
+---------
+var payload = new Properties();
+payload.put("restTemplate","DaimlerBenz/RESTCalls/addSwitch.txt");
+payload.put("restURL","/api/resources/adapterkinds/OPENAPI");
+payload.put("restType","POST");
+payload.put("restContentType","application/xml");
+
+var restReplacements = new Properties();
+restReplacements.put("switch.name","DLTest");
+restReplacements.put("switch.ip","192.168.220.50");
+payload.put("restReplacements",restReplacements);]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <output>
+    <param name="restResponce" type="string"/>
+    <param name="restStatus" type="number"/>
+  </output>
+  <attrib name="RESTHost" type="REST:RESTHost" read-only="false" conf-id="9f16cb09-818d-4334-8216-b1311fe5ca01" conf-key="restHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="debug_switch" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="564.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[REST Call]]></display-name>
+    <script encoded="false"><![CDATA[//replacment function
+function replace(text,replacProps){
+	for each (key in replacProps.keys){
+		regex=new RegExp("\{"+key+"\}","g");
+		text=text.replace(regex,replacProps.get(key)); 
+	}
+	return text;
+}
+//get RESTCall Template
+restTemp=(payload.get("restTemplate")).split("/");
+restTemplate=restTemp.pop();
+restTemplatePath=restTemp.join("/");
+restTemplateCat=Server.getResourceElementCategoryWithPath(restTemplatePath);
+for each (template in restTemplateCat.resourceElements){
+	if (template.name == restTemplate ){
+		System.log("using Template "+template.name);
+		restContent=template.getContentAsMimeAttachment().content;				
+	}
+}
+
+//Prep Call
+
+restReplacements=payload.get("restReplacements");
+keys=restReplacements.keys;
+if (keys.indexOf("restTarget")>=0){
+	restURL=replace(payload.get("restURL"),restReplacements);
+} else {
+	restURL=payload.get("restURL");
+}
+restType=payload.get("restType");
+//consturct content
+restContent=replace(restContent,restReplacements);
+
+//debug Switch
+if (debug_switch){
+	System.log("********* REST DEBUG *******");
+	System.log(restType+" "+restURL);
+	System.log(restContent);
+	System.log("****************************");
+}
+
+//execute Call
+var request  = RESTHost.createRequest(restType, restURL, restContent);
+request.contentType = payload.get("restContentType");
+var response = request.execute();
+
+restStatus=parseInt(response.statusCode);
+System.log("Status code: " + restStatus);
+
+restResponce=response.contentAsString;
+
+]]></script>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="debug_switch" type="boolean" export-name="debug_switch"/>
+    </in-binding>
+    <out-binding>
+      <bind name="restResponce" type="string" export-name="restResponce"/>
+      <bind name="restStatus" type="number" export-name="restStatus"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

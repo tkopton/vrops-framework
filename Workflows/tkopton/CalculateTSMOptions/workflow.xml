@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="6a1c31d9-13ed-4a00-818e-5ee168586b33" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[CalculateTSMOptions]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="VM_NAME" type="string"/>
+    <param name="OS" type="string"/>
+    <param name="DATACENTER" type="string"/>
+    <param name="BSERVICE" type="string"/>
+    <param name="SECZONE" type="string"/>
+    <param name="EXPORT" type="string"/>
+    <param name="VADP" type="string"/>
+    <param name="CHANGE" type="string"/>
+  </input>
+  <output>
+    <param name="ISP_SERVER" type="string"/>
+    <param name="VADP_SERVER" type="string"/>
+    <param name="VADP_DAY" type="string"/>
+    <param name="VADP_SCRIPT" type="string"/>
+    <param name="INCR_START" type="string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[calculateOptions]]></display-name>
+    <script encoded="false"><![CDATA[VM_NAME = VM_NAME.toUpperCase();
+OS = OS.toUpperCase();
+DATACENTER = DATACENTER.toUpperCase();
+BSERVICE = BSERVICE.toUpperCase();
+SECZONE = SECZONE.toUpperCase();
+EXPORT = EXPORT.toUpperCase();
+VADP = VADP.toUpperCase();
+CHANGE =CHANGE.toUpperCase();
+var random_days = new Array();
+var random_times = new Array
+
+// BONN    
+if ( DATACENTER == "BNH" ) {
+    // TLCBON01
+    if ( BSERVICE == "SASPF" ) {
+        ISP_SERVER = "TLCBON01";
+        VADP_SERVER = "VM_DM_BNH01";
+        random_days = ["WEDNESDAY", "SATURDAY"];
+    } else {
+    // TLCBON02
+        ISP_SERVER = "TLCBON02";
+        VADP_SERVER = "VM_DM_BNH02";
+        random_days = ["WEDNESDAY", "SATURDAY"];
+    }
+	var randomIndex = Math.floor(Math.random() * random_days.length); 
+	var VADP_DAY = random_days[randomIndex];
+}
+
+// PORZ
+if ( DATACENTER == "PRZ" ) {
+    // TLCPRZD1
+    if ( SECZONE == "DMZ" ) {
+        ISP_SERVER = "TLCPRZD1";
+        if ( EXPORT == "JA" ) {
+            VADP_SERVER = "VM_DM_PRZD1";
+            VADP_DAY = "SATURDAY";
+        } else {
+            VADP_SERVER = "VM_DM_PRZD1_NC";
+            VADP_DAY = "SUNDAY";
+        }
+       
+    } else if ( BSERVICE == "KVLNBW" ) {
+    // TLCPRZ01
+        ISP_SERVER = "TLCPRZ01";
+        VADP_SERVER = "VM_DM_PRZ03";
+        random_days = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','SATURDAY','SUNDAY'];
+        var randomIndex = Math.floor(Math.random() * random_days.length); 
+		var VADP_DAY = random_days[randomIndex];
+    } else {
+    // TLCPRZ02 
+        ISP_SERVER = "TLCPRZ02";
+        random_days = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','SATURDAY','SUNDAY'];
+        var randomIndex = Math.floor(Math.random() * random_days.length); 
+		var VADP_DAY = random_days[randomIndex];
+        if ( EXPORT == "JA" ) {
+            VADP_SERVER = "VM_DM_PRZ04";
+        } else {
+            VADP_SERVER = "VM_DM_PRZVDI04_NC";
+        }
+    }
+}
+
+// STRAUSBERG
+if ( DATACENTER == "SRB" ) {
+   // TLCSRBD1
+    if ( SECZONE == "DMZ" ) {
+        ISP_SERVER = "TLCSRBD1";
+        if ( EXPORT == "JA" ) {
+            VADP_SERVER = "VM_DM_SRBD1";
+            VADP_DAY = "SATURDAY";
+        } else {
+            VADP_SERVER = "VM_DM_SRBD1_NC";
+            VADP_DAY = "SUNDAY";
+        }
+       
+    } else if ( SECZONE == "WEWIS" ) {
+    // TLCSRBW2
+        ISP_SERVER = "TLCSRBW2";
+        VADP_SERVER = "VM_DM_SRBW2";
+        VADP_DAY = "SUNDAY";
+    } else if ( BSERVICE == "KVLNBW" ) {
+    // TLCSRB01
+        ISP_SERVER = "TLCSRB01";
+        VADP_SERVER = "VM_DM_SRB03";
+        random_days = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','SATURDAY','SUNDAY'];
+        var randomIndex = Math.floor(Math.random() * random_days.length); 
+		var VADP_DAY = random_days[randomIndex];
+    } else {
+    // TLCSRB02 
+        ISP_SERVER = "TLCSRB02";
+        random_days = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','SATURDAY','SUNDAY'];
+        var randomIndex = Math.floor(Math.random() * random_days.length); 
+		var VADP_DAY = random_days[randomIndex];
+        if ( EXPORT == "JA" ) {
+            VADP_SERVER = "VM_DM_SRB04";
+        } else {
+            VADP_SERVER = "VM_DM_SRBVDI04_NC";
+        }
+    }
+}
+
+// WILHELMSHAVEN
+if ( DATACENTER == "WHV" ) {
+    // TLCWHV01
+    if ( BSERVICE == "SASPF" ) {
+        ISP_SERVER = "TLCWHV01";
+        VADP_SERVER = "VM_DM_WHV03";
+        VADP_DAY = "WEDNESDAY";
+    } else {
+    // TLCWHV02
+        ISP_SERVER = "TLCWHV02";
+        VADP_SERVER = "VM_DM_WHV04";
+        random_days = ['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','SATURDAY','SUNDAY'];
+        var randomIndex = Math.floor(Math.random() * random_days.length); 
+		var VADP_DAY = random_days[randomIndex];
+    }
+}
+
+// Calculating the start time for the file-based backup
+
+random_times = ['20:00','20:15','20:30','20:45','21:00','21:15','21:30','21:45','22:00','22:15','22:30','22:45','23:00','23:15','23:30','23:45','00:00','00:15','00:30','00:45','01:00'];
+var randomIndex = Math.floor(Math.random() * random_times.length); 
+INCR_START = random_times[randomIndex];
+
+if ( VADP == "NEIN" ) {
+    VADP_SERVER = "--";
+    VADP_DAY = "--";
+    VADP_SCRIPT = "--";  
+} else {
+    VADP_SCRIPT = "FULL" + VADP_SERVER + "_" + VADP_DAY +".CMD" 
+    VADP_SCRIPT = VADP_SCRIPT.toUpperCase();  
+}
+]]></script>
+    <in-binding>
+      <bind name="VM_NAME" type="string" export-name="VM_NAME"/>
+      <bind name="OS" type="string" export-name="OS"/>
+      <bind name="DATACENTER" type="string" export-name="DATACENTER"/>
+      <bind name="BSERVICE" type="string" export-name="BSERVICE"/>
+      <bind name="SECZONE" type="string" export-name="SECZONE"/>
+      <bind name="EXPORT" type="string" export-name="EXPORT"/>
+      <bind name="VADP" type="string" export-name="VADP"/>
+      <bind name="CHANGE" type="string" export-name="CHANGE"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ISP_SERVER" type="string" export-name="ISP_SERVER"/>
+      <bind name="VADP_SERVER" type="string" export-name="VADP_SERVER"/>
+      <bind name="VADP_DAY" type="string" export-name="VADP_DAY"/>
+      <bind name="VADP_SCRIPT" type="string" export-name="VADP_SCRIPT"/>
+      <bind name="INCR_START" type="string" export-name="INCR_START"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="VM_NAME">
+      <desc><![CDATA[VM_NAME]]></desc>
+    </p-param>
+    <p-param name="OS">
+      <desc><![CDATA[OS]]></desc>
+    </p-param>
+    <p-param name="DATACENTER">
+      <desc><![CDATA[DATACENTER]]></desc>
+    </p-param>
+    <p-param name="BSERVICE">
+      <desc><![CDATA[BSERVICE]]></desc>
+    </p-param>
+    <p-param name="SECZONE">
+      <desc><![CDATA[SECZONE]]></desc>
+    </p-param>
+    <p-param name="EXPORT">
+      <desc><![CDATA[EXPORT]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#YES#;#string#NO#}#]]></p-qual>
+    </p-param>
+    <p-param name="VADP">
+      <desc><![CDATA[VADP]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#YES#;#string#NO#}#]]></p-qual>
+    </p-param>
+    <p-param name="CHANGE">
+      <desc><![CDATA[CHANGE]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

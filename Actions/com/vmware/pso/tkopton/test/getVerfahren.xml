@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVerfahren" result-type="Array/string" api-version="6.0.0" id="74cbfb1d-fa00-4bf1-a435-dfd09bc5959e" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.pso.tkopton.test">
+  <script encoded="false"><![CDATA[var gpArray = new Array();
+gpArray = gpArray.concat("GP01", "GP02", "GP03");
+
+return gpArray;]]></script>
+</dunes-script-module>

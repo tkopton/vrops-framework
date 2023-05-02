@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="configureReplicationToVc" result-type="VR:Task" api-version="6.0.0" id="33952f84-5e04-4985-a69a-ab20f7d45b30" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vr.configure">
+  <description><![CDATA[Start replicating a virtual machine to a vCenter Server site.]]></description>
+  <param n="remoteSite" t="VR:VcRemoteSite"><![CDATA[]]></param>
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <param n="datastore" t="VR:RemoteDatastore"><![CDATA[]]></param>
+  <param n="rpo" t="number"><![CDATA[]]></param>
+  <param n="quiesceGuestEnabled" t="boolean"><![CDATA[]]></param>
+  <param n="networkCompressionEnabled" t="boolean"><![CDATA[]]></param>
+  <param n="enableMPIT" t="boolean"><![CDATA[]]></param>
+  <param n="instancesPerDay" t="number"><![CDATA[]]></param>
+  <param n="numDays" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var settings = new VRReplicationSettings();
+settings.name = vm.name;
+settings.rpo = rpo;
+settings.quiesceGuestEnabled = quiesceGuestEnabled;
+settings.networkCompressionEnabled = networkCompressionEnabled;
+
+if (enableMPIT) {
+	var retentionPolicyTier = new VRRetentionPolicyTier();
+	retentionPolicyTier.granularityMinutes = Math.floor((24/instancesPerDay)*60);
+	retentionPolicyTier.numSlots = numDays * instancesPerDay;
+	settings.retentionPolicyTiers = [retentionPolicyTier];
+}
+
+return remoteSite.configureReplicationTo(vm.id, datastore.id, settings);]]></script>
+</dunes-script-module>

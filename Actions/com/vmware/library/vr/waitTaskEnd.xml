@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="waitTaskEnd" result-type="void" api-version="6.0.0" id="a5e2c988-4576-4a77-81f2-eb1c493466b2" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vr">
+  <description><![CDATA[Wait for a vCenter Server Task to complete.
+When the task completes, return the task result if any. ]]></description>
+  <param n="task" t="VR:Task"><![CDATA[Task to Wait for]]></param>
+  <script encoded="false"><![CDATA[while (task != null) {
+
+	var name = task.name != null ? "'" + task.name + "' " : "";
+	var state = task.getState();
+	if (state == "success") {
+		System.log("Task " + name + "succeeded");
+		break;
+	}
+	else if (state == "error") {
+		throw "Task " + name + "error: " + task.getErrotMessage();
+	}
+	else if (state == "running") {
+		if(task.getProgress() != null) {
+			System.log("Task " + name + task.getProgress() + "%");
+		}
+		else {
+			System.log("Task " + name + "in progress");
+		}
+	}
+	else if (state == "queued") {
+			System.log("Task " + name + "is queued");
+	}
+		
+	System.sleep(500);
+}
+
+if (task == null) {
+	throw "HMS Task is null";
+}]]></script>
+</dunes-script-module>

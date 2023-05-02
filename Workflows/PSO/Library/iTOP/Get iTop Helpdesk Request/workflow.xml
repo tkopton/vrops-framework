@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="7ef73ac6-f428-4f04-98bd-e4c547f51772" version="1.0.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get iTop Helpdesk Request]]></display-name>
+  <description><![CDATA[Retrieves the fields associated with the specified Helpdesk Request ID (IE: R-000012)]]></description>
+  <position y="0.0" x="65.0"/>
+  <input>
+    <param name="refId" type="string"/>
+    <param name="fields" type="string">
+      <description><![CDATA[Comma delimited list of fields to be returned (returns all if left blank)]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="statusCode" type="number">
+      <description><![CDATA[Status code of the HTTP request]]></description>
+    </param>
+    <param name="contentLength" type="number">
+      <description><![CDATA[Length of the request response]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[Response headers]]></description>
+    </param>
+    <param name="contentAsString" type="string">
+      <description><![CDATA[Response content as string]]></description>
+    </param>
+    <param name="requestCode" type="string"/>
+    <param name="requestMessage" type="string"/>
+    <param name="fieldsArray" type="Array/string"/>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="statusCodeAttribute" type="number" read-only="false"/>
+  <attrib name="restOperation" type="REST:RESTOperation" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="restOperation">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[REST operation to be used for the call]]></description>
+  </attrib>
+  <attrib name="auth_user" type="string" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_user">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <attrib name="auth_pwd" type="SecureString" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_pwd">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item3" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[REST call]]></display-name>
+    <script encoded="false"><![CDATA[if (fields == null || fields.length == 0) var fields = "*";
+
+var data = new data("core/get","UserRequest", "SELECT UserRequest WHERE ref = '"+refId+"'", fields);
+
+var inputData = JSON.stringify(data);
+System.log("JSON Input DATA : " + inputData);
+var content = "";
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, content);
+//set the request content type
+request.contentType = "application/json";
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+//System.log("Response: " + response);
+statusCodeAttribute = response.statusCode;
+System.log("Status code: " + statusCodeAttribute);
+contentLength = response.contentLength;
+headers = response.getAllHeaders();
+contentAsString = response.contentAsString;
+//System.log("Content as string: " + contentAsString);
+System.log("");
+System.log("==== Attempt to retrieve values ====");
+var jsonResponse = JSON.parse(contentAsString);
+var requestCode = jsonResponse.code;
+var requestMessage = jsonResponse.message;
+System.log("Code: "+requestCode);
+System.log("Message: "+requestMessage);
+
+for each (obj in jsonResponse.objects){
+	System.log("Class: "+obj["class"]);
+	System.log("Ref: "+obj.fields.ref);
+	var objFields = obj.fields;
+	var fieldsArray = System.getModule("com.vmware.coe.json").getJSONstringAsArrayOfStrings(JSON.stringify(objFields));
+	for each (field in fieldsArray){
+		//System.log("Field:: "+field);
+		System.log(field.split('":"')[0] + ": " + field.split('":"')[1]);
+	}
+	/*System.log("objFields: "+obj.fields);
+	for (var key in objFields){
+		System.log(key + ": " + objFields[key]);
+	}
+	*/
+	
+}
+
+function data(operation,className,key,outPutFields)
+{
+	this["operation"]=operation;
+	this["class"]=className;
+	this["key"]=key;
+	this["output_fields"]=outPutFields;
+}]]></script>
+    <in-binding>
+      <bind name="auth_user" type="string" export-name="auth_user"/>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd"/>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+      <bind name="refId" type="string" export-name="refId"/>
+      <bind name="fields" type="string" export-name="fields"/>
+    </in-binding>
+    <out-binding>
+      <bind name="statusCode" type="number" export-name="statusCode"/>
+      <bind name="contentLength" type="number" export-name="contentLength"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="contentAsString" type="string" export-name="contentAsString"/>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+      <bind name="requestCode" type="string" export-name="requestCode"/>
+      <bind name="requestMessage" type="string" export-name="requestMessage"/>
+      <bind name="fieldsArray" type="Array/string" export-name="fieldsArray"/>
+    </out-binding>
+    <position y="55.40909090909091" x="25.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="163.59090909090907" x="65.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="99.95454545454544" x="165.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[Check status code]]></display-name>
+    <script encoded="false"><![CDATA[if ( statusCodeAttribute != 200 ) {
+	throw "HTTPError: status code: " + statusCodeAttribute;
+} else {
+	return true;
+}	]]></script>
+    <in-binding>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+    </in-binding>
+    <position y="99.95454545454544" x="25.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Get Helpdesk Ticket Info]]></title>
+      <p-param name="refId">
+        <desc><![CDATA[Reference ID (IE: R-000012): ]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="fields">
+        <desc><![CDATA[Comma delimited list of fields to be returned (returns all if left blank)]]></desc>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[ref, friendlyname]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

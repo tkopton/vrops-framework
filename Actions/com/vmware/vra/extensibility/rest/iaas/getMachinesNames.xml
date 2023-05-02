@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getMachinesNames" result-type="Array/string" api-version="6.0.0" id="af37d55f-4f89-4b99-a609-e98b7378154b" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null) return null;
+var parameters = "$orderby=name%20asc&$top=200";
+return System.getModule("com.vmware.vra.extensibility.rest").getObjectsProperty(restHost,username,password, customHeaders, "/iaas/machines", parameters, "name");
+
+//var objects = System.getModule("com.vmware.vra.extensibility.rest.iaas").getMachines(restHost,username,password, customHeaders, parameters);
+//return System.getModule("com.vmware.vra.extensibility.rest").getObjectsProperty(objects, "name");]]></script>
+</dunes-script-module>

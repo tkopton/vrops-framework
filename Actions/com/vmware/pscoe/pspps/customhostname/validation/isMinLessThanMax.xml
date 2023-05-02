@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isMinLessThanMax" result-type="boolean" api-version="6.0.0" id="eb294e8f-d5b4-4fd1-8370-146d683367b2" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.pspps.customhostname.validation">
+  <param n="min" t="number"><![CDATA[]]></param>
+  <param n="max" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(min < 0 || max < 0) {
+	return false;
+}
+
+//if one of the values is empty
+if(min == null|| max == null) {
+	return true;
+}
+
+
+return min < max;
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="callSalt" result-type="Properties" api-version="6.0.0" id="218d3033-f424-4385-bdb5-e701705ecc6f" version="0.0.2" allowed-operations="vfe" category-name="com.vmware.pso.drv.demo">
+  <description><![CDATA[Call the SALT API]]></description>
+  <runtime><![CDATA[python:3.7]]></runtime>
+  <entry-point><![CDATA[callSalt.handler]]></entry-point>
+  <param n="saltHost" t="string"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="validateSSL" t="boolean"><![CDATA[]]></param>
+  <param n="command" t="string"><![CDATA[<interface>.<method> without()]]></param>
+  <param n="obj1" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj2" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj3" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj4" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj5" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj6" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj7" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj8" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj9" t="string"><![CDATA[{key: value} or {}]]></param>
+  <param n="obj10" t="string"><![CDATA[{key: value} or {}]]></param>
+</dunes-script-module>

@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="generateHostname" result-type="string" api-version="6.0.0" id="ce448b34-8369-495c-aeaf-08ac5199b2a5" version="0.0.7" allowed-operations="evf" category-name="com.vmware.pscoe.pspps.customhostname">
+  <description><![CDATA[Generates a custom hostname based on a template. Example format: {CustomProp1_Value}separator{CustomProp2_Value)separator####.]]></description>
+  <param n="resolvedHostnameTemplate" t="string"><![CDATA[The resolved hostname template (ex: {Prop1_Value}separator{Prop2_Value}separator####) where #'s will be replaced with a generated index]]></param>
+  <param n="minLength" t="number"><![CDATA[]]></param>
+  <param n="maxLength" t="number"><![CDATA[]]></param>
+  <param n="excludedMachineNames" t="Array/string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var Logger = System.getModule("com.vmware.pscoe.library.logging").getLogger();
+
+Logger.debug("Resolved name: " + resolvedHostnameTemplate);
+
+resolvedHostnameTemplate = applyMinMaxLength(resolvedHostnameTemplate, minLength, maxLength);
+
+Logger.debug("Excluded machine names - " + excludedMachineNames);
+
+var digitsPattern, machinePrefix, postfixPattern;
+try {
+	digitsPattern = resolvedHostnameTemplate.match(/#+/)[0];
+	machinePrefix = resolvedHostnameTemplate.match(/^[^#]+/) != null ? resolvedHostnameTemplate.match(/^[^#]+/)[0] : "";
+	postfixPattern = resolvedHostnameTemplate.match(/[^#]+$/) != null ? resolvedHostnameTemplate.match(/[^#]+$/)[0] : "";
+}
+catch (e) {
+	Logger.error(e + "; Empty digits patten, the default will be applied."); // empty prefix or number sufix - error ignore, just log
+}
+
+Logger.debug("digits pattern - " + digitsPattern);
+Logger.debug("machine prefix - " + machinePrefix);
+
+var digits = getNextMachineDigits(machinePrefix, digitsPattern, postfixPattern, excludedMachineNames);
+if(!digitsPattern) { // if no digits pattetn (###) - apply a valid one
+	digitsPattern = formDigitsPattern(digits);
+	resolvedHostnameTemplate += digitsPattern;
+}
+
+var digitsString = System.formatNumber(digits, System.getModule("com.vmware.pscoe.library.util").replaceAll(digitsPattern, "#", "0"));
+
+if(!checkDigitsLength(digits, digitsPattern.length)) {
+	throw new Error("Digits exceeds maximum length of " + digitsPattern.length);
+}
+
+var name = resolvedHostnameTemplate.replace(/([#]+)/, digitsString);
+return name;
+
+function applyMinMaxLength(template, minLength, maxLength) {
+	Logger.info("Template length - " + template.length);
+	Logger.info("Min length - " + minLength);
+	Logger.info("Max length - " + maxLength);
+	
+	if(maxLength != null && template.length > maxLength) {
+		Logger.info("The string '" + template + "' has length that is more than the allowed - " + maxLength);
+		return applyMaxLength(template, maxLength);		
+	} else if(minLength != null && template.length < minLength) {
+		Logger.info("The string '" + template + "' has length that is less than the allowed - " + minLength);		
+		return applyMinLength(template, minLength);
+	} else {
+		Logger.info("The template's length matches the requirements.");
+		return template;
+	}
+}
+
+function applyMaxLength(template, maxLength) {
+	var digitsPattern = resolvedHostnameTemplate.match(/#+/)[0];
+	
+	if (digitsPattern.length > maxLength) {
+		throw "The selected pattern has " + digitsPattern.length + " digits and the max length is selected to be " + maxLength;
+	}
+	
+	var prefix = resolvedHostnameTemplate.match(/^[^#]+/) != null ? resolvedHostnameTemplate.match(/^[^#]+/)[0] : "";
+	var postfix = resolvedHostnameTemplate.match(/[^#]+$/) != null ? resolvedHostnameTemplate.match(/[^#]+$/)[0] : "";	
+	var numberOfCharsToBeTruncated = template.length - maxLength;
+	
+	if(!!postfix) {
+		if(postfix.length > numberOfCharsToBeTruncated) {
+			postfix = postfix.substring(0, postfix.length - numberOfCharsToBeTruncated);
+			numberOfCharsToBeTruncated = 0;
+		} else {
+			numberOfCharsToBeTruncated -= postfix.length;
+			postfix = "";
+		}
+		Logger.debug("To be truncated - " + numberOfCharsToBeTruncated);
+	}
+	
+	if(numberOfCharsToBeTruncated > 0) {
+		prefix = prefix.substring(0, prefix.length - numberOfCharsToBeTruncated);
+	}
+	
+	var template = prefix + digitsPattern + postfix;
+	
+	return template;
+}
+
+function applyMinLength(template, minLength) {
+	var numberOfCharsToBeAdded = minLength - template.length;
+	var firstIndexOfDigits = template.indexOf('#');
+	var template = template.substring(0, firstIndexOfDigits) + Array(numberOfCharsToBeAdded + 1).join('#') + template.substring(firstIndexOfDigits);
+	
+	return template;
+}
+
+/*
+	suffix (number) - the calculated number for the undefined suffixPattern - no (###)
+	calculates the length of the curretn suffix and replase it with #
+	return the calculated suffixPattern
+*/
+function formDigitsPattern(digits) {
+	var length = digits.toString().length;
+	return Array(length + 1).join("#");
+}
+/*
+if the suffix is only with '9' digits - add one more # in order to move next
+function formSuffixPattern(suffix) {
+	var suffixString =  suffix.toString();
+	var length = suffixString.length;
+	return suffixString.match(/^[9]+$/) != null ? Array(length + 2).join("#") : Array(length + 1).join("#");
+}
+*/
+
+function getNextMachineDigits(machinePrefix, digitsPattern, postfixPattern, excludedMachineNames) {
+	var shouldFullfillIndexes = System.getModule("com.vmware.pscoe.pspps.customhostname").isAutofillingIndexesEnabled();
+	
+	//Some###name - the generated config attribute would be -> SomenamenextIndex
+	var config = System.getModule("com.vmware.pscoe.pspps.customhostname").getConfigurationElement("PSCoE/PpS", "Custom Hostname Configuration");
+	var index = 0;
+	var indexPrefix = machinePrefix + postfixPattern;
+	
+	if (config) {
+		config.reload();
+		Logger.debug("Generating new machine index.");
+		
+		var nextIndex = config.getAttributeWithKey(indexPrefix + "nextIndex");
+		Logger.debug("nextIndex " + nextIndex);
+
+		if (nextIndex) {
+			index = nextIndex.value;
+		} else {
+			index = getStartingNumber(config, indexPrefix);
+		}
+	} else {
+		throw new Error("Configuration file error.");
+	}
+	
+	if(shouldFullfillIndexes) {
+		return getNextDigitsUsingAutofillMechanism(machinePrefix, digitsPattern, postfixPattern, excludedMachineNames, index);
+	} else {
+		return getNextDigitsUsingConfigurations(indexPrefix, index);
+	}
+}
+
+function getStartingNumber(config, indexPrefix) {
+       var specificStartPrefix = config.getAttributeWithKey(indexPrefix + "startIndex");
+       var globalStartPrefix = config.getAttributeWithKey("startIndex");
+ 
+       if (specificStartPrefix) {
+              Logger.info("Hostname template is new but has been configured to use a particular starting number - " + specificStartPrefix.value);
+              return specificStartPrefix.value;
+       } else if (globalStartPrefix) {
+              Logger.info("Hostname template is new.  Using global starting number - " + globalStartPrefix.value);
+              return globalStartPrefix.value;
+       }
+       return 1;
+}
+
+function getNextDigitsUsingConfigurations(indexPrefix, index) {
+	var config = System.getModule("com.vmware.pscoe.pspps.customhostname").getConfigurationElement("PSCoE/PpS", "Custom Hostname Configuration");
+	
+	if (config) {
+		config.reload();
+		
+		config.setAttributeWithKey(indexPrefix + "nextIndex", index + 1);
+		Logger.debug("Next machine index saved.");
+	}
+	else {
+		throw new Error("Configuration file error.");
+	}
+	
+	return index;
+}
+
+function getNextDigitsUsingAutofillMechanism(machinePrefix, digitsPattern, machinePostfix, excludedMachineNames, startIndex) {
+	var i, j, allVms, allVmNames;
+	
+	if(machinePrefix.length > 0) {
+		allVms = Server.findAllForType("vCAC:VirtualMachine", "startswith(VirtualMachineName, '" + machinePrefix + "')");
+	} else {
+		allVms = Server.findAllForType("vCAC:VirtualMachine", "endswith(VirtualMachineName, '" + machinePostfix + "')");
+	}
+	//Getting array of string containing all virtual machines' names
+	allVmNames = allVms.map(function(vm) {
+		return vm['virtualMachineName'];
+	});
+	
+	Logger.debug("All vms - " + allVmNames);
+	Logger.debug("Excluded machine names - " + excludedMachineNames);
+	
+	for (i = startIndex; i < allVmNames.length + startIndex; i++) {
+		var isMachineContained = false;
+		var currentName = constructMachineName(machinePrefix, digitsPattern, machinePostfix, i);
+		
+		for each(var vmName in allVmNames) {
+			if(vmName.match(new RegExp("^" + machinePrefix + "[0-9]{" + digitsPattern.length + "}" + machinePostfix + "$")) != null
+					&& currentName == vmName) {
+				isMachineContained = true;
+				break;
+			}
+		}
+		
+		if(!isMachineContained) {
+			//does the validation for vCenter, DNS, AD
+			if(excludedMachineNames == null || excludedMachineNames.indexOf(currentName) == -1) {
+				Logger.debug("Returned index - " + i);
+				return i;
+			}
+		}
+	}
+	
+	//excluded machine names (for AD, DNS and vCenter checks) still need to be in mind after VMs in vRA are iterated in case there are some in the end	
+	currentName = constructMachineName(machinePrefix, digitsPattern, machinePostfix, i)
+	while(excludedMachineNames != null && excludedMachineNames.indexOf(currentName) != -1) {
+		Logger.info("Index " + i + " should be excluded");
+		currentName = constructMachineName(machinePrefix, digitsPattern, machinePostfix, ++i);
+	}
+	
+	Logger.info("Returned index - " + i);
+	return i;
+}
+
+function constructMachineName(prefix, digitsPattern, postfix, currentIndex) {
+	var numberStr = "" + currentIndex;
+	var digitsAsStr = (((digitsPattern.length + 1 - numberStr.length) > 0) ? Array(digitsPattern.length + 1 - numberStr.length).join('0') : "") + numberStr;
+	var currentName = prefix + digitsAsStr + postfix;
+	
+	return currentName;
+}
+
+function checkDigitsLength(digits, length) {
+	var digitsLength = digits.toString().length;
+	
+	return digitsLength <= length;
+}]]></script>
+</dunes-script-module>

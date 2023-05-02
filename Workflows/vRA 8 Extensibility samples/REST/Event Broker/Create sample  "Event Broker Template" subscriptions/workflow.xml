@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="acb0db9f-c68f-4864-a506-c7f5c377f89b" version="0.0.1" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create sample  "Event Broker Template" subscriptions]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="topicIds" type="Array/string"/>
+    <param name="username" type="string"/>
+    <param name="password" type="SecureString"/>
+    <param name="restHost" type="REST:RESTHost"/>
+    <param name="disabled" type="boolean"/>
+  </input>
+  <attrib name="defaultUsername" type="string" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="defaultRestHost" type="REST:RESTHost" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="restHost"/>
+  <attrib name="defaultPassword" type="SecureString" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="password"/>
+  <attrib name="name" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="description" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Created by VMware Extensibility samples]]></value>
+  </attrib>
+  <attrib name="eventTopicId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="blocking" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <attrib name="runnableType" type="string" read-only="false">
+    <value encoded="n"><![CDATA[extensibility.vro]]></value>
+  </attrib>
+  <attrib name="runnableId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="timeout" type="string" read-only="false">
+    <value encoded="n"><![CDATA[10]]></value>
+  </attrib>
+  <attrib name="priority" type="string" read-only="false">
+    <value encoded="n"><![CDATA[0]]></value>
+  </attrib>
+  <attrib name="runnableWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='b55b8789-f4ee-4382-b9b0-e7a1b9e7876a'&dunesName='Workflow']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="681.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="foreach">
+    <display-name><![CDATA[Foreach element]]></display-name>
+    <in-binding>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="name" type="Array/string" export-name="*topicIds"/>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="disabled" type="boolean" export-name="disabled"/>
+      <bind name="eventTopicId" type="Array/string" export-name="*topicIds"/>
+      <bind name="blocking" type="boolean" export-name="blocking"/>
+      <bind name="runnableType" type="string" export-name="runnableType"/>
+      <bind name="runnableId" type="string" export-name="runnableId"/>
+      <bind name="timeout" type="string" export-name="timeout"/>
+      <bind name="priority" type="string" export-name="priority"/>
+      <bind name="" type="null"/>
+    </in-binding>
+    <out-binding/>
+    <reference type="Workflow" id="f9688e37-968a-4e63-8423-8cfef57ea36b"/>
+    <iteration-catch-block>
+      <script encoded="false"><![CDATA[]]></script>
+    </iteration-catch-block>
+    <position y="60.0" x="360.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[Set runnable ID]]></display-name>
+    <script encoded="false"><![CDATA[runnableId = runnableWorkflow.id;]]></script>
+    <in-binding>
+      <bind name="runnableWorkflow" type="Workflow" export-name="runnableWorkflow"/>
+    </in-binding>
+    <out-binding>
+      <bind name="runnableId" type="string" export-name="runnableId"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="200.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="topicIds">
+      <desc><![CDATA[projectName]]></desc>
+    </p-param>
+    <p-param name="username">
+      <desc><![CDATA[username]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[password]]></desc>
+    </p-param>
+    <p-param name="restHost">
+      <desc><![CDATA[restHost]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="a865bf1f-6223-4faf-985f-af074e92c9b8" version="0.0.8" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Configure Custom Hostname]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="blueprint" type="vCACCAFE:CompositeBlueprint">
+      <description><![CDATA[Blueprint to extend]]></description>
+    </param>
+    <param name="hostnameTemplate" type="string">
+      <description><![CDATA[The custom hostname template]]></description>
+    </param>
+    <param name="validateDNS" type="boolean">
+      <description><![CDATA[Validate against DNS]]></description>
+    </param>
+    <param name="validateAD" type="boolean">
+      <description><![CDATA[Validate agaisnt Active Directory]]></description>
+    </param>
+    <param name="validateVcenter" type="boolean">
+      <description><![CDATA[Validate agaisnt vCenter Server]]></description>
+    </param>
+    <param name="component" type="string">
+      <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></description>
+    </param>
+    <param name="minLength" type="number">
+      <description><![CDATA[Min Length]]></description>
+    </param>
+    <param name="maxLength" type="number">
+      <description><![CDATA[Max Length]]></description>
+    </param>
+    <param name="minLessThanMax" type="boolean"/>
+    <param name="propertyGroupSuffix" type="string">
+      <description><![CDATA[Suffix to add to the property group in vRA]]></description>
+    </param>
+    <param name="cafeHost" type="vCACCAFE:VCACHost"/>
+    <param name="sendEmailOnError" type="boolean">
+      <description><![CDATA[Send email on error]]></description>
+    </param>
+  </input>
+  <attrib name="workflowStateBuilding" type="string" read-only="false">
+    <value encoded="n"><![CDATA[VMPSMasterWorkflow32.BuildingMachine]]></value>
+    <description><![CDATA[Workflow state]]></description>
+  </attrib>
+  <attrib name="replaceExistingPropsTRUE" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Replace the value of existing properties]]></description>
+  </attrib>
+  <attrib name="defaultValues" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean):WorkflowIdentifierProperties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+  </attrib>
+  <attrib name="customHostnameWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='dcb5e43b-e37a-47f9-b60d-4f43bc4ee61a'&dunesName='Workflow']]></value>
+  </attrib>
+  <attrib name="eventTopic" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Machine provisioning]]></value>
+    <description><![CDATA[Configured event topic]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[Prepare Properties]]></display-name>
+    <script encoded="false"><![CDATA[var props = new Properties();
+
+props.put("wfIdentifierName", "createHostname" + propertyGroupSuffix);
+props.put("sendEmailOnError", sendEmailOnError);
+props.put("customPropertiesPrefix", "Pps.Hostname");
+props.put("workflow", customHostnameWorkflow);
+props.put("isConcurrent", false);
+props.put("continueOnError", false);
+
+wfToRun = new Array();
+wfToRun.push(props);
+
+defaultValues = new Properties();
+
+var TemplateValidator = System.getModule("com.vmware.pscoe.pspps.customhostname.validation").TemplateValidator() ;
+defaultValues.put("template", TemplateValidator.validateTemplate(hostnameTemplate));
+defaultValues.put("minLength", minLength);
+defaultValues.put("maxLength", maxLength);
+defaultValues.put("hostname", "#{VirtualMachineName}");
+
+var validation = new Properties()
+validation.put("DNS", validateDNS);
+validation.put("AD", validateAD);
+validation.put("vCenter", validateVcenter);
+defaultValues.put("validation", validation);
+]]></script>
+    <in-binding>
+      <bind name="customHostnameWorkflow" type="Workflow" export-name="customHostnameWorkflow"/>
+      <bind name="validateDNS" type="boolean" export-name="validateDNS"/>
+      <bind name="validateAD" type="boolean" export-name="validateAD"/>
+      <bind name="validateVcenter" type="boolean" export-name="validateVcenter"/>
+      <bind name="hostnameTemplate" type="string" export-name="hostnameTemplate"/>
+      <bind name="minLength" type="number" export-name="minLength">
+        <description><![CDATA[Min Length]]></description>
+      </bind>
+      <bind name="maxLength" type="number" export-name="maxLength">
+        <description><![CDATA[Max Length]]></description>
+      </bind>
+      <bind name="propertyGroupSuffix" type="string" export-name="propertyGroupSuffix"/>
+      <bind name="sendEmailOnError" type="boolean" export-name="sendEmailOnError"/>
+      <bind name="cafeHost" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+    </in-binding>
+    <out-binding>
+      <bind name="defaultValues" type="Properties" export-name="defaultValues"/>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean):WorkflowIdentifierProperties" export-name="wfToRun"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="link" linked-workflow-id="f462d6d5-434f-45cb-b115-c940a0b8010d">
+    <display-name><![CDATA[Assign vRO Workflows To Blueprint]]></display-name>
+    <in-binding>
+      <bind name="workflowState" type="string" export-name="workflowStateBuilding">
+        <description><![CDATA[Workflow state]]></description>
+      </bind>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean):WorkflowIdentifierProperties" export-name="wfToRun">
+        <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+      </bind>
+      <bind name="blueprint" type="vCACCAFE:CompositeBlueprint" export-name="blueprint">
+        <description><![CDATA[Blueprint to extend]]></description>
+      </bind>
+      <bind name="component" type="string" export-name="component">
+        <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></description>
+      </bind>
+      <bind name="globalProps" type="Array/string" explicitly-not-bound="true">
+        <description><![CDATA[List of Global Properties]]></description>
+      </bind>
+      <bind name="defaultValuesList" type="Array/string" explicitly-not-bound="true">
+        <description><![CDATA[List of Default Values in form: key=value]]></description>
+      </bind>
+      <bind name="replaceExistingProps" type="boolean" export-name="replaceExistingPropsTRUE">
+        <description><![CDATA[Replace the value of existing properties]]></description>
+      </bind>
+      <bind name="defaultValues" type="Properties" export-name="defaultValues">
+        <description><![CDATA[Hidden used by  other workflow only]]></description>
+      </bind>
+      <bind name="cafeHost" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+      <bind name="eventTopic" type="string" export-name="eventTopic"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Adds or updates a state change  workflow on several blueprints and their virtual machines]]></description>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Blueprint]]></title>
+      <p-param name="blueprint">
+        <desc><![CDATA[Blueprint to extend]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="component">
+        <desc><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#blueprint != null ]]></p-qual>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getComponentNames").call( #blueprint , true )]]></p-qual>
+      </p-param>
+      <p-param name="propertyGroupSuffix">
+        <desc><![CDATA[Suffix to add to the property group in vRA]]></desc>
+      </p-param>
+      <p-param name="cafeHost">
+        <desc><![CDATA[cafeHost]]></desc>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="dataBinding" type="vCACCAFE:VCACHost"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getCafeHostFromObject").call( #blueprint )]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Hostname]]></title>
+      <p-param name="hostnameTemplate">
+        <desc><![CDATA[Custom hostname template]]></desc>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[name-####]]></p-qual>
+      </p-param>
+      <p-param name="minLength">
+        <desc><![CDATA[Minimum length]]></desc>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[#minLessThanMax]]></p-qual>
+      </p-param>
+      <p-param name="maxLength">
+        <desc><![CDATA[Maximum length]]></desc>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[#minLessThanMax]]></p-qual>
+      </p-param>
+      <p-param name="minLessThanMax">
+        <desc><![CDATA[minLessThanMax]]></desc>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA[GetAction("com.vmware.pscoe.pspps.customhostname.validation","isMinLessThanMax").call( #minLength, #maxLength)]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Validation]]></title>
+      <p-param name="validateDNS">
+        <desc><![CDATA[Validate agaisnt DNS?]]></desc>
+      </p-param>
+      <p-param name="validateAD">
+        <desc><![CDATA[Validate agaisnt Active Directory?]]></desc>
+      </p-param>
+      <p-param name="validateVcenter">
+        <desc><![CDATA[Validate against vCenter?]]></desc>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Run properties]]></title>
+      <p-param name="sendEmailOnError">
+        <desc><![CDATA[Send email on error?]]></desc>
+        <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<package>
+<description><![CDATA[Latest version.]]></description>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Action?id='218d3033-f424-4385-bdb5-e701705ecc6f'&dunesName='Action'&name='callSalt'&category='com.vmware.pso.drv.demo']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='2cff340c-5b46-4b17-8d3c-aa0d29c78a1f'&dunesName='Workflow']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='38c58a78-0460-4b5c-b449-c754042d8501'&dunesName='Workflow']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='616b129f-ba2b-4ba0-bd29-badd2f2abffa'&dunesName='Workflow']]></elm>
+</package>

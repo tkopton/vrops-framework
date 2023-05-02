@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="c264b2f1-e638-473e-8e4b-e9f671e2e304" version="0.1.0">
+  <display-name><![CDATA[config.global]]></display-name>
+  <atts>
+    <att name="replicationConfigElement" type="ConfigurationElement" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='99e3cea7-b274-4fbe-b380-4491205b0aa5'&dunesName='ConfigurationElement']]></value>
+    </att>
+    <att name="hostnamePattern" type="string" read-only="false">
+      <value encoded="n"><![CDATA[V01{LETTERS3}{NUMBERS2}]]></value>
+    </att>
+    <att name="LockTimeOut" type="number" read-only="false">
+      <value encoded="n"><![CDATA[900.0]]></value>
+    </att>
+    <att name="EventManagerDebugFlag" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[true]]></value>
+    </att>
+    <att name="DNSTimeOut" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1200.0]]></value>
+    </att>
+    <att name="PowerShellScriptingHost" type="PowerShell:PowerShellHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='0495b430-415b-4871-8bff-84080aff93fb'&dunesName='PowerShell:PowerShellHost']]></value>
+    </att>
+    <att name="AKHManagerTimeOut" type="number" read-only="false">
+      <value encoded="n"><![CDATA[600.0]]></value>
+    </att>
+    <att name="LockSleepTime" type="number" read-only="false">
+      <value encoded="n"><![CDATA[20.0]]></value>
+    </att>
+    <att name="DNSSleepTime" type="number" read-only="false">
+      <value encoded="n"><![CDATA[20.0]]></value>
+    </att>
+    <att name="AKHManagerSleepTime" type="number" read-only="false">
+      <value encoded="n"><![CDATA[20.0]]></value>
+    </att>
+    <att name="EventManagerLoggingExclude" type="Array/string" read-only="false">
+      <value encoded="n"><![CDATA[[59:string#/machine/properties/Plugin.AdMachineCleanup.Password,29:string#type=Credential value=]]]></value>
+    </att>
+    <att name="ServerDBTimeOut" type="number" read-only="false">
+      <value encoded="n"><![CDATA[600.0]]></value>
+    </att>
+    <att name="ServerDBSleepTime" type="number" read-only="false">
+      <value encoded="n"><![CDATA[20.0]]></value>
+    </att>
+  </atts>
+</config-element>

@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item7" object-name="workflow:name=generic" id="c3027636-fe21-4998-a986-28f2f9bf33fa" version="2.4.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[(Deprecated since v2.4.0) Assign vRO Workflows To Blueprint (JSON input)]]></display-name>
+  <description><![CDATA[Creates property group defining workflows to run via workflow dispatcher.
+Adds or updates a state change workflow on several blueprints and their virtual machines.
+Uses JSON input to define default values for workflow input.
+
+Disclaimer: This is an experimental version of the configuration workflow. Use with caution, as future versions might introduce changes that are not backward compatible.]]></description>
+  <position y="27.227272727272727" x="85.0"/>
+  <input>
+    <param name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflowState:string,workflow:Workflow,isConcurrent:boolean,continueOnError:boolean,sendEmailOnError:boolean):wfIdentifier">
+      <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+    </param>
+    <param name="blueprint" type="vCACCAFE:CompositeBlueprint">
+      <description><![CDATA[Blueprint to extend]]></description>
+    </param>
+    <param name="component" type="string">
+      <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></description>
+    </param>
+    <param name="replaceExistingProps" type="boolean">
+      <description><![CDATA[Replace the value of existing properties]]></description>
+    </param>
+    <param name="jsonParams" type="string">
+      <description><![CDATA[The json containing all values for input parameters]]></description>
+    </param>
+    <param name="propGroupName" type="string">
+      <description><![CDATA[The property group name to add the properties to]]></description>
+    </param>
+    <param name="propGroupPrefix" type="string">
+      <description><![CDATA[The prefix of a property group name]]></description>
+    </param>
+    <param name="appendToExistingPropertyGroup" type="boolean">
+      <description><![CDATA[Only valid if replaceExistingProps=true. Add properties to property group if that already exists. If false, clear the existing property group before adding the values.]]></description>
+    </param>
+    <param name="addGeneralPropertiesToCommonGroup" type="boolean">
+      <description><![CDATA[Add general properties (not directly related to a workflow operation) to the common property group Extensibility.Common]]></description>
+    </param>
+  </input>
+  <attrib name="wfToRunNew" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="27.227272727272727" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item1" type="task">
+    <display-name><![CDATA[Convert wfToRun]]></display-name>
+    <script encoded="false"><![CDATA[wfToRunNew = [];
+for (var i = 0; i < wfToRun.length; i++) {
+	wfToRunNew[i] = new Object();
+	wfToRunNew[i].wfIdentifierName = wfToRun[i].wfIdentifierName;
+	wfToRunNew[i].workflow = wfToRun[i].workflow;
+	wfToRunNew[i].workflowState = wfToRun[i].workflowState;
+	wfToRunNew[i].isConcurrent = wfToRun[i].isConcurrent;
+	wfToRunNew[i].continueOnError = wfToRun[i].continueOnError;
+	wfToRunNew[i].sendEmailOnError = wfToRun[i].sendEmailOnError;
+	
+	wfToRunNew[i].customPropertiesPrefix = "";
+	wfToRunNew[i].wfToRunOnFailure = null;
+	wfToRunNew[i].triggerUserInteractionOnError = false;
+	wfToRunNew[i].retryCount = 0;
+	wfToRunNew[i].retryDelay = 0;
+}]]></script>
+    <in-binding>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflowState:string,workflow:Workflow,isConcurrent:boolean,continueOnError:boolean,sendEmailOnError:boolean):wfIdentifier" export-name="wfToRun">
+        <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="wfToRunNew" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRunNew"/>
+    </out-binding>
+    <position y="37.22727272727273" x="184.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="e0993df0-d8e7-4c0d-b5ed-f41be793090d">
+    <display-name><![CDATA[Assign vRO Workflows To Blueprint (JSON input)]]></display-name>
+    <in-binding>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRunNew">
+        <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+      </bind>
+      <bind name="blueprint" type="vCACCAFE:CompositeBlueprint" export-name="blueprint">
+        <description><![CDATA[Blueprint to extend]]></description>
+      </bind>
+      <bind name="component" type="string" export-name="component">
+        <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></description>
+      </bind>
+      <bind name="replaceExistingProps" type="boolean" export-name="replaceExistingProps">
+        <description><![CDATA[Replace the value of existing properties]]></description>
+      </bind>
+      <bind name="jsonParams" type="string" export-name="jsonParams">
+        <description><![CDATA[The json containing all values for input parameters]]></description>
+      </bind>
+      <bind name="propGroupName" type="string" export-name="propGroupName">
+        <description><![CDATA[The property group name to add the properties to]]></description>
+      </bind>
+      <bind name="propGroupPrefix" type="string" export-name="propGroupPrefix">
+        <description><![CDATA[The prefix of a property group name]]></description>
+      </bind>
+      <bind name="appendToExistingPropertyGroup" type="boolean" export-name="appendToExistingPropertyGroup">
+        <description><![CDATA[Only valid if replaceExistingProps=true. Add properties to property group if that already exists. If false, clear the existing property group before adding the values.]]></description>
+      </bind>
+      <bind name="addGeneralPropertiesToCommonGroup" type="boolean" export-name="addGeneralPropertiesToCommonGroup">
+        <description><![CDATA[Add general properties (not directly related to a workflow operation) to the common property group Extensibility.Common]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Creates property group defining workflows to run via workflow dispatcher.
+Adds or updates a state change workflow on several blueprints and their virtual machines.
+Uses JSON input to define default values for workflow input.
+
+Disclaimer: This is an experimental version of the configuration workflow. Use with caution, as future versions might introduce changes that are not backward compatible.]]></description>
+    <position y="37.22727272727273" x="324.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Blueprint mapping]]></title>
+      <desc><![CDATA[Select which Blueprint will trigger a workflow for the selected state]]></desc>
+      <p-param name="blueprint">
+        <desc><![CDATA[Blueprint to extend]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="component">
+        <desc><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getComponentNames").call( #blueprint , true )]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[vRealize Orchestrator Workflows]]></title>
+      <p-param name="wfToRun">
+        <desc><![CDATA[Workflows to run at the specified state]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="replaceExistingProps">
+        <desc><![CDATA[Replace the value of existing properties]]></desc>
+      </p-param>
+      <p-param name="propGroupName">
+        <desc><![CDATA[propGroupName]]></desc>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Unused]]></title>
+    </p-step>
+    <p-param name="jsonParams">
+      <desc><![CDATA[jsonParams]]></desc>
+    </p-param>
+    <p-param name="propGroupPrefix">
+      <desc><![CDATA[propGroupPrefix]]></desc>
+    </p-param>
+    <p-param name="appendToExistingPropertyGroup">
+      <desc><![CDATA[Only valid if replaceExistingProps=true. Add properties to property group if that already exists. If false, clear the existing property group before adding the values.]]></desc>
+    </p-param>
+    <p-param name="addGeneralPropertiesToCommonGroup">
+      <desc><![CDATA[Add general properties (not directly related to a workflow operation) to the common property group Extensibility.Common]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

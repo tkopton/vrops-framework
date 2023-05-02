@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createContentSourceEntitlements" result-type="Array/string" api-version="6.0.0" id="85af00b6-24b3-4fd4-9590-dd7561b41415" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.vra.extensibility.rest.catalog">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="projectId" t="string"><![CDATA[]]></param>
+  <param n="contentSourcesIds" t="Array/string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || projectId == null) return null;
+if (customHeaders == null || customHeaders == undefined || customHeaders.keys.length == 0) customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+
+var url = "/catalog/api/admin/entitlements";
+
+var operation = "POST";
+
+var entitlementIds = new Array();
+
+for each (var contentSourceId in contentSourcesIds) {
+	var entitlement = {
+		"projectId": projectId,
+		"definition": {
+			"type": "CatalogSourceIdentifier",
+			"id": contentSourceId,
+		}
+	}
+	var content = JSON.stringify(entitlement);
+
+	try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+	} catch (e) {
+		throw "POST " + url + "Failed" +
+			"\n Error : " + e;
+	}
+	var object = JSON.parse(contentAsString);
+	entitlementIds.push(object.id);
+}
+return entitlementIds;]]></script>
+</dunes-script-module>

@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="loadConfigurationPropertiesForGuestDomOps" result-type="string" api-version="6.0.0" id="5d4eb98d-0e2a-4c1a-a3d6-21f14490d1dc" version="1.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.pps.guestuserdomainops">
+  <description><![CDATA[Load a configuration from property group if blueprint and property group name is defined. 
+Or load a template configuration from resource element if loadTemplate is true and resource element name is given.]]></description>
+  <param n="loadTemplate" t="boolean"><![CDATA[]]></param>
+  <param n="vRaEntity" t="Any"><![CDATA[]]></param>
+  <param n="propertyGroupPrefix" t="string"><![CDATA[]]></param>
+  <param n="propertyGroupName" t="string"><![CDATA[]]></param>
+  <param n="templateJsonResourceElement" t="ResourceElement"><![CDATA[]]></param>
+  <param n="cleanUpOnDeleteWorkflow" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var json = "";
+
+if(loadTemplate) {
+	if (templateJsonResourceElement) {
+		var template = templateJsonResourceElement.getContentAsMimeAttachment().content;
+		json = JSON.stringify(JSON.parse(template), null, 2);
+	}
+} else {
+	var confPropertiesJsonStr = System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").loadSimplifiedJsonForPropertyGroup(vRaEntity,propertyGroupPrefix,propertyGroupName);
+			
+	var confProperties = JSON.parse(confPropertiesJsonStr);
+	
+	json = getPresentationJson(confProperties, cleanUpOnDeleteWorkflow);
+}
+
+return json;
+
+//---- functions
+function getPresentationJson(confProperties, disposeWorkflowIdentifier) {
+	
+	var presentationJson = "";
+	if (confProperties) {
+		var confPropertiesForUI = new Properties();
+		
+		for (var key in confProperties) {
+		
+			var operationsArray = confProperties[key];
+		
+			var operationsArrayForUi = [];
+			for each(var operation in operationsArray) {
+				var operationParameters = {};
+				
+				var wfParameters = operation["wfParameters"];
+				for (var wfParamKey in wfParameters) {
+					if (wfParamKey == "operationInput") {
+						for (var opInputKey in wfParameters[wfParamKey]) {
+							operationParameters[opInputKey] = wfParameters[wfParamKey][opInputKey];
+						}
+					} else {
+						operationParameters[wfParamKey] = wfParameters[wfParamKey];
+					}
+				}
+				
+				var wfIdentifierNames = operation["wfIdentifierNames"];
+		
+				if(wfIdentifierNames && wfIdentifierNames.indexOf(disposeWorkflowIdentifier) > -1) {
+					operationParameters.cleanUpOnDelete = true;
+				}
+				operationsArrayForUi.push(operationParameters);
+			}
+			
+			confPropertiesForUI.put(key, operationsArrayForUi);
+		}
+		presentationJson = JSON.stringify(confPropertiesForUI, null, 2);
+	}
+	return presentationJson;
+}]]></script>
+</dunes-script-module>

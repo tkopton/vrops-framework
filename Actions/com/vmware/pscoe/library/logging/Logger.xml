@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="Logger" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.logging.Logger" version="2.0.1" allowed-operations="evf" category-name="com.vmware.pscoe.library.logging">
+  <description><![CDATA[
+ This action represents logging interface for vRO actions or scripting blocks.
+]]></description>
+  <script encoded="false"><![CDATA[
+  /**
+   * Logger class
+   *
+   * @param name    - logger name; ex: com.vmware.pscoe.mail
+   * @param options   - logger context, could be any object; ex: vc:VirtualMachine
+   * @return Logger   - the actual logger object
+   */
+  function Logger(name, options) {
+
+    var log = function(severity, message) {
+      var msg = "[" + name + "]:" + message;
+      switch(severity) {
+        case "DEBUG" : 
+        	System.debug(msg); 
+        	break;
+        case "INFO"  : 
+        	System.log(msg); 
+        	break;
+        case "WARN"  : 
+        	System.warn(msg); 
+        	break;
+        case "ERROR" : 
+        	System.error(msg); 
+        	break;
+        default: 
+        	System.error("Logging Level[" + severity + "] is not defined!");
+      }
+    };
+
+    this.info = function(msg) {
+      log("INFO", msg);
+    };
+    this.warn = function(msg) {
+      log("WARN", msg);
+    };
+    this.error = function(msg) {
+      log("ERROR", msg);
+    };
+    this.debug = function(msg) {
+      log("DEBUG", msg);
+    };
+    this.implementation = 'vRO built in';
+  }
+
+  return Logger;
+]]></script>
+</dunes-script-module>

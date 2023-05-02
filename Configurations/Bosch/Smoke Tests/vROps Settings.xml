@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="9b1872e9-534a-4c2b-abb3-c454b02422ce" version="0.0.1">
+  <display-name><![CDATA[vROps Settings]]></display-name>
+  <atts>
+    <att name="smokeTestAdapterKind" type="string" read-only="false">
+      <value encoded="n"><![CDATA[OPENAPI]]></value>
+    </att>
+    <att name="testSuiteResourceKind" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Test Suite]]></value>
+    </att>
+    <att name="testCaseResourceKind" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Test Case]]></value>
+    </att>
+    <att name="smokeTestResourceAdapterKind" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Smoke Tests (INT)]]></value>
+    </att>
+    <att name="testSuiteNameIdentifierKey" type="string" read-only="false">
+      <value encoded="n"><![CDATA[]]></value>
+    </att>
+    <att name="testCaseNameIdentifierKey" type="string" read-only="false">
+      <value encoded="n"><![CDATA[]]></value>
+    </att>
+  </atts>
+</config-element>

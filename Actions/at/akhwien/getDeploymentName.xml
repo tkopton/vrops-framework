@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDeploymentName" result-type="string" api-version="6.0.0" id="18836c13-ec06-487c-865d-013a9f62f81c" version="0.0.0" allowed-operations="evf" category-name="at.akhwien">
+  <param n="payload" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var tenant = System.getContext().getParameter("__asd_tenantRef");
+var cafeHost = vCACCAFEHostManager.getDefaultHostForTenant(tenant , "true");
+requestID=payload.machine.properties.get("__Cafe.Root.Request.Id");
+
+var catResources = vCACCAFEEntitiesFinder.findCatalogResources(cafeHost);
+for each (resource in catResources){
+	//System.log(resource.resourceTypeRef.getLabel());
+	//System.log( resource.getName());
+    if ((resource.resourceTypeRef.getLabel() == "Deployment")&&(resource.requestId==requestID)){
+    	System.log("*** DeploymentName :"+ resource.getName());
+		return resource.getName();
+      }
+}
+System.log("*** No deploymentName found");
+return null;]]></script>
+</dunes-script-module>

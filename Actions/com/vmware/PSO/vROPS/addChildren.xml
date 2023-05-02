@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addChildren" result-type="number" api-version="6.0.0" id="5cd40a69-144b-45b8-a7c4-480dfaef4671" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="target" t="string"><![CDATA[]]></param>
+  <param n="children" t="Array/string"><![CDATA[]]></param>
+  <param n="RESTHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[System.log("adding children");
+restURL="/api/resources/"+target+"/relationships/CHILD";
+var restContentTop='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><ops:uuid-values xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ops="http://webservice.vmware.com/vRealizeOpsMgr/1.0/"><ops:uuids>';
+var restContentFoot='</ops:uuids></ops:uuid-values>';
+var repeat='';
+for each (child in children){
+	if (child!="no such object"){
+		if (repeat==""){
+			repeat=child;
+		} else {
+			repeat=repeat+" "+child;
+		}
+	}
+}
+restContent=restContentTop+repeat+restContentFoot;
+//System.log(restContent);
+
+var request  = RESTHost.createRequest("POST", restURL, restContent);
+request.contentType = "application/xml";
+var response = request.execute();
+System.log("Status code:"+response.statusCode);
+return parseInt(response.statusCode);]]></script>
+</dunes-script-module>

@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="99e12921-19c9-480c-acd2-936bcf5ab5f8" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Last Stats]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="iD_01" type="string"/>
+    <param name="iD_02" type="string"/>
+  </input>
+  <attrib name="getLastStats" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:122d78bc-20aa-439b-a767-ce1827883f1f'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="latestStats" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[createValues]]></display-name>
+    <script encoded="false"><![CDATA[var latestStats = {
+    "values": [{
+        "resourceId": "",
+        "stat-list": {
+            "stat": [{
+                "timestamps": [],
+                "statKey": {
+                    "key": "stat|key1"
+                },
+                "rollUpType": "NONE",
+                "intervalUnit": {
+                    "quantifier": 5,
+                    "intervalType": "MINUTES"
+                },
+                "data": [1.0, 2.0],
+                "values": null,
+                "dtTimestamps": [1478899586344, 1478899596344, 1478899606344],
+                "minThresholdData": [0.5, 1.0],
+                "maxThresholdData": [1.5, 3.0],
+                "smoothValues": [1.5, 1.5],
+                "others": [],
+                "otherAttributes": {}
+            }]
+        }
+    }]
+};
+
+
+var MS_PER_MINUTE = 60000;
+var durationInMinutes = 20;
+var myEndTime = (new Date()).getTime();
+var myStartTime = new Date(myEndTime - durationInMinutes * MS_PER_MINUTE).getTime();
+
+latestStats.values[0].resourceId = iD_01;
+latestStats.values[0]["stat-list"].stat[0].timestamps = [myStartTime, myEndTime];
+latestStats.values[0]["stat-list"].stat[0].statKey.key = "cpu|costop_summation";
+
+
+
+
+
+
+]]></script>
+    <in-binding>
+      <bind name="iD_01" type="string" export-name="iD_01"/>
+      <bind name="iD_02" type="string" export-name="iD_02"/>
+    </in-binding>
+    <out-binding>
+      <bind name="latestStats" type="Properties" export-name="latestStats"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[getStats]]></display-name>
+    <script encoded="false"><![CDATA[var params = [iD_01];	
+System.log("Adding properties... " + JSON.stringify(latestStats));
+
+var request = getLastStats.createRequest(params, JSON.stringify(latestStats));
+System.log(request.url);
+
+var response = request.execute();
+System.log(response.statusCode);
+System.log(response.contentAsString);
+
+
+if(response.statusCode >= 400) {
+	throw "HTTPError: status code: " + response.statusCode;
+}
+]]></script>
+    <in-binding>
+      <bind name="getLastStats" type="REST:RESTOperation" export-name="getLastStats"/>
+      <bind name="latestStats" type="Properties" export-name="latestStats"/>
+      <bind name="iD_01" type="string" export-name="iD_01"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="404.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="iD_01">
+      <desc><![CDATA[iD_01]]></desc>
+    </p-param>
+    <p-param name="iD_02">
+      <desc><![CDATA[iD_02]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

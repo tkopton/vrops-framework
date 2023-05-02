@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getServiceSubcategoriesForServiceName" result-type="Array/string" api-version="6.0.0" id="952e5166-2f8d-4166-b0c9-bf2b67022be8" version="0.0.1" allowed-operations="evf" category-name="com.vmware.coe.itop">
+  <description><![CDATA[Returns an array of strings containing the valid ServiceSubcategories for the given Service Name.]]></description>
+  <param n="auth_user" t="string"><![CDATA[iTop API Username]]></param>
+  <param n="auth_pwd" t="SecureString"><![CDATA[iTop API Password]]></param>
+  <param n="restOperation" t="REST:RESTOperation"><![CDATA[REST Operation Object]]></param>
+  <param n="serviceName" t="string"><![CDATA[Service Name]]></param>
+  <script encoded="false"><![CDATA[if (auth_user == null || auth_pwd == null || restOperation == null || serviceName == null) return null;
+var data = new data("core/get","ServiceSubcategory", "SELECT ServiceSubcategory JOIN Service ON ServiceSubcategory.service_id=Service.id WHERE Service.name='"+serviceName+"'", "name");
+
+var inputData = JSON.stringify(data);
+//System.log("JSON Input DATA : " + inputData);
+var content = "";
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, content);
+//set the request content type
+request.contentType = "application/json";
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+if ( response.statusCode >= 400 ) {
+	throw "HTTPError: status code: " + response.statusCode;
+}	
+
+var jsonResponse = JSON.parse(response.contentAsString);
+//var requestCode = jsonResponse.code;
+//var requestMessage = jsonResponse.message;
+
+var serviceSubcategoriesArray = new Array();
+for each (obj in jsonResponse.objects){
+	serviceSubcategoriesArray.push(obj.fields.name);
+	//System.log("Name: "+obj.fields.name);	
+}
+return serviceSubcategoriesArray;
+
+function data(operation,className,key,outPutFields)
+{
+	this["operation"]=operation;
+	this["class"]=className;
+	this["key"]=key;
+	this["output_fields"]=outPutFields;
+}]]></script>
+</dunes-script-module>

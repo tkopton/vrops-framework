@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVrslcmRestHost" result-type="REST:RESTHost" api-version="6.0.0" id="baa7d60a-81c1-4117-a773-f185b3409323" version="0.2.0" allowed-operations="evf" category-name="com.au.vra.onboarding">
+  <script encoded="false"><![CDATA[//For Debugging Purposes
+System.debug("Action Called: CreateVrslcmRestHost");
+
+var configPath = 'vra_config';
+var configName = 'vrslcm_configuration';
+var baseUrlKey = 'hostname'
+
+for each(var configElement in Server.getConfigurationElementCategoryWithPath(configPath).configurationElements)
+{
+	if(configElement.name == configName){
+        var baseUrl = configElement.getAttributeWithKey(baseUrlKey)['value']
+        break;
+	}
+}
+
+var restHostIds = RESTHostManager.getHosts();
+for each(var id in restHostIds){
+    var host = RESTHostManager.getHost(id);
+    if(baseUrl === host.url){
+        return host;
+    }
+}
+
+return null;]]></script>
+</dunes-script-module>

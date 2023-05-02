@@ -1,0 +1,331 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="36a5f6d4-9748-48cb-ba95-6d862856c3ca" version="2.4.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create_Update vRO Workflow Configuration]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="wfName" type="string"/>
+    <param name="wf" type="Workflow"/>
+    <param name="globalProps" type="Array/string">
+      <description><![CDATA[List of Global Properties]]></description>
+    </param>
+    <param name="isConcurrent" type="boolean">
+      <description><![CDATA[Should the workflow allow concurrent executions]]></description>
+    </param>
+    <param name="continueOnError" type="boolean">
+      <description><![CDATA[Should provisioning continue if this wokrflow fails]]></description>
+    </param>
+    <param name="defaultValues" type="Properties"/>
+    <param name="replaceExistingProps" type="boolean">
+      <description><![CDATA[Flag indicating if the workflow will replace an existing properties values]]></description>
+    </param>
+    <param name="cafeHost" type="vCACCAFE:VCACHost"/>
+    <param name="defaultValuesList" type="Array/string"/>
+    <param name="sendEmailOnError" type="boolean"/>
+    <param name="customPropertiesPrefix" type="string"/>
+    <param name="workflowToRunOnError" type="Workflow">
+      <description><![CDATA[Workflow to be run on failure]]></description>
+    </param>
+    <param name="stopAndWaitOnError" type="boolean"/>
+    <param name="propertyGroupName" type="string">
+      <description><![CDATA[(Optional) The name of property group which will contains couple of workflow configurations]]></description>
+    </param>
+    <param name="arrayParamPrefix" type="string">
+      <description><![CDATA[(Optional) Prefix for parameters when a workflow configuration is an array of properties]]></description>
+    </param>
+    <param name="encryptedProperties" type="Array/string">
+      <description><![CDATA[(Optional) Encrypted properties]]></description>
+    </param>
+    <param name="generalProps" type="Properties"/>
+    <param name="appendToExistingPropertyGroup" type="boolean"/>
+    <param name="addGeneralPropertiesToCommonGroup" type="boolean"/>
+    <param name="retryCount" type="number"/>
+    <param name="retryDelay" type="number"/>
+  </input>
+  <output>
+    <param name="propertyGroupId" type="string"/>
+  </output>
+  <attrib name="staticProps" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[#{#string#vCACVm#;#string#vCenterVm#;#string#virtualMachineEntity#;#string#vCACHost#;#string#externalWFStub#;#string#vCACVmProperties#;#string#loggerObj#;#string#__tokenName#;#string#vCloudVApp#;#string#vCloudVm#}#]]></value>
+  </attrib>
+  <attrib name="commonProfileName" type="string" read-only="false" conf-id="90ee9bdb-ba13-4bf5-92ee-2ef9393f12de" conf-key="commonProfileName">
+    <value encoded="n"><![CDATA[Extensibility.Common]]></value>
+  </attrib>
+  <attrib name="userInteractionWorkflowId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[706c5322-29d6-4592-8618-80c2434dcfd2]]></value>
+    <description><![CDATA[Id that points to User Interaction workflow]]></description>
+  </attrib>
+  <attrib name="attrPropertyGroupName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Configure Profiles]]></display-name>
+    <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.library.vra.dispatcher");
+
+var defaultValues = new Properties();
+if (!globalProps) {
+	globalProps = [];
+}
+if (defaultValuesProps) {
+	defaultValues = defaultValuesProps
+} else {
+	for each (var pair in defaultValuesList) {
+		if (pair && pair != "" && pair.indexOf("=") > -1) {
+			var key = pair.split("=")[0];
+			var val = pair.split("=")[1];
+			defaultValues.put(key, val);
+		}
+	}
+}
+var wfBuildProfileName = wfIdentifierName.replace(/[^a-zA-Z0-9]/g,'');
+var profileName = "Extensibility.Workflows." + wfBuildProfileName;
+var propertyGroupDescription = "Configuration Properties for vCO workflow: " + wfBuildProfileName;
+
+var PropertyGroup = System.getModule("com.vmware.pscoe.library.vra").PropertyGroup(host);
+var commonProfile = PropertyGroup.get(commonProfileName);
+var profile = null;
+
+try {
+	profile = PropertyGroup.get(attrPropertyGroupName);
+} catch (e) {
+	logger.error("Error getting Property Group " + profileName + " trying to create one: " + e);
+}
+if (!profile) {
+	profile = new PropertyGroup({
+		label : attrPropertyGroupName,
+		description : propertyGroupDescription,
+		properties : {},
+		tenantId : host.tenant
+	})
+}
+if (replaceExistingProps && !appendToExistingPropertyGroup) {
+	profile.setProperties({})
+}
+
+var wfParamNames = getWorkflowParameters();
+
+if (arrayParamPrefix && arrayParamPrefix != "" && (defaultValues.get(arrayParamPrefix) instanceof Array)) {
+	var array = defaultValues.get(arrayParamPrefix);
+	for (var i = 0; i < array.length; i++) {
+		var arrayPropsPrefix = customPropertiesPrefix + arrayParamPrefix + "_" + i;
+		var arrayProfileName = profileName + "_" + arrayParamPrefix + "_" + i;
+		setWorkflowProperties(arrayPropsPrefix, arrayProfileName, array[i], profile, commonProfile, wfParamNames);
+	}
+} else {
+	setWorkflowProperties(customPropertiesPrefix, profileName, defaultValues, profile, commonProfile, wfParamNames);
+}
+
+
+profile.save();
+commonProfile.save();
+
+propertyGroupId = profile.getId();
+
+
+// ============================================================ Functions.
+function getWorkflowParameters() {
+	var wfParamNames = [];
+	if (wf && wf.inParameters) {
+		for each (var param in wf.inParameters) {
+			wfParamNames.push(param.name);
+		}
+	}
+	if (wf && wf.outParameters) {
+		for each (var param in wf.outParameters) {
+			wfParamNames.push(param.name);
+		}
+	}
+	return wfParamNames;
+}
+
+function setWorkflowProperties(prefix, profileName, props, profile, commonProfile, wfParamNames) {
+	
+	System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+		profile, profileName + ".Id", wf.id, true, false, false, true);
+	//Set up wfs common params
+	if (prefix && prefix != "") {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+		profile, profileName + ".CustomPropertiesPrefix", prefix, true, false, false, true);
+	}
+	if (isConcurrent != null) {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+			profile, profileName + ".IsConcurrent", isConcurrent, true, false, false, true);
+	}
+	if (continueOnError != null) {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+			profile, profileName + ".ContinueOnError", continueOnError, true, false, false, true);
+	}
+	if (sendEmailOnError != null) {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+			profile, profileName + ".SendEmailOnError", sendEmailOnError, true, false, false, true);
+	}
+	if (workflowToRunOnError && workflowToRunOnError != 'notfound') {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(profile,profileName + ".RunWorkflowOnError",workflowToRunOnError.id,true,false,false, true);
+	}
+	if (stopAndWaitOnError) {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(profile,profileName + ".StopAndWaitOnError",userInteractionWorkflowId,true,false,false, true);
+	}
+	if (retryCount) {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(profile,profileName + ".RetryCount",retryCount,true,false,false, true);
+	}
+	if (retryDelay) {
+		System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(profile,profileName + ".RetryDelay",retryDelay,true,false,false, true);
+	}
+	
+	// then add wfParameters properties
+	var commonGroup = commonProfile;
+	if ((addGeneralPropertiesToCommonGroup != null) && !addGeneralPropertiesToCommonGroup) {
+		commonGroup = profile;
+	}
+	System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").createCustomPropertiesForParameters(
+		globalProps, staticProps, wf.inParameters, props, prefix, profileName, profile, commonGroup, replaceExistingProps, encryptedProperties);
+
+	System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").createCustomPropertiesForParameters(
+		globalProps, staticProps, wf.outParameters, props, prefix, profileName, profile, commonGroup, replaceExistingProps, encryptedProperties);
+	
+	createCustomPropertiesForGlobalNonWfParams(prefix, profile, commonGroup, wfParamNames);
+}
+
+function createCustomPropertiesForGlobalNonWfParams(prefix, propertyGroup, commonPropertyGroup, wfParamNames) {
+	// now add all other properties not related to workflow parameters
+	if(generalProps) {
+		for each (var key in generalProps.keys) {
+			var isEncrypted = encryptedProperties.indexOf(key) > -1;
+			// check if property is NOT part of wf parameters
+			if (wfParamNames.indexOf(key) < 0 || globalProps.indexOf(key) >= 0) {
+				var propValue = generalProps.get(key);
+				
+				if (!(propValue instanceof Object)) {
+					if (globalProps.indexOf(key) < 0) {
+						System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+							propertyGroup, prefix + "." + key, propValue, true, false, isEncrypted, replaceExistingProps);
+					} else {
+						System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").addUpdateBuildProfileProperty(
+							commonPropertyGroup, "Extensibility.Properties." + key, propValue, true, false, isEncrypted, replaceExistingProps);
+					}
+				}
+			}
+		}
+	}
+}]]></script>
+    <in-binding>
+      <bind name="workflowToRunOnError" type="Workflow" export-name="workflowToRunOnError"/>
+      <bind name="wfIdentifierName" type="string" export-name="wfName"/>
+      <bind name="wf" type="Workflow" export-name="wf"/>
+      <bind name="userInteractionWorkflowId" type="string" export-name="userInteractionWorkflowId"/>
+      <bind name="stopAndWaitOnError" type="boolean" export-name="stopAndWaitOnError"/>
+      <bind name="staticProps" type="Array/string" export-name="staticProps"/>
+      <bind name="sendEmailOnError" type="boolean" export-name="sendEmailOnError"/>
+      <bind name="replaceExistingProps" type="boolean" export-name="replaceExistingProps"/>
+      <bind name="isConcurrent" type="boolean" export-name="isConcurrent"/>
+      <bind name="globalProps" type="Array/string" export-name="globalProps"/>
+      <bind name="generalProps" type="Properties" export-name="generalProps"/>
+      <bind name="encryptedProperties" type="Array/string" export-name="encryptedProperties"/>
+      <bind name="defaultValuesList" type="Array/string" export-name="defaultValuesList"/>
+      <bind name="defaultValuesProps" type="Properties" export-name="defaultValues"/>
+      <bind name="customPropertiesPrefix" type="string" export-name="customPropertiesPrefix"/>
+      <bind name="continueOnError" type="boolean" export-name="continueOnError"/>
+      <bind name="commonProfileName" type="string" export-name="commonProfileName"/>
+      <bind name="host" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+      <bind name="attrPropertyGroupName" type="string" export-name="attrPropertyGroupName"/>
+      <bind name="arrayParamPrefix" type="string" export-name="arrayParamPrefix"/>
+      <bind name="appendToExistingPropertyGroup" type="boolean" export-name="appendToExistingPropertyGroup"/>
+      <bind name="addGeneralPropertiesToCommonGroup" type="boolean" export-name="addGeneralPropertiesToCommonGroup"/>
+      <bind name="retryCount" type="number" export-name="retryCount"/>
+      <bind name="retryDelay" type="number" export-name="retryDelay"/>
+    </in-binding>
+    <out-binding>
+      <bind name="propertyGroupId" type="string" export-name="propertyGroupId"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[Create property group name]]></display-name>
+    <script encoded="false"><![CDATA[if (propertyGroupName && propertyGroupName != "") {
+	attrPropertyGroupName = propertyGroupName;
+} else {
+	var wfBuildProfileName = wfName.replace(/[^a-zA-Z0-9]/g,'');
+	attrPropertyGroupName = "Extensibility.Workflows." + wfBuildProfileName;
+}]]></script>
+    <in-binding>
+      <bind name="wfName" type="string" export-name="wfName"/>
+      <bind name="propertyGroupName" type="string" export-name="propertyGroupName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="attrPropertyGroupName" type="string" export-name="attrPropertyGroupName"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="cafeHost">
+      <desc><![CDATA[vRA Cafe Host]]></desc>
+    </p-param>
+    <p-param name="wfName">
+      <desc><![CDATA[Workflow name]]></desc>
+    </p-param>
+    <p-param name="wf">
+      <desc><![CDATA[Workflow]]></desc>
+    </p-param>
+    <p-param name="globalProps">
+      <desc><![CDATA[List of global properties]]></desc>
+    </p-param>
+    <p-param name="defaultValuesList">
+      <desc><![CDATA[List of default values in "key=value" format]]></desc>
+    </p-param>
+    <p-param name="isConcurrent">
+      <desc><![CDATA[Enable concurrent execution]]></desc>
+      <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="continueOnError">
+      <desc><![CDATA[Continue provisioning if workflow fails]]></desc>
+    </p-param>
+    <p-param name="sendEmailOnError">
+      <desc><![CDATA[Sent email on error]]></desc>
+    </p-param>
+    <p-param name="customPropertiesPrefix">
+      <desc><![CDATA[Custom properties prefix]]></desc>
+    </p-param>
+    <p-param name="replaceExistingProps">
+      <desc><![CDATA[Replace the values of existing properties]]></desc>
+    </p-param>
+    <p-step>
+      <title><![CDATA[New step]]></title>
+      <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[true]]></p-qual>
+      <p-param name="defaultValues">
+        <desc><![CDATA[Used by other workflows only]]></desc>
+      </p-param>
+    </p-step>
+    <p-param name="workflowToRunOnError">
+      <desc><![CDATA[Workflow to be run on failure]]></desc>
+    </p-param>
+    <p-param name="stopAndWaitOnError">
+      <desc><![CDATA[stopAndWaitOnError]]></desc>
+    </p-param>
+    <p-param name="propertyGroupName">
+      <desc><![CDATA[(Optional) The name of property group which will contains couple of workflow configurations]]></desc>
+    </p-param>
+    <p-param name="arrayParamPrefix">
+      <desc><![CDATA[(Optional) Prefix for parameters when a workflow configuration is an array of properties]]></desc>
+    </p-param>
+    <p-param name="encryptedProperties">
+      <desc><![CDATA[(Optional) Encrypted properties]]></desc>
+    </p-param>
+    <p-param name="generalProps">
+      <desc><![CDATA[generalProps]]></desc>
+    </p-param>
+    <p-param name="appendToExistingPropertyGroup">
+      <desc><![CDATA[appendToExistingPropertyGroup]]></desc>
+    </p-param>
+    <p-param name="addGeneralPropertiesToCommonGroup">
+      <desc><![CDATA[addGeneralPropertiesToCommonGroup]]></desc>
+    </p-param>
+    <p-param name="retryCount">
+      <desc><![CDATA[retryCount]]></desc>
+    </p-param>
+    <p-param name="retryDelay">
+      <desc><![CDATA[retryDelay]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

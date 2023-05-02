@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="f462d6d5-434f-45cb-b115-c940a0b8010d" version="2.4.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[(Deprecated since v2.4.0) Assign vRO Workflows To Blueprint]]></display-name>
+  <description><![CDATA[Adds or updates a state change  workflow on several blueprints and their virtual machines]]></description>
+  <position y="27.227272727272727" x="85.0"/>
+  <input>
+    <param name="workflowState" type="string">
+      <description><![CDATA[Workflow state]]></description>
+    </param>
+    <param name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean):WorkflowIdentifierProperties">
+      <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+    </param>
+    <param name="blueprint" type="vCACCAFE:CompositeBlueprint">
+      <description><![CDATA[Blueprint to extend]]></description>
+    </param>
+    <param name="component" type="string">
+      <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></description>
+    </param>
+    <param name="globalProps" type="Array/string">
+      <description><![CDATA[List of Global Properties]]></description>
+    </param>
+    <param name="defaultValuesList" type="Array/string">
+      <description><![CDATA[List of Default Values in form: key=value]]></description>
+    </param>
+    <param name="replaceExistingProps" type="boolean">
+      <description><![CDATA[Replace the value of existing properties]]></description>
+    </param>
+    <param name="defaultValues" type="Properties">
+      <description><![CDATA[Hidden used by  other workflow only]]></description>
+    </param>
+    <param name="cafeHost" type="vCACCAFE:VCACHost"/>
+    <param name="eventTopic" type="string"/>
+  </input>
+  <attrib name="propertiesToCheck" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[#{#string#workflow#;#string#wfIdentifierName#}#]]></value>
+  </attrib>
+  <attrib name="wfToRunNew" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="27.227272727272727" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="task">
+    <display-name><![CDATA[Convert wfToRun]]></display-name>
+    <script encoded="false"><![CDATA[wfToRunNew = [];
+for (var i = 0; i < wfToRun.length; i++) {
+	wfToRunNew[i] = new Object();
+	wfToRunNew[i].wfIdentifierName = wfToRun[i].wfIdentifierName;
+	wfToRunNew[i].workflow = wfToRun[i].workflow;
+	wfToRunNew[i].sendEmailOnError = wfToRun[i].sendEmailOnError;
+	wfToRunNew[i].customPropertiesPrefix = wfToRun[i].customPropertiesPrefix;
+	wfToRunNew[i].wfToRunOnFailure = wfToRun[i].wfToRunOnFailure;
+	wfToRunNew[i].triggerUserInteractionOnError = wfToRun[i].triggerUserInteractionOnError;
+	wfToRunNew[i].continueOnError = wfToRun[i].continueOnError;
+	wfToRunNew[i].isConcurrent = wfToRun[i].isConcurrent;
+	wfToRunNew[i].retryCount = 0;
+	wfToRunNew[i].retryDelay = 0;
+}]]></script>
+    <in-binding>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean):WorkflowIdentifierProperties" export-name="wfToRun">
+        <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="wfToRunNew" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRunNew"/>
+    </out-binding>
+    <position y="37.22727272727273" x="184.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="287b6369-9ae2-4dd1-ab9e-b53a48d8f098">
+    <display-name><![CDATA[Assign vRO Workflows To Blueprint]]></display-name>
+    <in-binding>
+      <bind name="workflowState" type="string" export-name="workflowState">
+        <description><![CDATA[Workflow state]]></description>
+      </bind>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRunNew">
+        <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+      </bind>
+      <bind name="blueprint" type="vCACCAFE:CompositeBlueprint" export-name="blueprint">
+        <description><![CDATA[Blueprint to extend]]></description>
+      </bind>
+      <bind name="component" type="string" export-name="component">
+        <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></description>
+      </bind>
+      <bind name="globalProps" type="Array/string" export-name="globalProps">
+        <description><![CDATA[List of Global Properties]]></description>
+      </bind>
+      <bind name="defaultValuesList" type="Array/string" export-name="defaultValuesList">
+        <description><![CDATA[List of Default Values in form: key=value]]></description>
+      </bind>
+      <bind name="replaceExistingProps" type="boolean" export-name="replaceExistingProps">
+        <description><![CDATA[Replace the value of existing properties]]></description>
+      </bind>
+      <bind name="defaultValues" type="Properties" export-name="defaultValues">
+        <description><![CDATA[Hidden used by  other workflow only]]></description>
+      </bind>
+      <bind name="cafeHost" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+      <bind name="eventTopic" type="string" export-name="eventTopic"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Adds or updates a state change  workflow on several blueprints and their virtual machines]]></description>
+    <position y="37.22727272727273" x="324.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Blueprint mapping]]></title>
+      <desc><![CDATA[Select which Blueprint will trigger a workflow for the selected state]]></desc>
+      <p-param name="blueprint">
+        <desc><![CDATA[Blueprint to extend]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="component">
+        <desc><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getComponentNames").call( #blueprint , true )]]></p-qual>
+      </p-param>
+      <p-param name="cafeHost">
+        <desc><![CDATA[cafeHost]]></desc>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="dataBinding" type="vCACCAFE:VCACHost"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getCafeHostFromObject").call( #blueprint )]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[vRealize Automation]]></title>
+      <p-param name="eventTopic">
+        <desc><![CDATA[Event topic]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra.dispatcher.presentation","getCurrentlyConfiguredTopics").call( #cafeHost )]]></p-qual>
+      </p-param>
+      <p-param name="workflowState">
+        <desc><![CDATA[vRA workflow state to enable]]></desc>
+        <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra.dispatcher.presentation","getCurrentlyConfiguredPhasesAndStates").call( #cafeHost , #eventTopic )]]></p-qual>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[(GetAction("com.vmware.pscoe.library.vra.dispatcher.presentation","getCurrentlyConfiguredPhasesAndStates").call( #cafeHost , #eventTopic )).length == 0]]></p-qual>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[(GetAction("com.vmware.pscoe.library.vra.dispatcher.presentation","getCurrentlyConfiguredPhasesAndStates").call( #cafeHost , #eventTopic )).length != 0]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[vRealize Orchestrator Workflows]]></title>
+      <p-param name="wfToRun">
+        <desc><![CDATA[Workflows to run at the specified state]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.pscoe.library.util","validateCompositeArray").call(#wfToRun,#propertiesToCheck,null)]]></p-qual>
+      </p-param>
+      <p-param name="globalProps">
+        <desc><![CDATA[List of global properties]]></desc>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.pscoe.library.util","validateArray").call(#globalProps,null)]]></p-qual>
+      </p-param>
+      <p-param name="defaultValuesList">
+        <desc><![CDATA[List of default values in "key=value" format]]></desc>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.pscoe.library.util","validateArray").call(#defaultValuesList,null)]]></p-qual>
+      </p-param>
+      <p-param name="replaceExistingProps">
+        <desc><![CDATA[Replace the values of existing properties]]></desc>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Unused]]></title>
+      <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[true]]></p-qual>
+      <p-param name="defaultValues">
+        <desc><![CDATA[Hidden used by  other workflow only]]></desc>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

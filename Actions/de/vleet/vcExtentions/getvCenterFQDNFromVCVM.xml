@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getvCenterFQDNFromVCVM" result-type="string" api-version="6.0.0" id="b146b014-604b-458a-b7a5-f8c9b0d86d97" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vcExtentions">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[vcenterURL=vcvm.sdkConnection.name;
+temp=vcenterURL.split(":")[1];
+return temp.substring(2,temp.length);
+]]></script>
+</dunes-script-module>

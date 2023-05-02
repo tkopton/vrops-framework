@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setBlueprintProperties" result-type="void" api-version="6.0.0" id="a1432cdc-7b85-4bfd-9283-2e104f88d9a9" version="2.3.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher.configuration">
+  <param n="blueprint" t="vCACCAFE:CompositeBlueprint"><![CDATA[]]></param>
+  <param n="componentName" t="string"><![CDATA[]]></param>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="commonProfileName" t="string"><![CDATA[]]></param>
+  <param n="propertyGroupIds" t="Array/string"><![CDATA[]]></param>
+  <param n="wfConfiguredNames" t="Any"><![CDATA[It could be string or Array of strings]]></param>
+  <param n="wfToRun" t="Array/Any"><![CDATA[]]></param>
+  <param n="wfDelimiter" t="string"><![CDATA[]]></param>
+  <param n="workflowState" t="string"><![CDATA[]]></param>
+  <param n="arrayParamPrefix" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.pscoe.library.logging")
+	  .getLogger("com.vmware.pscoe.library.vra.dispatcher.configuration.setBlueprintProperties");
+
+var Blueprint = System.getModule("com.vmware.pscoe.library.vra").Blueprint(host);
+var bp = Blueprint.get(blueprint.getId());
+var obj = componentName != null && componentName != "" ? bp.getComponent(componentName): bp;
+
+var propsDiff = new Properties();
+
+if (wfConfiguredNames != null) {
+	for each (var wf in wfToRun) {
+		var propName = "Extensibility.States." + wf.workflowState.replace(/ - /g, ".");
+		
+		//CleanUp wf identifiers per state
+		propsDiff = removeWFPerState(obj, propsDiff, propName, wf.wfIdentifierName);	
+		var bpCustomPropValue = propsDiff.get(propName);
+		var propValue = (bpCustomPropValue && bpCustomPropValue != "") ? bpCustomPropValue : "";
+		
+		if (wfConfiguredNames instanceof Array) {
+			var index = 0;
+			for each(var names in wfConfiguredNames){
+				var wfName =  wf.wfIdentifierName + "_" + arrayParamPrefix + "_" + index;
+				var objWFs = names;
+					
+				if(!objWFs || objWFs.indexOf(wf.wfIdentifierName) !== -1){
+					propValue = (propValue == "" ? wfName : propValue + wfDelimiter + wfName);
+				}
+				index = index + 1;
+			}
+		} else {
+			var wfName =  wf.wfIdentifierName;
+			var objWFs = wfConfiguredNames;
+			
+			if(!objWFs || objWFs.indexOf(wf.wfIdentifierName) !== -1){
+				propValue = (propValue == "" ? wfName : propValue + wfDelimiter + wfName);
+			}
+		}
+		propsDiff.put(propName, propValue);
+		
+		updateLifecycleProperty(propsDiff, wf.workflowState, obj);
+	}
+} else if (workflowState && workflowState != "") {
+	var propName = "Extensibility.States." + workflowState.replace(/ - /g, ".");
+	
+	var existingNames = obj.getProperties()[propName];
+	if (existingNames && existingNames instanceof Object) {
+		logger.debug("Property value is an object, using defaultValue: " + existingNames.defaultValue)
+		existingNames = existingNames.defaultValue;
+	}
+	logger.debug("Existing workflows: " + existingNames);
+	
+	var arr = [];
+	for each (var wf in wfToRun) {
+		var wfName = wf.wfIdentifierName.replace(/[^a-zA-Z0-9]/g,'');
+		if (!existingNames || existingNames.split(wfDelimiter).indexOf(wfName) < 0) {
+			arr.push(wfName);
+			logger.debug ("Adding workflow name to list for state configuration: " + wfName);
+		}
+	}
+	if (arr.length > 0) {
+		var wfNames = arr.join(wfDelimiter);
+		logger.debug ("Adding workflows for state: " + wfNames);
+		var propValue = (existingNames && existingNames != "" ? (existingNames + wfDelimiter + wfNames) : wfNames);
+		logger.debug ("Merged workflows: " + propValue);
+		propsDiff.put(propName, propValue);	
+	}
+	
+	updateLifecycleProperty(propsDiff, workflowState, obj);
+	
+} else {
+	throw "Cannot find neither workflow configuration nor workflow state.";
+}
+
+var client = host.createCompositionClient();
+var blueprintService = client.getCompositionCompositeBlueprintService();
+var attrBlueprint = null;
+
+if (componentName != null && componentName != "") {
+	attrBlueprint = blueprintService.updateBlueprintComponentProperties(blueprint.id, componentName, propsDiff);
+} else {
+	attrBlueprint = blueprintService.updateBlueprintProperties(blueprint.id, propsDiff);
+}
+
+System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration")
+	.assignPropertyGroupsToBlueprint(attrBlueprint,componentName,host,commonProfileName,propertyGroupIds);
+
+// ============================================ Functions
+// Added Event support
+// The Lifecycle Property for Events is not equal to the event name (as is the State case), but is the part before .EVENT.
+function updateLifecycleProperty(propsDiff, state, obj){
+	var lifecyclePropertyName = "Extensibility.Lifecycle.Properties.";
+	if (state.split(" - ")[1] == "EVENT"){
+		lifecyclePropertyName += state.split(".EVENT.")[0];
+	} else {
+		lifecyclePropertyName += state.split(" - ")[0];
+	}
+	var pattern ="((^\\*)|(" + wfDelimiter + "\\*)|Extensibility\\.(\\*|States\\.\\*))";
+	var lifecyclePropertyValue = System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").appendToCustomProperty(
+				lifecyclePropertyName, "Extensibility.States.*", pattern, obj.getProperties(), wfDelimiter);	
+	propsDiff.put(lifecyclePropertyName, lifecyclePropertyValue);
+}
+
+function removeWFPerState(obj, properties, propName, wfIdName){
+	var existingNamesAll = obj.getProperties()[propName];
+	if (existingNamesAll && existingNamesAll instanceof Object) {
+		logger.debug("Property value is an object, using defaultValue: " + existingNamesAll.defaultValue)	
+		existingNamesAll =  existingNamesAll.defaultValue; 
+	}
+	
+	logger.debug("Existing workflows all: " + existingNamesAll);
+		
+	if(!existingNamesAll){
+		return properties;
+	}	
+	
+	var existingNames = existingNamesAll;
+	if(existingNamesAll.indexOf(wfIdName) != -1){
+		existingNames = [];
+		existingNamesAll = existingNamesAll.split(wfDelimiter);
+		 
+		for each(wfName in existingNamesAll){	
+			logger.debug(" wfName " + wfName + " wfIdName " + wfIdName);
+			//Removes WFs with prefix wfIdName
+			if(wfName.indexOf(wfIdName) != 0){
+				existingNames.push(wfName);
+			}
+		}
+		
+		existingNames = existingNames.join(wfDelimiter);
+	}
+	properties = propAddSet(properties, propName, existingNames);
+	return properties;
+}
+
+function propAddSet(properties, key, value){
+	if(!value || isBlank(value.toString()))
+		return properties;
+
+	if (properties.get(key) != null) {
+			properties[key] = value;
+		} else {
+			properties.put(key, value);
+		}
+	return properties;		
+}
+
+function isBlank(str) {
+    return (!str || /^\s*$/.test(str));
+}]]></script>
+</dunes-script-module>

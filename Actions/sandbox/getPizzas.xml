@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPizzas" result-type="Array/string" api-version="6.0.0" id="4bb273ed-3eaf-48cb-9597-fef2abfb0541" version="0.0.0" allowed-operations="evf" category-name="sandbox">
+  <script encoded="false"><![CDATA[var pizzas = new Array() ;
+pizzas.push( "Margherita" );
+pizzas.push( "Funghi" );
+pizzas.push( "Florentina" );
+pizzas.push( "Vegeteriana" );
+pizzas.push( "Tonno" );
+pizzas.push( "Capricciosa" );
+pizzas.push( "Calzone" );
+pizzas.push( "Diavolo" );
+return pizzas;]]></script>
+</dunes-script-module>

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="6f9ad3c8-84f6-4519-8e59-ca1ebe1a7de6" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Test getUserRequestFieldFromRef]]></display-name>
+  <position y="0.0" x="25.0"/>
+  <input>
+    <param name="refId" type="string">
+      <description><![CDATA[User Request Reference ID (IE: R-000029)]]></description>
+    </param>
+    <param name="requestField" type="string">
+      <description><![CDATA[Request Field to return (IE: start_date)]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="returnValue" type="string"/>
+  </output>
+  <attrib name="auth_user" type="string" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_user">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[iTOP API Username]]></description>
+  </attrib>
+  <attrib name="auth_pwd" type="SecureString" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_pwd">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[iTOP API Password]]></description>
+  </attrib>
+  <attrib name="restOperation" type="REST:RESTOperation" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="restOperation">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[REST Operation]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="0.0" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.coe.itop/getUserRequestFieldFromRef">
+    <display-name><![CDATA[getUserRequestFieldFromRef]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.coe.itop").getUserRequestFieldFromRef(auth_user,auth_pwd,restOperation,refId,requestField) ;]]></script>
+    <in-binding>
+      <bind name="auth_user" type="string" export-name="auth_user">
+        <description><![CDATA[iTOP API Username]]></description>
+      </bind>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd">
+        <description><![CDATA[iTOP API Password]]></description>
+      </bind>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation">
+        <description><![CDATA[REST Operation]]></description>
+      </bind>
+      <bind name="refId" type="string" export-name="refId">
+        <description><![CDATA[Request ID (IE: R-000012)]]></description>
+      </bind>
+      <bind name="requestField" type="string" export-name="requestField">
+        <description><![CDATA[Field to return]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="returnValue"/>
+    </out-binding>
+    <description><![CDATA[Returns the first returned value for the given request field. For example, get the start_date for Helpdesk Request R-000029]]></description>
+    <position y="9.954545454545453" x="124.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="refId">
+      <desc><![CDATA[Active Organizations Only]]></desc>
+    </p-param>
+    <p-param name="requestField">
+      <desc><![CDATA[Request Field to return (IE: start_date)]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

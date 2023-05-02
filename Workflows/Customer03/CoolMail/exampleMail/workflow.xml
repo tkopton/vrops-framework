@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="15d4e5c8-6261-4c58-8be3-b66bf63c0967" version="1.0.1" api-version="6.0.0" allowed-operations="evf" icon-id="c00df2ff-aa7d-4532-b59c-8c1aec65ddb1" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[exampleMail]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="yourName" type="string"/>
+    <param name="repeatValues" type="Array/string"/>
+    <param name="mailTo" type="string"/>
+    <param name="whyTry" type="string"/>
+  </input>
+  <attrib name="mailtemplate" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='e153698f-857c-436e-9911-d6844c633cba'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <attrib name="mailPayload" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[prepMail]]></display-name>
+    <script encoded="false"><![CDATA[//prepare Properties for output. For this example I will just collect all the plugins and put their name and versioninto a property
+var propertyValues= new Properties();
+for each (plug in Server.getAllPluginInfo()){
+	propertyValues.put(plug.name,plug.version);
+}
+
+var mailPayload= new Properties();
+mailPayload.put("mailTo",mailTo);
+mailPayload.put("subject","Test email für {id.name}");
+mailPayload.put("mailTemplate",mailtemplate);
+var mailReplacements= new Properties();
+mailReplacements.put("id.name",yourName);
+mailReplacements.put("id.try",whyTry);
+mailReplacements.put("repeat",repeatValues);
+mailReplacements.put("plugins",propertyValues);
+mailPayload.put("mailReplacements",mailReplacements);
+]]></script>
+    <in-binding>
+      <bind name="yourName" type="string" export-name="yourName"/>
+      <bind name="repeatValues" type="Array/string" export-name="repeatValues"/>
+      <bind name="mailtemplate" type="ResourceElement" export-name="mailtemplate"/>
+      <bind name="mailTo" type="string" export-name="mailTo"/>
+      <bind name="whyTry" type="string" export-name="whyTry"/>
+    </in-binding>
+    <out-binding>
+      <bind name="mailPayload" type="Properties" export-name="mailPayload"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="03167550-d51d-4466-9fd9-7a770f40bdaa">
+    <display-name><![CDATA[coolMail SubSystem]]></display-name>
+    <in-binding>
+      <bind name="mailPayload" type="Properties" export-name="mailPayload"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Reosurce Template structure Example
+Variables are in {variableName}
+
+<html>
+this is a test {vm.name}. 
+<table>
+<tr><td>Name</td><td>{vm.name}</td></tr>
+<tr><td>IP</td><td>{vm.ip}</td></tr>
+<tr><td>Mac</td><td>{vm.mac}</td></tr>
+</table></html>
+
+------------------------------------------------------------------------------------------------
+Payload Structure example
+
+var mailProperties= new Properties();
+mailProperties.put("mailTo","info@langenhan.info");
+mailProperties.put("mailCC","info@langenhan.info");
+mailProperties.put("subject","Test email für {vm.name}");
+mailProperties.put("mailTemplate","MailTemplates/testmail.html");
+var mailReplacements= new Properties();
+mailReplacements.put("vm.name","myVM");
+mailReplacements.put("vm.ip","192.168.220.10");
+mailReplacements.put("vm.mac"," 0A:0B:0C:0D:0E:0F");
+mailProperties.put("mailReplacements",mailReplacements);
+------------------------------------------------------------------------------------------------]]></description>
+    <position y="55.90909090909091" x="345.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="yourName">
+      <desc><![CDATA[Your Name]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="whyTry">
+      <desc><![CDATA[Give a reason why you give CoolMail a go]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      <p-qual kind="static" name="defaultValue" type="string"><![CDATA[cause....]]></p-qual>
+    </p-param>
+    <p-param name="repeatValues">
+      <desc><![CDATA[Please enter some values]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="mailTo">
+      <desc><![CDATA[Where should the Test Mail go to?]]></desc>
+      <p-qual kind="static" name="defaultValue" type="string"><![CDATA[test@mylab.local]]></p-qual>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

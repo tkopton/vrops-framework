@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getToppings" result-type="Array/string" api-version="6.0.0" id="96037873-f373-4a6b-a2a2-bef7bad8e51d" version="0.0.0" allowed-operations="evf" category-name="sandbox">
+  <script encoded="false"><![CDATA[var toppings = new Array() ;
+toppings.push( "None" );
+toppings.push( "Bacon" );
+toppings.push( "Cheddar" );
+toppings.push( "Onions" );
+toppings.push( "Pepperoni" );
+toppings.push( "Anchovies" );
+toppings.push( "Marmelade" );
+toppings.push( "Mushrooms" );
+return toppings;]]></script>
+</dunes-script-module>

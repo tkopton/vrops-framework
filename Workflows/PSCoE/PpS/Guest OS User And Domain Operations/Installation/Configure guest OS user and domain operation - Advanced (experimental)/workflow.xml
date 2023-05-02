@@ -1,0 +1,301 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="ccacf652-903e-4c1f-84ed-95da1d0689bc" version="1.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Configure guest OS user and domain operation - Advanced (experimental)]]></display-name>
+  <description><![CDATA[Configure PS PpS guest OS User and Domain operation component and assign the configuration to a blueprint.
+Advanced configuration allows specification of multiple operations and modification of existing configuration.
+
+Disclaimer: This is an experimental version of the configuration workflow. Use with caution, as future versions might introduce changes that are not backward compatible.]]></description>
+  <position y="9.545454545454543" x="45.0"/>
+  <input>
+    <param name="blueprint" type="vCACCAFE:CompositeBlueprint">
+      <description><![CDATA[Blueprint to extend]]></description>
+    </param>
+    <param name="component" type="string">
+      <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assignment on the composite blueprint]]></description>
+    </param>
+    <param name="vmUsername" type="string">
+      <description><![CDATA[Guest username]]></description>
+    </param>
+    <param name="vmPassword" type="SecureString">
+      <description><![CDATA[Guest Password]]></description>
+    </param>
+    <param name="createNewConfiguration" type="boolean"/>
+    <param name="configurationName" type="string">
+      <description><![CDATA[The name of the property prefix]]></description>
+    </param>
+    <param name="selectedExistingPropGroup" type="string"/>
+    <param name="advancedConfigurationJSON" type="string"/>
+  </input>
+  <attrib name="workflowStateProvisioned" type="string" read-only="false">
+    <value encoded="n"><![CDATA[VMPSMasterWorkflow32.MachineProvisioned]]></value>
+    <description><![CDATA[Workflow state]]></description>
+  </attrib>
+  <attrib name="provisioningOperationWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='dadbec55-001e-4ed2-8a7e-aa8d874fa9d6'&dunesName='Workflow']]></value>
+  </attrib>
+  <attrib name="disposingOperationWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='88f1d818-c936-4c93-8e89-1704a4e92c48'&dunesName='Workflow']]></value>
+  </attrib>
+  <attrib name="workflowStateDisposing" type="string" read-only="false">
+    <value encoded="n"><![CDATA[VMPSMasterWorkflow32.Disposing]]></value>
+    <description><![CDATA[Workflow state]]></description>
+  </attrib>
+  <attrib name="replaceExistingProps" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Replace the value of existing properties]]></description>
+  </attrib>
+  <attrib name="propertyGroupPrefix" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Extensibility.Workflows.PpS.UserDomOps.]]></value>
+  </attrib>
+  <attrib name="templateFileName" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='62ea1637-0c68-4a3b-a208-26a526b9970f'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <attrib name="advancedConfigJSONParsed" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="wfProvIdentifierName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Prov]]></value>
+  </attrib>
+  <attrib name="wfDispIdentifierName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Disp]]></value>
+  </attrib>
+  <attrib name="propertyGroupName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="isConcurrent" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Should the workflow allow concurrent executions]]></description>
+  </attrib>
+  <attrib name="sendEmailOnError" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflowState:string,workflow:Workflow,isConcurrent:boolean,continueOnError:boolean,sendEmailOnError:boolean):wfIdentifier" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+  </attrib>
+  <attrib name="appendToExistingPropertyGroup" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="updatedConfigJson" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="wfProvContinueOnError" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="wfDispContinueOnError" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <attrib name="addGeneralPropertiesToCommonGroup" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="9.045454545454543" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[Validate the advanced JSON configuration]]></display-name>
+    <script encoded="false"><![CDATA[try {
+	advancedConfigJSONParsed = advancedConfigurationJSON.replace(/[\r\n\t]/g,'');
+	advancedConfigJSONParsed = JSON.parse(advancedConfigJSONParsed);	
+	advancedConfigJSONParsed = JSON.stringify(advancedConfigJSONParsed);
+	
+}
+catch(ex) {
+	throw "Invalid JSON format for advanced configuration. The error is: " + ex;	
+}
+
+]]></script>
+    <in-binding>
+      <bind name="advancedConfigurationJSON" type="string" export-name="advancedConfigurationJSON"/>
+    </in-binding>
+    <out-binding>
+      <bind name="advancedConfigJSONParsed" type="string" export-name="advancedConfigJSONParsed"/>
+    </out-binding>
+    <position y="19.045454545454543" x="144.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" type="task">
+    <display-name><![CDATA[Prepare WFD Properties]]></display-name>
+    <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.pps.guestuserdomainops", null);
+logger.debug(" User domain operations JSON User input " + advancedConfigJSONParsed);
+advancedConfigJSONParsed = JSON.parse(advancedConfigJSONParsed);
+updatedConfigJson = {};
+
+
+//Loop through JSON to add workflows key to the UserDomOps prop sections
+for (var key in advancedConfigJSONParsed){
+																							
+	var operation = advancedConfigJSONParsed[key];
+	
+	if (!(operation instanceof Object)) {
+		logger.debug("Found general configuration value '" + key + "', not an operation configuration. Will not add workflow identifier names.");
+		updatedConfigJson[key] = operation;
+	} else if(operation instanceof Array){
+		var objList = [];
+		for each (var opDetails in operation){
+			var workflowsIds = [];
+			workflowsIds.push(wfProvIdentifierName);
+			if(opDetails.cleanUpOnDelete && opDetails.cleanUpOnDelete.toString() == "true"){
+				workflowsIds.push(wfDispIdentifierName);
+			}
+			
+			// add input parameters to wfParams attribute
+			var wfParams = {};
+			wfParams["operationInput"] = {};
+			for (var wfParamKey in opDetails) {
+				// only type and cleanUpOnDelete should be in root level of wfParams
+				if (wfParamKey == "type" || wfParamKey == "cleanUpOnDelete") {
+					wfParams[wfParamKey] = opDetails[wfParamKey];
+				} else {
+					// all other parameters are operation input parameters
+					wfParams["operationInput"][wfParamKey] = opDetails[wfParamKey];
+				}
+			}
+			
+			objList.push({"wfParameters":wfParams,"wfIdentifierNames":workflowsIds});
+		}
+		updatedConfigJson[key] = objList;
+	} else {
+		var errorMsg = "Workflow properties JSON is not in correct format; " + key + " value must be an array of properties.";	
+		logger.error(errorMsg);
+		throw errorMsg;
+	}
+}
+
+updatedConfigJson.vmUsername = vmUsername;
+updatedConfigJson.vmPassword = vmPassword;
+
+var encryptedProperties = ["userPassword", "domainPassword", "vmPassword"];
+updatedConfigJson.encryptedProperties = encryptedProperties;
+
+updatedConfigJson = JSON.stringify(updatedConfigJson);]]></script>
+    <in-binding>
+      <bind name="advancedConfigJSONParsed" type="string" export-name="advancedConfigJSONParsed"/>
+      <bind name="disposingOperationWorkflow" type="Workflow" export-name="disposingOperationWorkflow"/>
+      <bind name="provisioningOperationWorkflow" type="Workflow" export-name="provisioningOperationWorkflow"/>
+      <bind name="vmPassword" type="SecureString" export-name="vmPassword"/>
+      <bind name="vmUsername" type="string" export-name="vmUsername"/>
+      <bind name="wfDispIdentifierName" type="string" export-name="wfDispIdentifierName"/>
+      <bind name="wfProvIdentifierName" type="string" export-name="wfProvIdentifierName"/>
+      <bind name="workflowStateDisposing" type="string" export-name="workflowStateDisposing"/>
+      <bind name="workflowStateProvisioned" type="string" export-name="workflowStateProvisioned"/>
+    </in-binding>
+    <out-binding>
+      <bind name="updatedConfigJson" type="string" export-name="updatedConfigJson"/>
+    </out-binding>
+    <position y="19.045454545454543" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item2" type="task">
+    <display-name><![CDATA[Configure WF to run & PropGroupName]]></display-name>
+    <script encoded="false"><![CDATA[wfToRun = [];
+
+var wf = new Properties();
+wf.put("workflow", provisioningOperationWorkflow);
+wf.put("wfIdentifierName", wfProvIdentifierName);
+wf.put("workflowState", workflowStateProvisioned);
+wf.put("continueOnError", wfProvContinueOnError);
+wf.put("isConcurrent", isConcurrent);
+wf.put("sendEmailOnError", sendEmailOnError);
+wfToRun.push(wf);
+
+var wf = new Properties();
+wf.put("workflow", disposingOperationWorkflow);
+wf.put("wfIdentifierName", wfDispIdentifierName);
+wf.put("workflowState", workflowStateDisposing);
+wf.put("continueOnError", wfDispContinueOnError);
+wf.put("isConcurrent", isConcurrent);
+wf.put("sendEmailOnError", sendEmailOnError);
+wfToRun.push(wf);
+
+propertyGroupName = propGroupPrefix + configurationName;]]></script>
+    <in-binding>
+      <bind name="configurationName" type="string" export-name="configurationName"/>
+      <bind name="createNewConfiguration" type="boolean" export-name="createNewConfiguration"/>
+      <bind name="disposingOperationWorkflow" type="Workflow" export-name="disposingOperationWorkflow"/>
+      <bind name="isConcurrent" type="boolean" export-name="isConcurrent"/>
+      <bind name="propGroupPrefix" type="string" export-name="propertyGroupPrefix"/>
+      <bind name="provisioningOperationWorkflow" type="Workflow" export-name="provisioningOperationWorkflow"/>
+      <bind name="sendEmailOnError" type="boolean" export-name="sendEmailOnError"/>
+      <bind name="wfDispIdentifierName" type="string" export-name="wfDispIdentifierName"/>
+      <bind name="wfProvIdentifierName" type="string" export-name="wfProvIdentifierName"/>
+      <bind name="workflowStateDisposing" type="string" export-name="workflowStateDisposing"/>
+      <bind name="workflowStateProvisioned" type="string" export-name="workflowStateProvisioned"/>
+      <bind name="wfProvContinueOnError" type="boolean" export-name="wfProvContinueOnError"/>
+      <bind name="wfDispContinueOnError" type="boolean" export-name="wfDispContinueOnError"/>
+    </in-binding>
+    <out-binding>
+      <bind name="propertyGroupName" type="string" export-name="propertyGroupName"/>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflowState:string,workflow:Workflow,isConcurrent:boolean,continueOnError:boolean,sendEmailOnError:boolean):wfIdentifier" export-name="wfToRun"/>
+    </out-binding>
+    <position y="19.045454545454543" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="c3027636-fe21-4998-a986-28f2f9bf33fa">
+    <display-name><![CDATA[Assign vRO Workflows To Blueprint (JSON input)]]></display-name>
+    <in-binding>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflowState:string,workflow:Workflow,isConcurrent:boolean,continueOnError:boolean,sendEmailOnError:boolean):wfIdentifier" export-name="wfToRun">
+        <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+      </bind>
+      <bind name="blueprint" type="vCACCAFE:CompositeBlueprint" export-name="blueprint">
+        <description><![CDATA[Blueprint to extend]]></description>
+      </bind>
+      <bind name="component" type="string" export-name="component">
+        <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assignment on the composite blueprint]]></description>
+      </bind>
+      <bind name="replaceExistingProps" type="boolean" export-name="replaceExistingProps">
+        <description><![CDATA[Replace the value of existing properties]]></description>
+      </bind>
+      <bind name="propGroupName" type="string" export-name="propertyGroupName"/>
+      <bind name="jsonParams" type="string" export-name="updatedConfigJson"/>
+      <bind name="propGroupPrefix" type="string" export-name="propertyGroupPrefix"/>
+      <bind name="appendToExistingPropertyGroup" type="boolean" export-name="appendToExistingPropertyGroup"/>
+      <bind name="addGeneralPropertiesToCommonGroup" type="boolean" export-name="addGeneralPropertiesToCommonGroup"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Adds or updates a state change  workflow on several blueprints and their virtual machines]]></description>
+    <position y="19.045454545454543" x="564.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Blueprint]]></title>
+      <p-param name="blueprint">
+        <desc><![CDATA[Blueprint to extend]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="component">
+        <desc><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assignment on the composite blueprint]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getComponentNames").call( #blueprint , true )]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#blueprint != null]]></p-qual>
+      </p-param>
+      <p-param name="vmUsername">
+        <desc><![CDATA[Guest username]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="vmPassword">
+        <desc><![CDATA[Guest Password]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Guest Operations]]></title>
+      <p-param name="createNewConfiguration">
+        <desc><![CDATA[Create a new configuration. No - modify an existing configuration.]]></desc>
+        <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="configurationName">
+        <desc><![CDATA[Configuration name (prefix will be added: ${propertyGroupPrefix})]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#createNewConfiguration]]></p-qual>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[!#createNewConfiguration?#selectedExistingPropGroup:""]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="selectedExistingPropGroup">
+        <desc><![CDATA[Select the property group to modify:]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getPropertyGroupsByPrefix").call( true , #blueprint , #propertyGroupPrefix )]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[! #createNewConfiguration]]></p-qual>
+      </p-param>
+      <p-param name="advancedConfigurationJSON">
+        <desc><![CDATA[JSON for advanced configuration]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.pscoe.pps.guestuserdomainops","loadConfigurationPropertiesForGuestDomOps").call( #createNewConfiguration , #blueprint , #propertyGroupPrefix , #selectedExistingPropGroup , #templateFileName , #wfDispIdentifierName )]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="static" name="textInput" type="void"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

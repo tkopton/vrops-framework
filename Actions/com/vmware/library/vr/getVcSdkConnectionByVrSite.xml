@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVcSdkConnectionByVrSite" result-type="VC:SdkConnection" api-version="6.0.0" id="ef77dd85-0576-4614-8491-f91cc85ef5eb" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vr">
+  <description><![CDATA[Get the vCenter plug-in sdkConnection object to which the local site is related.]]></description>
+  <param n="site" t="VR:Site"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[for (var i = 0; i < VcPlugin.allSdkConnections.length; i++) {
+	var sdkConn = VcPlugin.allSdkConnections[i];
+	if (sdkConn.about != null && site.vcInstanceUuid == sdkConn.about.instanceUuid) {
+		return sdkConn;
+	}
+}
+]]></script>
+</dunes-script-module>

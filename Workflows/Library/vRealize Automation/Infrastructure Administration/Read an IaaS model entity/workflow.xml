@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="8d15aeff-9d2e-4365-a322-c4269825d3b1" version="2.0.4" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Read an IaaS model entity]]></display-name>
+  <description><![CDATA[Reads a vCloud Automation Center model entity by its ID.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="host" type="vCAC:VCACHost">
+      <description><![CDATA[The IaaS host instance]]></description>
+    </param>
+    <param name="modelName" type="string">
+      <description><![CDATA[The IaaS' model name of the IaaS entity]]></description>
+    </param>
+    <param name="entitySetName" type="string">
+      <description><![CDATA[The entity set of the IaaS entity]]></description>
+    </param>
+    <param name="entityId" type="Properties">
+      <description><![CDATA[A map of property name, value containing the ID of the IaaS entity]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[A map of the HTTP headers]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="entity" type="vCAC:Entity">
+      <description><![CDATA[The IaaS entity]]></description>
+    </param>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Read entity]]></display-name>
+    <script encoded="false"><![CDATA[entity = vCACEntityManager.readModelEntity(host.id, modelName, entitySetName, entityId, headers);]]></script>
+    <in-binding>
+      <bind name="host" type="vCAC:VCACHost" export-name="host"/>
+      <bind name="modelName" type="string" export-name="modelName"/>
+      <bind name="entitySetName" type="string" export-name="entitySetName"/>
+      <bind name="entityId" type="Properties" export-name="entityId"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+    </in-binding>
+    <out-binding>
+      <bind name="entity" type="vCAC:Entity" export-name="entity"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="entityId">
+      <desc><![CDATA[The entity's ID]]></desc>
+    </p-param>
+    <p-param name="host">
+      <desc><![CDATA[vCloud Automation Center host]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="modelName">
+      <desc><![CDATA[Model name]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="entitySetName">
+      <desc><![CDATA[Entity set name]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="headers">
+      <desc><![CDATA[HTTP headers]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

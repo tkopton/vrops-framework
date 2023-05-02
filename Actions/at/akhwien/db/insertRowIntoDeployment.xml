@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="insertRowIntoDeployment" result-type="boolean" api-version="6.0.0" id="7fa25e72-8e7f-404c-ac82-2c36cdaefd07" version="0.0.2" allowed-operations="evf" category-name="at.akhwien.db">
+  <param n="JDBCString" t="string"><![CDATA[]]></param>
+  <param n="DBUser" t="string"><![CDATA[]]></param>
+  <param n="DBUserPassword" t="SecureString"><![CDATA[]]></param>
+  <param n="deploymentId" t="string"><![CDATA[]]></param>
+  <param n="hostname" t="string"><![CDATA[]]></param>
+  <param n="domainSuffix" t="string"><![CDATA[]]></param>
+  <param n="requestor" t="string"><![CDATA[]]></param>
+  <param n="requestTime" t="Date"><![CDATA[]]></param>
+  <param n="description" t="string"><![CDATA[]]></param>
+  <param n="usage" t="string"><![CDATA[]]></param>
+  <param n="antiVirus" t="string"><![CDATA[]]></param>
+  <param n="sla" t="string"><![CDATA[]]></param>
+  <param n="replicationRPO" t="number"><![CDATA[]]></param>
+  <param n="monitoring" t="string"><![CDATA[]]></param>
+  <param n="ip" t="string"><![CDATA[]]></param>
+  <param n="owner" t="string"><![CDATA[]]></param>
+  <param n="backupIntervall" t="string"><![CDATA[]]></param>
+  <param n="backupType" t="string"><![CDATA[]]></param>
+  <param n="replicationQuiescing" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[requestTimeSQL=System.formatDate(requestTime,"yyyy-MM-dd HH:mm:ss")
+
+replicationRPOSTR=replicationRPO.toString();
+
+sqlStatement="INSERT INTO deployment VALUES"
+			+ "(" 
+			+ "'" + deploymentId + "',"
+			+ "'" + hostname + "',"
+			+ "'" + domainSuffix + "',"
+			+ "'" + requestor + "',"
+			+ "'" + requestTimeSQL + "'," //requestdate
+			+ "'" + description + "',"
+			+ "'" + usage + "',"
+			+ "'" + antiVirus + "',"
+			+ "'" + backupIntervall + "',"
+			+ "'" + backupType + "',"
+			+ "'" + sla + "',"
+			+ "'tba'," //vCenter
+			+ "'" + replicationRPO + "',"
+			+ "'none'," //Replication Destination
+			+ "'" + replicationQuiescing + "',"
+			+ "'" + monitoring + "',"
+			+ "'tba'," //monitoring type
+			+ "'" + ip + "',"
+			+ "'reserved'," //AKH Manager Status
+			+ "'reserved'," //ServerDB Status
+			+ "'add'," //DNS Status
+			+ "'reserved'," //vRA_status is always "add" on insert
+			+ "GETDATE(),"//vRA_timestamp
+			+ "'" + owner + "');"
+
+var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( JDBCString, DBUser, DBUserPassword );
+	//System.log( "Connection to database successful" );
+	
+	var stat = con.createStatement();
+	var result = stat.execute( sqlStatement );
+	stat.close();
+	if ( result == 0 )  {
+		return true;
+	} else  {
+		return false;
+	}
+	
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+}]]></script>
+</dunes-script-module>

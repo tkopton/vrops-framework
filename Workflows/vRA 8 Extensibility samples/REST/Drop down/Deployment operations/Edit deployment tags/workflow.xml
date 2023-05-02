@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item7" object-name="workflow:name=generic" id="71812c0f-238c-4335-a53f-9d8973f26ad0" version="0.0.1" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Edit deployment tags]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="deploymentName" type="string"/>
+    <param name="tags" type="Properties"/>
+    <param name="username" type="string"/>
+    <param name="password" type="SecureString"/>
+    <param name="restHost" type="REST:RESTHost"/>
+    <param name="resourceName" type="string"/>
+  </input>
+  <output>
+    <param name="actionResult_1" type="Any"/>
+  </output>
+  <attrib name="defaultUsername" type="string" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="defaultRestHost" type="REST:RESTHost" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="restHost"/>
+  <attrib name="defaultPassword" type="SecureString" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="password"/>
+  <attrib name="deploymentId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="deployment" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="620.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item0" type="task" script-module="com.vmware.vra.extensibility.rest.deployment/setDeploymentResourceTagsFromProperties">
+    <display-name><![CDATA[setDeploymentResourceTagsFromProperties]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.vra.extensibility.rest.deployment").setDeploymentResourceTagsFromProperties(restHost, username, password, deploymentId, resourceName, tags);
+]]></script>
+    <in-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="resourceName" type="string" export-name="resourceName"/>
+      <bind name="tags" type="Properties" export-name="tags"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item6" type="task">
+    <display-name><![CDATA[Get Deployment ID by name]]></display-name>
+    <script encoded="false"><![CDATA[var deployment = System.getModule("com.vmware.vra.extensibility.rest.deployment").getDeploymentByNameQS(restHost,username,password,deploymentName);
+if (deployment != null) deploymentId = deployment.id;
+else throw "Could not find ID for deployment " + deploymentName;]]></script>
+    <in-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="deploymentName" type="string" export-name="deploymentName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="200.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="deploymentName">
+      <desc><![CDATA[deploymentName]]></desc>
+    </p-param>
+    <p-param name="tags">
+      <desc><![CDATA[tags]]></desc>
+    </p-param>
+    <p-param name="username">
+      <desc><![CDATA[username]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[password]]></desc>
+    </p-param>
+    <p-param name="restHost">
+      <desc><![CDATA[restHost]]></desc>
+    </p-param>
+    <p-param name="resourceName">
+      <desc><![CDATA[resourceName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

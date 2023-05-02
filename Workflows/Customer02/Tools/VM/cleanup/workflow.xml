@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="944849f3-c2c4-48bf-822e-967f3894065d" version="0.0.9" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[cleanup]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="usage" type="string"/>
+    <param name="description" type="string"/>
+    <param name="vcacvMName" type="string"/>
+  </input>
+  <output>
+    <param name="outDescription" type="string"/>
+    <param name="outUsage" type="string"/>
+  </output>
+  <attrib name="entity" type="vCAC:Entity" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The IaaS' entity instance]]></description>
+  </attrib>
+  <attrib name="inputProperties" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A map of property name, value of the simple properties of the IaaS entity]]></description>
+  </attrib>
+  <attrib name="links" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A map of link name and entity of the complex properties of the IaaS entity]]></description>
+  </attrib>
+  <attrib name="headers" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A map of the HTTP headers]]></description>
+  </attrib>
+  <attrib name="tempDescription" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="task">
+    <display-name><![CDATA[cleanup input]]></display-name>
+    <script encoded="false"><![CDATA[//filter out unusabel signs and shorten in VM description and VM usage
+
+//replace umlaute with long Umlaut
+tr = {"ä":"ae", "ü":"ue", "ö":"oe", "ß":"ss", "Ä":"Ae","Ü":"Ue","Ö":"Oe"}
+replaceUmlauts = function(s) {
+    return s.replace(/[äöüßÄÖÜ]/g, function($0) { return tr[$0] })
+}
+
+//filter and cut fuction
+function filterIt(eingabe){
+	if ((eingabe==null)||(eingabe=="")){
+		// following row added by HUH 30.01.2018
+		eingabe="AKH Wien"
+		return eingabe;
+	}
+	eingabe=replaceUmlauts(eingabe);
+	regex=new RegExp("[a-zA-Z0-9\ ]","g");
+	temp=eingabe.match(regex);
+	//check if there is anything left in the sting
+	if ((temp==null)||(temp=="")){
+		return "";
+	} else {
+		ausgabe=temp.join(""); 
+	 	//cuting string to 50 character
+		return ausgabe.substring(0 ,50);
+	}
+}
+
+outDescription=filterIt(description);
+tempDescription=outDescription;
+outUsage=filterIt(usage);
+]]></script>
+    <in-binding>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="usage" type="string" export-name="usage"/>
+    </in-binding>
+    <out-binding>
+      <bind name="outDescription" type="string" export-name="outDescription"/>
+      <bind name="outUsage" type="string" export-name="outUsage"/>
+      <bind name="tempDescription" type="string" export-name="tempDescription"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task">
+    <display-name><![CDATA[update]]></display-name>
+    <script encoded="false"><![CDATA[var inputProperties =  new Properties();
+inputProperties.put("Notes",tempDescription);
+
+vcacvm=Server.findAllForType("vCAC:VirtualMachine", "VirtualMachineName eq '" + vcacvMName + "'")[0];
+entity=vcacvm.getEntity();]]></script>
+    <in-binding>
+      <bind name="vcacvMName" type="string" export-name="vcacvMName"/>
+      <bind name="tempDescription" type="string" export-name="tempDescription"/>
+    </in-binding>
+    <out-binding>
+      <bind name="entity" type="vCAC:Entity" export-name="entity"/>
+      <bind name="inputProperties" type="Properties" export-name="inputProperties"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item0" type="link" linked-workflow-id="3fbe872a-46de-484e-8232-8b110fcee02b">
+    <display-name><![CDATA[Update an IaaS model entity]]></display-name>
+    <in-binding>
+      <bind name="entity" type="vCAC:Entity" export-name="entity">
+        <description><![CDATA[The IaaS' entity instance]]></description>
+      </bind>
+      <bind name="inputProperties" type="Properties" export-name="inputProperties">
+        <description><![CDATA[A map of property name, value of the simple properties of the IaaS entity]]></description>
+      </bind>
+      <bind name="links" type="Properties" export-name="links">
+        <description><![CDATA[A map of link name and entity of the complex properties of the IaaS entity]]></description>
+      </bind>
+      <bind name="headers" type="Properties" export-name="headers">
+        <description><![CDATA[A map of the HTTP headers]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="updatedEntity" type="vCAC:Entity" explicitly-not-bound="true">
+        <description><![CDATA[The updated IaaS entity]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Updates a vCloud Automation Center model entity by its ID.]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="usage">
+      <desc><![CDATA[usage]]></desc>
+    </p-param>
+    <p-param name="description">
+      <desc><![CDATA[description]]></desc>
+    </p-param>
+    <p-param name="vcacvMName">
+      <desc><![CDATA[vcacvMName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

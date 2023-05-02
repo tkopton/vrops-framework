@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNameFromReservationPolicyID" result-type="string" api-version="6.0.0" id="13e97ce6-fa8a-48d8-a503-82697d1c92ef" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vra.tools">
+  <param n="tenantRef" t="string"><![CDATA[]]></param>
+  <param n="reservationPolicyID" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var cafeHost = vCACCAFEHostManager.getDefaultHostForTenant(tenantRef , true);
+polies =vCACCAFEEntitiesFinder.getReservationPolicies(cafeHost);
+for each (poly in polies){
+	if (reservationPolicyID==poly.id){
+		return poly.name;
+	}
+}]]></script>
+</dunes-script-module>

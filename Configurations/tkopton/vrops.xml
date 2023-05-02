@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="8f889f19-a6aa-40a4-87fc-dc2ab0aebd64" version="0.0.0">
+  <display-name><![CDATA[vrops]]></display-name>
+  <atts>
+    <att name="token" type="string" read-only="false">
+      <value encoded="n"><![CDATA[3c6e818d-c6e8-4f92-8cec-5cbeb54c56cc::80bbb3e7-8bec-440a-bd92-308cce591873]]></value>
+      <description><![CDATA[vR Ops authentication token]]></description>
+    </att>
+    <att name="tokenValidity" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.552585561981E12]]></value>
+      <description><![CDATA[as UNIX epoch time]]></description>
+    </att>
+    <att name="userName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[admin]]></value>
+      <description><![CDATA[vR Ops user name]]></description>
+    </att>
+    <att name="userPassword" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+      <description><![CDATA[vR Ops user password]]></description>
+    </att>
+    <att name="authSource" type="string" read-only="false">
+      <value encoded="n"><![CDATA[LOCAL]]></value>
+      <description><![CDATA[vR Ops authentication source]]></description>
+    </att>
+  </atts>
+</config-element>

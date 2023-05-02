@@ -1,0 +1,31 @@
+{ 
+"UserDomOps": [
+	{
+		"type": "addUser",
+		"userName": "<userName>",
+		"userPassword": "<password>"
+	},
+	{
+		"type": "addGroup",
+		"groupName": "<groupName>"
+	},
+	{
+		"type": "addUserToGroup",
+		"userName": "<userName>",
+		"groupName": "<groupName>"
+	},
+	{
+		"type": "joinDomain",
+		"domainUserName": "<domainUser>",
+		"domain": "<domain>",
+		"domainPassword": "<password>",
+		"cleanUpOnDelete": true
+	},
+	{
+		"type": "leaveDomain",
+		"domain": "<domain>",
+		"domainPassword": "<domainPassword>",
+		"domainUserName": "<domainUserName>"
+	}
+]
+}

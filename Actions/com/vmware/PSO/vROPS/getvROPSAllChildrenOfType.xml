@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getvROPSAllChildrenOfType" result-type="Array/string" api-version="6.0.0" id="bf0f4f62-728e-42f4-9031-0f8a019164ff" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="RESTHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="target" t="string"><![CDATA[]]></param>
+  <param n="resourceKind" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var allChildren=new Array();
+restURL="/api/resources/"+target+"/relationships/children";
+var request  = RESTHost.createRequest("GET", restURL,null);
+var response = request.execute();
+restStatus=parseInt(response.statusCode);
+if (restStatus==200){
+	xmldoc=XMLManager.fromString(response.contentAsString);
+	resourceNode=xmldoc.getElementsByTagName("ops:resource");
+	for (i=0;i<resourceNode.length;i++){
+		sub=resourceNode.item(i);
+		kind=sub.getElementsByTagName("ops:resourceKindKey").item(0);
+		if (kind.textContent==resourceKind){
+			tag=sub.getElementsByTagName("ops:name").item(0);
+			allChildren.push(tag.textContent);
+		}
+	}
+}
+return allChildren;]]></script>
+</dunes-script-module>

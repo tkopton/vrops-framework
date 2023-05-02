@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getObjectFromUrl" result-type="string" api-version="6.0.0" id="1ad30a9a-fdf5-4da2-94ec-a2caaaa81db9" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[Get from getvRA8CustomHeaders to avoid querying with username password]]></param>
+  <param n="url" t="string"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Must have restHost, url, custom headers or username and password)
+if (restHost == null ||  url == null || (customHeaders == null && (username == null || password == null))) return null;
+
+if ((customHeaders == null || customHeaders == undefined || customHeaders.keys.length == 0)) customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+if (parameters != null && parameters != "") {
+    url = url + "?" + parameters; // Parameters must be encoded
+}
+
+//System.debug(url);
+
+try {
+		var json = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, "GET", url, "", customHeaders);
+        var object = JSON.parse(json);
+        //System.debug("Got JSON object : \n" + JSON.stringify(object,null,2));
+        return object;
+	} catch (e) {
+        //throw "Unable to get object from url : " + url + "\n" + e + "\nWith Content : " + json;
+		System.warn("Unable to get object from url : " + url + "\n" + e + "\nWith Content : " + json);
+}]]></script>
+</dunes-script-module>

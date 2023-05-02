@@ -1,0 +1,1 @@
+{"schema":{"messages":{"id":"messages","type":{"dataType":"string"},"label":"messages","constraints":{"required":false}}},"layout":{"pages":[{"id":"page_2n2m3jo2","title":"General","sections":[{"id":"section_su2bcwgj","fields":[{"id":"messages","display":"textField","signpostPosition":"right-middle","state":{"visible":true,"read-only":false}}]}]}]},"itemId":""}

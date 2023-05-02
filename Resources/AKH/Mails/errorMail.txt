@@ -1,0 +1,131 @@
+<table>
+<tbody>
+<tr>
+<td>
+<p><img src="https://st.depositphotos.com/1031343/4348/v/450/depositphotos_43487261-stock-illustration-failure-stamp.jpg" alt="alicetest.akhwien.at" height="80" /></p>
+</td>
+</tr>
+<tr>
+<td>
+<br>
+<p>Dear Sir,</p>
+<p>vRealize Orchestrator found some problems within a workfow. Please take a look.</p>
+<table style="width: 80%;">
+<tbody>
+<tr>
+<td style="background-color: #e6f2ff;">error message</td>
+<td>{errorMessage}</td>
+</tr>
+<tr>
+<td style="background-color: #e6f2ff;">deployment id</td>
+<td>{cafe.root.request.id}</td>
+</tr>
+<tr>
+<td style="background-color: #e6f2ff;">deployment name</td>
+<td>{deploymentname}</td>
+</tr>
+<tr>
+<td style="background-color: #e6f2ff;">hostname</td>
+<td>{vmhostname}</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td>
+<p>Here are the values supplied by vRealize Orchestrator:</p>
+<table style="width: 80%;" border="1" cellspacing="2" cellpadding="2">
+<tbody>
+<tr>
+<td style="background-color: #e6f2ff;"><strong>Variables</strong></td>
+<td style="background-color: #e6f2ff;"><strong>Values</strong></td>
+</tr>
+<!--{repeat.start}-->
+<tr>
+<td style="width: 240px;">blueprint</td>
+<td style="width: 286px;">{componentId}</td>
+</tr>
+  <tr>
+<td style="width: 240px;">template</td>
+<td style="width: 286px;">{clonefrom}</td>
+</tr>
+<tr>
+<td style="width: 240px;">short hostname</td>
+<td style="width: 286px;">{akh.shortHostname}</td>
+</tr>
+<tr>
+<td style="width: 240px;">request id</td>
+<td style="width: 286px;">{asd_requestid}</td>
+</tr>
+<tr>
+<td style="width: 240px;">event</td>
+<td style="width: 286px;">{lifecycleState.state}</td>
+</tr>
+<tr>
+<td style="width: 240px;">phase</td>
+<td style="width: 286px;">{lifecycleState.phase}</td>
+</tr>
+<tr>
+<td style="width: 240px;">location</td>
+<td style="width: 286px;">{akh.rechenzentrum}</td>
+</tr>
+<tr>
+<td style="width: 240px;">ip address</td>
+<td style="width: 286px;">{ip}</td>
+</tr>
+<tr>
+<td style="width: 240px;">gateway</td>
+<td style="width: 286px;">{gateway}</td>
+</tr>
+<tr>
+<td style="width: 240px;">vlan</td>
+<td style="width: 286px;">{akh.vlanselect}</td>
+</tr>
+<tr>
+<td style="width: 240px;">dvs portgroup</td>
+<td style="width: 286px;">{akh.prettyName}</td>
+</tr>
+<tr>
+<td style="width: 240px;">storage</td>
+<td style="width: 286px;">{virtualMachine.Storage.Name}</td>
+</tr>
+<tr>
+<td style="width: 240px;">sla</td>
+<td style="width: 286px;">{akh.SLA}</td>
+</tr>
+<tr>
+<td style="width: 240px;">usage</td>
+<td style="width: 286px;">{akh.usage}</td>
+</tr>
+<tr>
+<td style="width: 240px;">description</td>
+<td style="width: 286px;">{request.reason}</td>
+</tr>
+<tr>
+<td style="width: 240px;">description</td>
+<td style="width: 286px;">{Notes}</td>
+</tr>
+<tr>
+<td style="width: 240px;">requested by</td>
+<td style="width: 286px;">{asd_requestedBy}</td>
+</tr>
+<tr>
+<td style="width: 240px;">requested for</td>
+<td style="width: 286px;">{asd_requestedFor}</td>
+</tr>
+
+<!--{repeat.end}--></tbody>
+</table>
+<p>&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCloudAccountVsphere" result-type="Any" api-version="6.0.0" id="bcdc8f9c-9bed-4054-9f96-cd2f28b59f9e" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <param n="cloudAccountId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || cloudAccountId == null) return null;
+
+var url = "/iaas/api/cloud-accounts-vsphere/" + cloudAccountId;
+System.log(url);
+var contentObject = System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,username,password,customHeaders,url, parameters);
+return contentObject;]]></script>
+</dunes-script-module>

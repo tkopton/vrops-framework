@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getvRA8CustomHeaders" result-type="Properties" api-version="6.0.0" id="c81581fd-1941-4a30-9e7b-9700e6b0635f" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null) throw "restHost is null";
+if (username == null) throw "username is null";
+if (password == null) throw "password is null";
+
+var body = {
+	"username": username,
+	"password": password,
+}
+
+var req = restHost.createRequest("POST", "/csp/gateway/am/api/login?access_token", JSON.stringify(body));
+req.setHeader("Content-Type", "application/json");
+System.debug(req.getMethod() + " " + req.fullUrl);
+var response = req.execute();
+var statusCode = response.statusCode;
+System.debug("statusCode " + statusCode);
+var contentAsString = response.contentAsString;
+if (statusCode != 200) {
+    try {
+        var object = JSON.parse(contentAsString);
+        var errorMessage = object.serverMessage;
+    } catch(e) {throw "HTTP " + statusCode + " : " + contentAsString}
+    throw errorMessage;
+}
+
+var object = JSON.parse(contentAsString);
+var headersProp = new Properties();
+headersProp.put("Authorization", "Bearer " + object["access_token"]);
+return headersProp;]]></script>
+</dunes-script-module>

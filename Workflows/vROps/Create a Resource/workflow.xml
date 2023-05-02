@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="4ae92176-efce-4c62-b5e3-9e6c285594fe" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create a Resource]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="adapterKindKey" type="string"/>
+    <param name="resourceName" type="string"/>
+    <param name="resourceKindKey" type="string"/>
+  </input>
+  <attrib name="encodedAdapterKindKey" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="addResourceUsingPushAdaptert" type="REST:RESTOperation" read-only="false" conf-id="229043a2-9cac-4cbb-9457-4ff800999267" conf-key="addResourceUsingPushAdapter">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[addResource]]></display-name>
+    <script encoded="false"><![CDATA[var myBody = {
+		"description": "The first Switch",
+		"creationTime": null,
+		"resourceKey": {
+		"name": "",
+		"adapterKindKey": "",
+		"resourceKindKey": ""
+	},
+		"resourceStatusStates": [],
+		"dtEnabled": true,
+		"monitoringInterval": 5
+	};
+
+myBody.resourceKey.name = resourceName;
+myBody.resourceKey.adapterKindKey = encodedAdapterKindKey;
+myBody.resourceKey.resourceKindKey = resourceKindKey;
+
+var params = [encodedAdapterKindKey];	
+System.log("Adding properties... " + JSON.stringify(myBody));
+
+var request = addResourceUsingPushAdaptert.createRequest(params, JSON.stringify(myBody));
+System.log("###############");
+System.log(request.content);
+System.log(request.fullUrl);
+
+
+var response = request.execute();
+
+if(response.statusCode >= 400) {
+	throw "HTTPError: status code: " + response.statusCode;
+}
+
+
+]]></script>
+    <in-binding>
+      <bind name="adapterKindKey" type="string" export-name="adapterKindKey"/>
+      <bind name="addResourceUsingPushAdaptert" type="REST:RESTOperation" export-name="addResourceUsingPushAdaptert"/>
+      <bind name="resourceName" type="string" export-name="resourceName"/>
+      <bind name="resourceKindKey" type="string" export-name="resourceKindKey"/>
+      <bind name="encodedAdapterKindKey" type="string" export-name="encodedAdapterKindKey"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task" script-module="com.vmware.pso.utils/urlEncode">
+    <display-name><![CDATA[urlEncode]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.pso.utils").urlEncode(str) ;]]></script>
+    <in-binding>
+      <bind name="str" type="string" export-name="adapterKindKey">
+        <description><![CDATA[String to encode]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="encodedAdapterKindKey"/>
+    </out-binding>
+    <position y="55.40909090909091" x="264.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="adapterKindKey">
+      <desc><![CDATA[adapterKindKey]]></desc>
+    </p-param>
+    <p-param name="resourceName">
+      <desc><![CDATA[resourceName]]></desc>
+    </p-param>
+    <p-param name="resourceKindKey">
+      <desc><![CDATA[resourceKindKey]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

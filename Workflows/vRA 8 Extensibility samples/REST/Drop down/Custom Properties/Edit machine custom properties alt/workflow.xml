@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item5" object-name="workflow:name=generic" id="8e8dd9e0-d340-4e3b-8376-4ee9f073daf6" version="0.0.1" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Edit machine custom properties alt]]></display-name>
+  <description><![CDATA[This version of the workflow uses a drop down that display the machine name but set the machineId variable with the ID thus avoiding to get the machine ID by name within the workflow. This works with vRA 8.2 service broker.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="machineId" type="string"/>
+    <param name="customProperties" type="Properties"/>
+    <param name="username" type="string"/>
+    <param name="password" type="SecureString"/>
+    <param name="restHost" type="REST:RESTHost"/>
+  </input>
+  <attrib name="content" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="defaultUsername" type="string" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="defaultRestHost" type="REST:RESTHost" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="restHost"/>
+  <attrib name="defaultPassword" type="SecureString" read-only="false" conf-id="cf442bf5-3fad-482d-a583-a9b9bc088134" conf-key="password"/>
+  <attrib name="customHeaders" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[{}]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="720.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item0" type="task" script-module="com.vmware.vra.extensibility.rest.iaas/setMachineCustomPropertiesFromProperties">
+    <display-name><![CDATA[setMachineCustomPropertiesFromProperties]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.vra.extensibility.rest.iaas").setMachineCustomPropertiesFromProperties(restHost,username,password,machineId,customProperties);
+]]></script>
+    <in-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="machineId" type="string" export-name="machineId"/>
+      <bind name="customProperties" type="Properties" export-name="customProperties"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="420.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="machineId">
+      <desc><![CDATA[projectName]]></desc>
+    </p-param>
+    <p-param name="customProperties">
+      <desc><![CDATA[tags]]></desc>
+    </p-param>
+    <p-param name="username">
+      <desc><![CDATA[username]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[password]]></desc>
+    </p-param>
+    <p-param name="restHost">
+      <desc><![CDATA[restHost]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

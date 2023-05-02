@@ -1,0 +1,4 @@
+INSERT INTO Network VALUES 
+(613,'Server_Standard','Server','Standard','routine.akhwien.at','10.126.13.0',24,'10.126.13.1',20,240),
+(621,'Server_VMwareAppliances','Server','VMwareAppliances','routine.akhwien.at','10.126.21.0',24,'10.126.21.1',20,240),
+(623,'Server_Standard','Server','Standard','routine.akhwien.at','10.126.23.0',24,'10.126.23.1',20,240);

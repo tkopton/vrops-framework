@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCurrentlyConfiguredPhasesAndStates" result-type="Array/string" api-version="6.0.0" id="62A120EF-31AB-407A-A0A0-E3E4BCA56FF1" version="2.3.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher.presentation">
+  <param n="cafeHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="topicName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var statesAndPhases = [];
+
+var topicNameNormalised = topicName.replace(/[^a-zA-Z0-9] /g,'');
+var subscriptionName = "Workflow Dispatcher - " + topicNameNormalised;
+
+var existingSubscription = vCACCAFEEntitiesFinder.findTenantWorkflowSubscriptions(cafeHost , subscriptionName)[0];
+if (existingSubscription) {
+	var subsCriteriaStr = System.getModule("com.vmware.library.vcaccafe.workflow.subscription").getCriteriaFromWorkflowSubscription(existingSubscription);
+	var subsCriteria = JSON.parse(subsCriteriaStr);
+	if (subsCriteria) {
+		statesAndPhases = getStatesFromCriteriaClause(subsCriteria);
+	}
+}
+
+if (!statesAndPhases || statesAndPhases.length == 0) {
+	var sd = System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").getStateDefinitions();
+	
+	for each (var state in sd) {
+		if (state.supportedEbsTopics && state.supportedEbsTopics.indexOf(topicName) > -1 
+			&& state.hasOwnProperty("defaultPhase") && state.defaultPhase) {
+			
+			statesAndPhases.push(state.name + " - " + state.defaultPhase);
+		}
+	}
+}
+
+return statesAndPhases;
+
+//----- functions
+function getStatesFromCriteriaClause (clause) {
+	var statesAndPhases = [];
+	if (clause.type == "or") {
+		for each (subClause in clause.subClauses) {
+			subClauseStatesAndPhases = getStatesFromCriteriaClause (subClause);
+			for each (scStates in subClauseStatesAndPhases) {
+				statesAndPhases.push(scStates);
+			}
+		}
+	} else if (clause.type == "and") {
+		var phase = getValueFromExpressionSubClauses(clause, "path", "data~lifecycleState~phase");
+		var state;
+		// Added Event Support
+		// Extract the event from the correct place
+		if (phase == "EVENT"){
+			state = getValueFromExpressionSubClauses(clause, "path", "data~lifecycleState~event");
+		}else {
+			state = getValueFromExpressionSubClauses(clause, "path", "data~lifecycleState~state");
+		}
+		var stateAndPhase = state + " - " + phase;
+		statesAndPhases.push(stateAndPhase);
+	}
+	
+	return statesAndPhases;
+}
+
+function getValueFromExpressionSubClauses (expClause, leftOperandType, leftOperandPath, defaultValue) {
+	var value = "";
+	if (expClause && expClause.subClauses) {
+		for each (clause in expClause.subClauses) {
+			if (clause.type == "expression" && clause.leftOperand && clause.leftOperand.type == leftOperandType && clause.leftOperand.path == leftOperandPath) {
+				
+				if (clause.rightOperand && clause.rightOperand.type == "constant" && clause.rightOperand.value && clause.rightOperand.value.value) {
+					value = clause.rightOperand.value.value;
+					break;
+				}
+			}
+		}
+	}
+	if (!value && defaultValue)
+		value = defaultValue;
+	
+	return value;
+}]]></script>
+</dunes-script-module>

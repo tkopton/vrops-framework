@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="propertiesToCustomPropertiesObject" result-type="Any" api-version="6.0.0" id="d11f348c-ea0d-429f-b30f-d0275207fc78" version="0.0.0" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="customProperties" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (customProperties == null) return null;
+return customPropertiesObject = {"customProperties" : customProperties};]]></script>
+</dunes-script-module>

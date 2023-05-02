@@ -1,0 +1,806 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="6d2f7a1d-3b44-41db-aa8d-d5d560bb7fa3" version="0.1.37" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[PreBuildVM]]></display-name>
+  <error-handler name="item29" throw-bind-name="errorText">
+    <position y="363.59090909090907" x="325.0"/>
+  </error-handler>
+  <position y="63.59090909090908" x="325.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <output>
+    <param name="virtualMachineAddOrUpdateProperties" type="Properties"/>
+  </output>
+  <attrib name="tenantRef" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="antiVirus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="jdbcString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="dbUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="dbPass" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vmHostname" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="repInterval" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="repQuies" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="shortHostame" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="hostnamePattern" type="string" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="hostnamePattern">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="SLA" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="deploymentId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="requestTime" type="Date" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="domainSuffix" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="requestor" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="description" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="usage" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="replicationNeeded" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="monitoring" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="ip" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="owner" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="dbresult" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="deploymentVMList" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="noHostname" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="errorText" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="AKHCustom" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="vlanGate" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="reservationPolicyID" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="reservationName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="debugFlag" type="boolean" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="EventManagerDebugFlag">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[(Optional) if Null it will work as true. False will switch exit without executing]]></description>
+  </attrib>
+  <attrib name="DNSStatusReturn" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vRaNewStatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[add]]></value>
+  </attrib>
+  <attrib name="vRAOldStatus" type="string" read-only="false">
+    <value encoded="n"><![CDATA[reserved]]></value>
+  </attrib>
+  <attrib name="backupInterval" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="backupType" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vRAError" type="string" read-only="false">
+    <value encoded="n"><![CDATA[error]]></value>
+  </attrib>
+  <attrib name="dummyError" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="prettyName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="FQDNs" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vlanID" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vcacvMName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="FolderOU" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="exclusions" type="Array/string" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="EventManagerLoggingExclude">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-note x="300.0" y="181.8181818181818" w="680.0" h="127.27272727272727">
+    <description><![CDATA[Automatically create Hostname]]></description>
+  </workflow-note>
+  <workflow-note x="1160.0" y="181.8181818181818" w="400.0" h="227.27272727272725" color="ceebb0ff">
+    <description><![CDATA[Create DNS record]]></description>
+  </workflow-note>
+  <workflow-note x="1000.0" y="181.8181818181818" w="140.0" h="227.27272727272725" color="ebb0b0ff">
+    <description><![CDATA[Get IP]]></description>
+  </workflow-note>
+  <workflow-note x="300.0" y="354.54545454545456" w="540.0" h="57.0" color="ebebebff">
+    <description><![CDATA[Default Error]]></description>
+  </workflow-note>
+  <workflow-item name="item3" out-name="item15" type="task">
+    <display-name><![CDATA[prep]]></display-name>
+    <script encoded="false"><![CDATA[function makeUpper(nameFromvRA){
+	if ((nameFromvRA=="")||(nameFromvRA==null)){
+		//	
+	} else {	
+		return nameFromvRA.toUpperCase();
+	}
+}
+
+//get Context
+var tenantRef = System.getContext().getParameter("__asd_tenantRef");
+//get variables
+vcacVMProps=payload.machine.properties;
+
+
+
+prettyName=payload.machine.properties.get("akh.prettyName");
+if ((prettyName==null)||(prettyName=="")){
+	AKHCustom=false;
+} else {
+	reservationPolicyID=vcacVMProps.get("ReservationPolicyID");
+
+	AKHCustom=true;
+	shortHostame=makeUpper(vcacVMProps.get("akh.shortHostname"));
+	vmHostname=makeUpper(vcacVMProps.get("Hostname"));
+
+	SLA=payload.machine.properties.get("akh.SLA");
+
+	deploymentId=vcacVMProps.get("__Cafe.Root.Request.Id");
+	
+	var vcachost = Server.findAllForType("vCACCAFE:VCACHost")[0];
+	
+	var requestitem=vCACCAFEEntitiesFinder.getCatalogItemRequest(vcachost, deploymentId);
+	requestTime=requestitem.dateCreated;
+	description=vcacVMProps.get("__Notes");
+	usage=vcacVMProps.get("akh.usage");
+	FolderOU=vcacVMProps.get("akh.policy.activedirectory.orgunit");
+	domainSuffix=vcacVMProps.get("VirtualMachine.Network0.DnsSuffix");
+	requestor=System.getContext().getParameter("__asd_requestedBy");
+	owner=payload.machine.owner;
+	vcacvMName=payload.machine.name;
+}]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </in-binding>
+    <out-binding>
+      <bind name="AKHCustom" type="boolean" export-name="AKHCustom"/>
+      <bind name="antiVirus" type="string" export-name="antiVirus"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="domainSuffix" type="string" export-name="domainSuffix"/>
+      <bind name="monitoring" type="string" export-name="monitoring"/>
+      <bind name="owner" type="string" export-name="owner"/>
+      <bind name="replicationNeeded" type="string" export-name="replicationNeeded"/>
+      <bind name="requestor" type="string" export-name="requestor"/>
+      <bind name="requestTime" type="Date" export-name="requestTime"/>
+      <bind name="reservationPolicyID" type="string" export-name="reservationPolicyID"/>
+      <bind name="shortHostame" type="string" export-name="shortHostame"/>
+      <bind name="SLA" type="string" export-name="SLA"/>
+      <bind name="tenantRef" type="string" export-name="tenantRef"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="vmHostname" type="string" export-name="vmHostname"/>
+      <bind name="prettyName" type="string" export-name="prettyName"/>
+      <bind name="vcacvMName" type="string" export-name="vcacvMName"/>
+      <bind name="FolderOU" type="string" export-name="FolderOU"/>
+    </out-binding>
+    <position y="19.045454545454543" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item8" type="end" end-mode="0">
+    <position y="363.59090909090907" x="1484.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item34" type="link" linked-workflow-id="b249e93f-8420-4dcb-9186-2b4295d72478">
+    <display-name><![CDATA[setHostname]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="newHostname" type="string" export-name="vmHostname"/>
+    </in-binding>
+    <out-binding/>
+    <position y="255.40909090909088" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item20" type="task">
+    <display-name><![CDATA[updateProps]]></display-name>
+    <script encoded="false"><![CDATA[shortPretty=prettyName.split(" (")[0];
+networkProfileName=vlanID+"-"+shortPretty;
+networkPortName="vDS_"+shortPretty+"_"+vlanID;
+var virtualMachineAddOrUpdateProperties = new Properties();
+
+virtualMachineAddOrUpdateProperties.put("VirtualMachine.Network0.Address",ip);
+virtualMachineAddOrUpdateProperties.put("VirtualMachine.Network0.Name",networkPortName);
+//virtualMachineAddOrUpdateProperties.put("VirtualMachine.Network0.ProfileName",networkProfileName);
+virtualMachineAddOrUpdateProperties.put("VirtualMachine.Network0.NetworkProfileName",networkProfileName);
+virtualMachineAddOrUpdateProperties.put("VirtualMachine.Network0.Gateway",vlanGate);
+virtualMachineAddOrUpdateProperties.put("VirtualMachine.Network0.DnsSearchSuffixes","routine.akhwien.at,pacs.akhwien.at,magwien.gv.at");
+
+virtualMachineAddOrUpdateProperties.put("akh.antiVirus",antiVirus);
+virtualMachineAddOrUpdateProperties.put("akh.monitor",monitoring);
+virtualMachineAddOrUpdateProperties.put("akh.rechenzentrum",reservationName);
+
+virtualMachineAddOrUpdateProperties.put("VirtualMachine.Admin.Hostname",vmHostname);
+
+// Write VM folder after SLA Name
+virtualMachineAddOrUpdateProperties.put("VMware.VirtualCenter.Folder",SLA);
+//write VM Desciption after filter
+// buf was here...
+//virtualMachineAddOrUpdateProperties.put("__Notes",description);
+
+//write VM Usage after filter
+virtualMachineAddOrUpdateProperties.put("akh.usage",usage);
+virtualMachineAddOrUpdateProperties.put("__Notes",usage);
+virtualMachineAddOrUpdateProperties.put("akh.vlanselect",vlanID);]]></script>
+    <in-binding>
+      <bind name="antiVirus" type="string" export-name="antiVirus"/>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="ip" type="string" export-name="ip"/>
+      <bind name="monitoring" type="string" export-name="monitoring"/>
+      <bind name="repInterval" type="number" export-name="repInterval"/>
+      <bind name="repQuies" type="string" export-name="repQuies"/>
+      <bind name="reservationName" type="string" export-name="reservationName"/>
+      <bind name="SLA" type="string" export-name="SLA"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="vlanGate" type="string" export-name="vlanGate"/>
+      <bind name="vmHostname" type="string" export-name="vmHostname"/>
+      <bind name="vlanID" type="string" export-name="vlanID"/>
+      <bind name="prettyName" type="string" export-name="prettyName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="virtualMachineAddOrUpdateProperties" type="Properties" export-name="virtualMachineAddOrUpdateProperties"/>
+      <bind name="vmHostname" type="string" export-name="vmHostname"/>
+    </out-binding>
+    <position y="373.59090909090907" x="1164.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item12" type="task">
+    <display-name><![CDATA[constructHostname]]></display-name>
+    <script encoded="false"><![CDATA[function pad (str, max) {
+  str = str.toString();
+  return str.length < max ? pad("0" + str, max) : str;
+}
+
+function getNumber(pattern,search){
+	letterNumber=pattern.indexOf(search)+search.length;
+	return pattern.substring(letterNumber,letterNumber+1);
+}
+
+function sortDesc(a,b){
+	return b - a;
+}
+function sortAcs(a,b){
+	return a - b;
+}
+
+function hole(numAry,upOrDown){
+	if (upOrDown) {
+		if (numAry.length==0){
+			return 1;
+		}
+		numAry=numAry.sort(sortAcs);
+		var temp=0;
+		for each (num in numAry){
+			if (num!=(temp+1)){
+				return temp+1;
+			}
+			temp=num;
+		}
+		return temp+1;
+	} else {
+		if (numAry.length==0){
+			return 99;
+		}
+		numAry=numAry.sort(sortDesc);
+		var temp=100;
+		for each (num in numAry){
+			if (num!=(temp-1)){
+				return temp-1;
+			}
+			temp=num;
+		}
+		return temp-1;
+	}
+}
+
+function makeHostname(newVMNumber){
+	amountNumbers=getNumber(hostnamePattern,"{NUMBERS");
+	strNumber=pad(newVMNumber,amountNumbers);
+	if((amountNumbers!=strNumber.length)||(newVMNumber<=0)){
+		vmHostname=null;
+	} else {
+		vmHostname=hostnameBase.replace(new RegExp("\{NUMBERS.\}","g"),strNumber);
+		vmHostname=vmHostname.toUpperCase();		
+	}
+	return vmHostname;
+}
+
+//checks if the Hostanem exists in any of the DNS FQDNS from Network table
+function checkFDQN(tempHostName){
+	for each (FQDN in FQDNs){
+		if (System.resolveHostName(tempHostName+"."+FQDN)!=null){
+			return true;
+		}
+	}
+	return false;
+}
+
+//deal with Hostname
+amountLetters=getNumber(hostnamePattern,"{LETTERS")
+if (amountLetters!=shortHostame.length){
+	throw "wrong amount of letters. Should be "+amountLetters+" is "+shortHostame.length;
+} else {
+	hostnameBase=hostnamePattern.replace(new RegExp("\{LETTERS.\}","g"),shortHostame);
+	hostnameSearchBase=hostnameBase.split("{NUMBERS")[0];
+}
+/* The following will get all VMs with the pattern from vCEnter. This is not used as we are getting all VM hostnames from the deployment Table
+//get all existing VMs with the same start name
+regexp=new RegExp("^"+hostnameSearchBase,"g")
+var allVMs  =System.getModule("com.vmware.library.vc.vm").getAllVMsMatchingRegexp(regexp);
+var VMList=new Array();
+for each (vm in allVMs){
+	VMList.push(vm.name);
+}
+*/
+VMList=deploymentVMList;
+//get next number
+var vmnumbers=new Array();
+for each (vmName in VMList){
+	if (vmName.indexOf(hostnameSearchBase)==0){
+		vmStrNumber=vmName.substring(hostnameSearchBase.length,vmName.length);
+		vmNumNumber=parseInt(vmStrNumber,10);
+		//wenn keine nummer da ist (erstes element)
+		if (vmNumNumber=="NaN"){
+			vmNumNumber=0;
+		}
+		//fals die nummer noch nicht exitiert schrieben wir sie ins Array
+		if (vmnumbers.indexOf(vmNumNumber)==-1){
+			vmnumbers.push(vmNumNumber);
+		}
+	}
+}
+
+
+//get next free number
+var looping=true;
+//chek if a hle is found and if that one exists in DBNS
+do {
+	if (SLA=="Test") {
+		nameCounter= hole(vmnumbers,false);
+	} else {
+		nameCounter= hole(vmnumbers,true);
+	}
+	vmHostname=makeHostname(nameCounter);
+	if (vmHostname==null){
+		looping=false;
+		noHostname=true;
+	} else {
+		if (checkFDQN(vmHostname)){
+			vmnumbers.push(nameCounter);
+			System.log(vmHostname+" exists in DNS, Skipping");
+		} else {
+			looping=false;
+			noHostname=false;
+		}
+	}
+} while (looping);
+System.log("new Hostname :"+vmHostname);]]></script>
+    <in-binding>
+      <bind name="deploymentVMList" type="Array/string" export-name="deploymentVMList"/>
+      <bind name="hostnamePattern" type="string" export-name="hostnamePattern"/>
+      <bind name="shortHostame" type="string" export-name="shortHostame"/>
+      <bind name="SLA" type="string" export-name="SLA"/>
+      <bind name="FQDNs" type="Array/string" export-name="FQDNs"/>
+    </in-binding>
+    <out-binding>
+      <bind name="noHostname" type="boolean" export-name="noHostname"/>
+      <bind name="vmHostname" type="string" export-name="vmHostname"/>
+    </out-binding>
+    <position y="200.86363636363635" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item11" type="custom-condition" alt-out-name="item34">
+    <display-name><![CDATA[Short Hostname?]]></display-name>
+    <script encoded="false"><![CDATA[if (shortHostame=="" || shortHostame ==null) {
+	return false;
+} else {
+	return true;
+}]]></script>
+    <in-binding>
+      <bind name="shortHostame" type="string" export-name="shortHostame"/>
+    </in-binding>
+    <position y="136.3181818181818" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item2" type="task" script-module="at.akhwien.db/getAllHostnamesFromDeployment">
+    <display-name><![CDATA[getAllHostnamesFromDeployment]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").getAllHostnamesFromDeployment(JDBCString,DBUser,DBUserPassword) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="jdbcString"/>
+      <bind name="DBUser" type="string" export-name="dbUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="dbPass"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="deploymentVMList"/>
+    </out-binding>
+    <position y="200.86363636363635" x="844.5"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item35" type="condition" alt-out-name="item10" comparator="0">
+    <display-name><![CDATA[no Hostname?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (noHostname == true) ;]]></script>
+    <in-binding>
+      <bind name="noHostname" type="boolean" export-name="noHostname"/>
+    </in-binding>
+    <condition name="noHostname" type="boolean" comparator="0" label="null">false</condition>
+    <position y="190.86363636363635" x="564.5"/>
+  </workflow-item>
+  <workflow-item name="item13" throw-bind-name="errorText" type="end" end-mode="1">
+    <position y="190.86363636363635" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item5" type="condition" alt-out-name="item16" comparator="0">
+    <display-name><![CDATA[AKH Customization?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (AKHCustom == true) ;]]></script>
+    <in-binding>
+      <bind name="AKHCustom" type="boolean" export-name="AKHCustom"/>
+    </in-binding>
+    <condition name="AKHCustom" type="boolean" comparator="0" label="null">false</condition>
+    <position y="63.59090909090908" x="544.5"/>
+  </workflow-item>
+  <workflow-item name="item16" type="end" end-mode="0">
+    <position y="9.045454545454543" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item30" type="task" script-module="de.vleet.vra.tools/getNameFromReservationPolicyID">
+    <display-name><![CDATA[getNameFromReservationPolicyID]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("de.vleet.vra.tools").getNameFromReservationPolicyID(tenantRef,reservationPolicyID) ;]]></script>
+    <in-binding>
+      <bind name="tenantRef" type="string" export-name="tenantRef"/>
+      <bind name="reservationPolicyID" type="string" export-name="reservationPolicyID"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="reservationName"/>
+    </out-binding>
+    <position y="128.13636363636363" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item18" out-name="item13" type="link" linked-workflow-id="4a60f120-6799-49ab-b5b9-65247bcbb5d7">
+    <display-name><![CDATA[releaseLock]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="255.40909090909088" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="link" linked-workflow-id="4442e79f-dc72-49f9-bfcd-9dcf555fe871">
+    <display-name><![CDATA[logAllProps]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="debugFlag" type="boolean" export-name="debugFlag">
+        <description><![CDATA[(Optional) if Null it will work as true. False will switch exit without executing]]></description>
+      </bind>
+      <bind name="exclusions" type="Array/string" export-name="exclusions"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Author: Daniel Langenhan (daniel_langenhan@yahoo.com.au)
+http://langenhan.info/software/logallprops.html
+
+This workflow will log the content of a property into the logs (System.log). The property can consists of multiple properties in properties as well as arrays. 
+The workflow will also log all system context variables (mostly used with vRA).
+
+The input variable debugFlag can be null. If set to false the workflow is not executed. This can be used to make sure that the logging will only work in a debug situtation. ]]></description>
+    <position y="73.59090909090908" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item7" catch-name="item21" throw-bind-name="errorText" type="link" linked-workflow-id="3f3ef0b5-3f29-43e0-8932-57199514ea30">
+    <display-name><![CDATA[wait for Lock]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="73.59090909090908" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item22" out-name="item0" type="link" linked-workflow-id="4a60f120-6799-49ab-b5b9-65247bcbb5d7">
+    <display-name><![CDATA[releaseLock]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="309.95454545454544" x="1164.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item23" type="task" script-module="at.akhwien.db/insertRowIntoDeployment">
+    <display-name><![CDATA[insertRowIntoDeployment]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").insertRowIntoDeployment(JDBCString,DBUser,DBUserPassword,deploymentId,hostname,domainSuffix,requestor,requestTime,description,usage,antiVirus,sla,replicationRPO,monitoring,ip,owner,backupIntervall,backupType,replicationQuiescing) ;]]></script>
+    <in-binding>
+      <bind name="antiVirus" type="string" export-name="antiVirus"/>
+      <bind name="backupIntervall" type="string" export-name="backupInterval"/>
+      <bind name="backupType" type="string" export-name="backupType"/>
+      <bind name="DBUser" type="string" export-name="dbUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="dbPass"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="domainSuffix" type="string" export-name="domainSuffix"/>
+      <bind name="hostname" type="string" export-name="vmHostname"/>
+      <bind name="ip" type="string" export-name="ip"/>
+      <bind name="JDBCString" type="string" export-name="jdbcString"/>
+      <bind name="monitoring" type="string" export-name="monitoring"/>
+      <bind name="owner" type="string" export-name="owner"/>
+      <bind name="requestor" type="string" export-name="requestor"/>
+      <bind name="requestTime" type="Date" export-name="requestTime"/>
+      <bind name="sla" type="string" export-name="SLA"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="replicationRPO" type="number" export-name="repInterval"/>
+      <bind name="replicationQuiescing" type="string" export-name="repQuies"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" export-name="dbresult"/>
+    </out-binding>
+    <position y="200.86363636363635" x="1164.5"/>
+  </workflow-item>
+  <workflow-item name="item23" out-name="item22" catch-name="item25" throw-bind-name="errorText" type="link" linked-workflow-id="d8548c21-ddf6-4d7c-9616-c8d967c2e9bc">
+    <display-name><![CDATA[getDNSStatus]]></display-name>
+    <in-binding>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="DNSStatusReturn" type="string" export-name="DNSStatusReturn"/>
+    </out-binding>
+    <position y="255.40909090909088" x="1164.5"/>
+  </workflow-item>
+  <workflow-item name="item24" throw-bind-name="errorText" type="end" end-mode="1">
+    <position y="245.40909090909088" x="1484.5"/>
+  </workflow-item>
+  <workflow-item name="item27" out-name="item24" type="link" linked-workflow-id="4a60f120-6799-49ab-b5b9-65247bcbb5d7">
+    <display-name><![CDATA[releaseLock]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="200.86363636363635" x="1444.5"/>
+  </workflow-item>
+  <workflow-item name="item28" throw-bind-name="errorText" type="end" end-mode="1">
+    <position y="363.59090909090907" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item29" out-name="item19" throw-bind-name="dummyError" type="link" linked-workflow-id="4a60f120-6799-49ab-b5b9-65247bcbb5d7">
+    <display-name><![CDATA[releaseLock]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="373.59090909090907" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item31" throw-bind-name="errorText" type="end" end-mode="1">
+    <position y="363.59090909090907" x="1044.5"/>
+  </workflow-item>
+  <workflow-item name="item32" out-name="item31" type="link" linked-workflow-id="4a60f120-6799-49ab-b5b9-65247bcbb5d7">
+    <display-name><![CDATA[releaseLock]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <position y="309.95454545454544" x="1004.5"/>
+  </workflow-item>
+  <workflow-item name="item33" out-name="item27" type="task" script-module="at.akhwien.db/updatevRAStatus">
+    <display-name><![CDATA[vRA Status: error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").updatevRAStatus(JDBCString,DBUser,DBUserPassword,deploymentId,newStatus,oldStatus) ;]]></script>
+    <in-binding>
+      <bind name="DBUserPassword" type="SecureString" export-name="dbPass"/>
+      <bind name="DBUser" type="string" export-name="dbUser"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="newStatus" type="string" export-name="vRAError"/>
+      <bind name="JDBCString" type="string" export-name="jdbcString"/>
+      <bind name="oldStatus" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <position y="255.40909090909088" x="1304.5"/>
+  </workflow-item>
+  <workflow-item name="item14" prototype-id="system-error" out-name="item18" type="task" interaction="l">
+    <display-name><![CDATA[System error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+errorText="No free Hostname availible for "+shortHostame+" in the System. Please contact your Administrator";
+System.error(errorText);
+]]></script>
+    <in-binding>
+      <bind name="shortHostame" type="string" export-name="shortHostame"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorText" type="string" export-name="errorText"/>
+    </out-binding>
+    <description><![CDATA[Log the input text to the console log with level 'error']]></description>
+    <position y="200.86363636363635" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item35" out-name="item14" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorText"/>
+      <bind name="vmhostname" type="string" export-name="vmHostname"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="desciption" type="string" export-name="description"/>
+      <bind name="reservationName" type="string" export-name="reservationName"/>
+      <bind name="ip" type="string" export-name="ip"/>
+      <bind name="gateway" type="string" export-name="vlanGate"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="255.40909090909088" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item25" out-name="item33" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorText"/>
+      <bind name="vmhostname" type="string" export-name="vmHostname"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="desciption" type="string" export-name="description"/>
+      <bind name="reservationName" type="string" export-name="reservationName"/>
+      <bind name="ip" type="string" export-name="ip"/>
+      <bind name="gateway" type="string" export-name="vlanGate"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="200.86363636363635" x="1304.5"/>
+  </workflow-item>
+  <workflow-item name="item36" out-name="item32" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorText"/>
+      <bind name="vmhostname" type="string" export-name="vmHostname"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="desciption" type="string" export-name="description"/>
+      <bind name="reservationName" type="string" export-name="reservationName"/>
+      <bind name="ip" type="string" export-name="ip"/>
+      <bind name="gateway" type="string" export-name="vlanGate"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="255.40909090909088" x="1004.5"/>
+  </workflow-item>
+  <workflow-item name="item21" out-name="item37" throw-bind-name="errorText" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorText"/>
+      <bind name="vmhostname" type="string" export-name="vmHostname"/>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="desciption" type="string" export-name="description"/>
+      <bind name="reservationName" type="string" export-name="reservationName"/>
+      <bind name="ip" type="string" export-name="ip"/>
+      <bind name="gateway" type="string" export-name="vlanGate"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="73.59090909090908" x="1044.5"/>
+  </workflow-item>
+  <workflow-item name="item26" out-name="item8" type="task" script-module="at.akhwien.db/updatevRAStatus">
+    <display-name><![CDATA[vrAStatus: Add]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").updatevRAStatus(JDBCString,DBUser,DBUserPassword,deploymentId,newStatus,oldStatus) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="jdbcString"/>
+      <bind name="DBUser" type="string" export-name="dbUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="dbPass"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="newStatus" type="string" export-name="vRaNewStatus"/>
+      <bind name="oldStatus" type="string" export-name="vRAOldStatus"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="373.59090909090907" x="1304.5"/>
+  </workflow-item>
+  <workflow-item name="item30" out-name="item4" type="link" linked-workflow-id="46d25f4b-76c8-4f82-83e8-7e4e3bcc939c">
+    <display-name><![CDATA[getSLADetails]]></display-name>
+    <in-binding>
+      <bind name="sla" type="string" export-name="SLA"/>
+    </in-binding>
+    <out-binding>
+      <bind name="antiVirus" type="string" export-name="antiVirus"/>
+      <bind name="repInterval" type="number" export-name="repInterval"/>
+      <bind name="repQuies" type="string" export-name="repQuies"/>
+      <bind name="backupInterval" type="string" export-name="backupInterval"/>
+      <bind name="backupType" type="string" export-name="backupType"/>
+      <bind name="monitoring" type="string" export-name="monitoring"/>
+    </out-binding>
+    <position y="73.59090909090908" x="804.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item17" type="task" script-module="at.akhwien.db/getFQDNSfromPrettyName">
+    <display-name><![CDATA[getFQDNSfromPrettyName]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").getFQDNSfromPrettyName(prettyName,jdbcString,DBUser,DbUserPass) ;]]></script>
+    <in-binding>
+      <bind name="prettyName" type="string" export-name="prettyName"/>
+      <bind name="jdbcString" type="string" export-name="jdbcString"/>
+      <bind name="DBUser" type="string" export-name="dbUser"/>
+      <bind name="DbUserPass" type="SecureString" export-name="dbPass"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="FQDNs"/>
+    </out-binding>
+    <position y="128.13636363636363" x="804.5"/>
+  </workflow-item>
+  <workflow-item name="item34" out-name="item9" catch-name="item36" throw-bind-name="errorText" type="link" linked-workflow-id="cc43d6ce-a667-4045-9a30-869a4a7ea77b">
+    <display-name><![CDATA[getIPusingPrettyName]]></display-name>
+    <in-binding>
+      <bind name="prettyName" type="string" export-name="prettyName"/>
+      <bind name="hostname" type="string" export-name="vmHostname"/>
+      <bind name="deploymentID" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vlanGate" type="string" export-name="vlanGate"/>
+      <bind name="IP" type="string" export-name="ip"/>
+      <bind name="vlanID" type="string" export-name="vlanID"/>
+    </out-binding>
+    <position y="200.86363636363635" x="1005.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item6" type="link" linked-workflow-id="944849f3-c2c4-48bf-822e-967f3894065d">
+    <display-name><![CDATA[cleanup]]></display-name>
+    <in-binding>
+      <bind name="usage" type="string" export-name="usage"/>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="vcacvMName" type="string" export-name="vcacvMName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="outUsage" type="string" export-name="usage"/>
+      <bind name="outDescription" type="string" export-name="description"/>
+    </out-binding>
+    <position y="73.59090909090908" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item20" out-name="item26" type="task" script-module="at.akhwien/addHostToAD">
+    <display-name><![CDATA[addHostToAD]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("at.akhwien").addHostToAD(machineName,FolderOU) ;]]></script>
+    <in-binding>
+      <bind name="machineName" type="string" export-name="vmHostname"/>
+      <bind name="FolderOU" type="string" export-name="FolderOU"/>
+    </in-binding>
+    <out-binding/>
+    <position y="309.95454545454544" x="1304.5"/>
+  </workflow-item>
+  <workflow-item name="item37" throw-bind-name="errorText" type="end" end-mode="1">
+    <position y="63.59090909090908" x="1205.0"/>
+  </workflow-item>
+  <workflow-item name="item19" out-name="item28" type="link" linked-workflow-id="7400ccc6-a7aa-42c8-a4a1-4163205cf1b1">
+    <display-name><![CDATA[errorMail]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="errorMessage" type="string" export-name="errorText"/>
+      <bind name="vmhostname" type="string" explicitly-not-bound="true"/>
+      <bind name="usage" type="string" explicitly-not-bound="true"/>
+      <bind name="desciption" type="string" explicitly-not-bound="true"/>
+      <bind name="reservationName" type="string" explicitly-not-bound="true"/>
+      <bind name="ip" type="string" explicitly-not-bound="true"/>
+      <bind name="gateway" type="string" explicitly-not-bound="true"/>
+      <bind name="deploymentName" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding/>
+    <position y="373.59090909090907" x="564.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

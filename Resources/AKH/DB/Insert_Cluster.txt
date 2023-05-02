@@ -1,0 +1,4 @@
+INSERT INTO Cluster VALUES 
+(613,'Test-','Test-','Test-','Test-','Test-','Test-'),
+(621,'Test-','Test-','Test-','Test-','Test-','Test-'),
+(623,'Test-','Test-','Test-','Test-','Test-','Test-');

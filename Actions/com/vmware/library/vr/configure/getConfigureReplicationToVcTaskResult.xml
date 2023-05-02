@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getConfigureReplicationToVcTaskResult" result-type="VR:VcToVcSourceGroup" api-version="6.0.0" id="73a102d2-0cd5-4a94-81f9-e954fffd94be" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vr.configure">
+  <param n="remoteSite" t="VR:VcRemoteSite"><![CDATA[]]></param>
+  <param n="task" t="VR:Task"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return remoteSite.getConfigureReplicationTaskResult(task)]]></script>
+</dunes-script-module>

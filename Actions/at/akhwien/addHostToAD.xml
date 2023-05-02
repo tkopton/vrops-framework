@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addHostToAD" result-type="void" api-version="6.0.0" id="d2849922-76c8-41db-8311-747567a783d4" version="0.0.0" allowed-operations="evf" category-name="at.akhwien">
+  <param n="machineName" t="string"><![CDATA[]]></param>
+  <param n="FolderOU" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[//do nothing if no OU
+if (FolderOU=="" || FolderOU==null){
+	return;
+}
+//get Domain name from LDAP
+var domainName="";
+tempOU=FolderOU.split(",");
+for each (entry in tempOU){
+	if (entry.toUpperCase().indexOf("DC")==0){
+		domainName=domainName+entry.split("=")[1]+".";
+	}
+}
+domainName=domainName.substring(0,domainName.length-1);
+
+//get AD host
+ldapClient =  Server.findAllForType("AD:AdHost")[0].getLdapClient();;
+
+//create Name
+computerDN = "CN=" + machineName + "," + FolderOU;
+try {
+  if(machineName.length > 15) {
+    throw "Machine name longer than 15 characters: " + machineName;
+  }
+	var ldapAttribs = [
+		new LdapAttribute("cn", [machineName]),
+		new LdapAttribute("dNSHostName", [(machineName + "." + domainName).toString()]),
+		new LdapAttribute("sAMAccountName", [(machineName.toUpperCase() + "$").toString()]),
+		new LdapAttribute("userAccountControl", ["4128"]),
+		new LdapAttribute("objectClass", ["computer"])
+	];
+
+	ldapClient.addEntry(new LdapEntry(computerDN, ldapAttribs));
+	
+
+
+} finally {
+	if(ldapClient != null) {
+		ldapClient.close();
+	}
+}]]></script>
+</dunes-script-module>

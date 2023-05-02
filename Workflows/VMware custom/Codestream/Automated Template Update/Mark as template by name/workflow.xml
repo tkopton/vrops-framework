@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="28fad27b-b6c8-4312-a3c6-232bf9f253b5" version="0.2.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Mark as template by name]]></display-name>
+  <description><![CDATA[Converts an existing virtual machine to a template, not allowing it to start. You can use templates to create virtual machines.
+Warning: The workflow may finish before the virtual machine status is refreshed.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="vmname" type="string"/>
+  </input>
+  <attrib name="vm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual machine to mark as template]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item2" type="task">
+    <display-name><![CDATA[Mark as template]]></display-name>
+    <script encoded="false"><![CDATA[vm.markAsTemplate();]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding/>
+    <position y="155.4090909090909" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="199.95454545454544" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="2af170ae-2f4a-42a1-a02a-6d9f9702e5cf">
+    <display-name><![CDATA[Get virtual machine by name]]></display-name>
+    <in-binding>
+      <bind name="criteria" type="string" export-name="vmname">
+        <description><![CDATA[Search criteria. Regular expressions supported.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="vms" type="Array/VC:VirtualMachine">
+        <description><![CDATA[Virtual machines found]]></description>
+      </bind>
+      <bind name="vmobject" type="VC:VirtualMachine" export-name="vm"/>
+    </out-binding>
+    <description><![CDATA[Returns a list of virtual machines from all registered vCenter Server hosts that match the provided expression.]]></description>
+    <position y="91.77272727272727" x="145.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vmname">
+      <desc><![CDATA[vmname]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

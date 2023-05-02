@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setProjectCustomProperties" result-type="void" api-version="6.0.0" id="64a65a46-4c6e-4ac8-b062-b7adfbf410e6" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="projectId" t="string"><![CDATA[]]></param>
+  <param n="properties" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || projectId == null) return null;
+
+var operation = "PATCH";
+var url = "/project-service/api/projects/" +  projectId; // /iaas/api/project does not support custom properties update in 8.2
+
+
+var projectUpdate = {
+  "properties" : properties
+}
+var content = JSON.stringify(projectUpdate);
+
+var customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+		var object = JSON.parse(contentAsString);
+	} catch (e) {
+		throw("Unable to Patch object url : " + url + "\n" + e + "\nWith Content : " + content);
+}]]></script>
+</dunes-script-module>

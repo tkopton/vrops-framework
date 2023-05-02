@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getvROPsIDFromQuery" result-type="string" api-version="6.0.0" id="21d2441c-c881-4620-9c58-a5a7886dd4a9" version="0.2.0" allowed-operations="evf" category-name="com.vmware.PSO.vROPS">
+  <param n="RESTHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="resourceKind" t="string"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (name.indexOf(" ")>0){
+	name=name.replace(new RegExp("\ ","g"),"%20");
+}
+if (resourceKind.indexOf(" ")>0){
+	resourceKind=resourceKind.replace(new RegExp("\ ","g"),"%20");
+}
+restURL="/api/resources?resourceKind="+resourceKind+"&name="+name;
+var request  = RESTHost.createRequest("GET", restURL,null);
+var response = request.execute();
+restStatus=parseInt(response.statusCode);
+if (restStatus==200){
+	xmldoc=XMLManager.fromString(response.contentAsString);
+	resourceNode=xmldoc.getElementsByTagName("ops:resource").item(0);
+	if (resourceNode!=null){
+		attribs=resourceNode.getAttributes();
+		return (attribs.item(1).nodeValue);
+	} else {
+		return "no such object";
+	}
+}]]></script>
+</dunes-script-module>

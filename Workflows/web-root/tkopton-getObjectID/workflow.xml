@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="43261aed-cea0-4c08-8162-80e81e10cf98" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[tkopton-getObjectID]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="messages" type="string"/>
+  </input>
+  <output>
+    <param name="objectId" type="string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//System.log(messages);
+jsonMessage = messages.replace(/\\/g, "\\\\");
+
+// Extract ObjectID
+//System.log("*************************************************");
+//System.log(jsonMessage);
+
+obj = JSON.parse(jsonMessage);
+
+//System.log(obj[0].fields[2].content);
+//System.log(obj[0].fields[3].content);
+
+objectId = obj[0].fields[2].content;]]></script>
+    <in-binding>
+      <bind name="messages" type="string" export-name="messages"/>
+    </in-binding>
+    <out-binding>
+      <bind name="objectId" type="string" export-name="objectId"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="170.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

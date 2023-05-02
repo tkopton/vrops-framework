@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="urlEncode" result-type="string" api-version="6.0.0" id="7a148256-952c-4036-88d5-f3577ea931de" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pso.utils">
+  <param n="str" t="string"><![CDATA[String to encode]]></param>
+  <script encoded="false"><![CDATA[return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+    return '%' + c.charCodeAt(0).toString(16);
+})]]></script>
+</dunes-script-module>

@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="cc506254-f300-4117-b167-31e79072055c" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create Custom Group]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="groupName" type="string"/>
+    <param name="jobName" type="string"/>
+    <param name="vROpsToken" type="string"/>
+    <param name="groupType" type="string"/>
+    <param name="logicalOp" type="string"/>
+  </input>
+  <attrib name="vROpsRESTHost" type="REST:RESTHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f89cebf6-4986-481b-b264-64dd5662b5aa'&dunesName='REST:RESTHost']]></value>
+  </attrib>
+  <attrib name="createCustomGroup" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f89cebf6-4986-481b-b264-64dd5662b5aa:26491109-a3f7-4624-8e93-4bc579b1ef80'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="jsonBody" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[createJsonBody]]></display-name>
+    <script encoded="false"><![CDATA[jsonBody = {
+            "resourceKey": {
+                "name": groupName,
+                "adapterKindKey": "Container",
+                "resourceKindKey": groupType,
+                "resourceIdentifiers": []
+            },
+            "membershipDefinition": {
+                "includedResources": [],
+                "excludedResources": [],
+                "rules": [
+                    {
+                        "resourceKindKey": {
+                            "resourceKind": "VirtualMachine",
+                            "adapterKind": "VMWARE"
+                        },
+                        "attributeRules": [
+                            {
+                                "type": "PROPERTY_CONDITION",
+                                "compareOperator": logicalOp,
+                                "stringValue": jobName,
+                                "key": "summary|customTag:job|customTagValue"
+                            }
+                        ],
+                        "resourceNameRules": [],
+                        "relationshipRules": [],
+						"others": [],
+						"otherAttributes": {
+						}
+                    }
+                ]
+            }
+        };]]></script>
+    <in-binding>
+      <bind name="groupName" type="string" export-name="groupName"/>
+      <bind name="jobName" type="string" export-name="jobName"/>
+      <bind name="vROpsToken" type="string" export-name="vROpsToken"/>
+      <bind name="groupType" type="string" export-name="groupType"/>
+      <bind name="logicalOp" type="string" export-name="logicalOp"/>
+    </in-binding>
+    <out-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[executeRequest]]></display-name>
+    <script encoded="false"><![CDATA[System.log(JSON.stringify(jsonBody));
+requestBody = JSON.stringify(jsonBody);
+
+request = createCustomGroup.createRequest(null, requestBody);
+request.contentType = "application/json";
+request.setHeader("accept","application/json");
+request.setHeader("Authorization","vRealizeOpsToken " + vROpsToken);
+request.setHeader("X-vRealizeOps-API-use-unsupported","true");
+
+response = request.execute();
+
+System.log(response.statusCode);
+System.log(response.contentAsString);]]></script>
+    <in-binding>
+      <bind name="vROpsToken" type="string" export-name="vROpsToken"/>
+      <bind name="vROpsRESTHost" type="REST:RESTHost" export-name="vROpsRESTHost"/>
+      <bind name="createCustomGroup" type="REST:RESTOperation" export-name="createCustomGroup"/>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="groupName">
+      <desc><![CDATA[groupName]]></desc>
+    </p-param>
+    <p-param name="jobName">
+      <desc><![CDATA[jobName]]></desc>
+    </p-param>
+    <p-param name="vROpsToken">
+      <desc><![CDATA[vROpsToken]]></desc>
+    </p-param>
+    <p-param name="groupType">
+      <desc><![CDATA[groupType]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#PCF-Services#;#string#PCF-Components#;#string#PCF#}#]]></p-qual>
+    </p-param>
+    <p-param name="logicalOp">
+      <desc><![CDATA[logicalOp]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#EQ#;#string#CONTAINS#;#string#NOT_EQ#;#string#EXISTS#}#]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

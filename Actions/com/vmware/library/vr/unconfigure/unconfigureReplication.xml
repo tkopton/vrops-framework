@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="unconfigureReplication" result-type="VR:Task" api-version="6.0.0" id="94e610f8-6e89-47ae-83b5-29d5ecde414b" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vr.unconfigure">
+  <description><![CDATA[Stop replicating a virtual machine to a vCenter Server site.]]></description>
+  <param n="replication" t="VR:VcToVcSourceGroup"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return replication.unconfigure()]]></script>
+</dunes-script-module>

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDeploymentObjects" result-type="Array/Any" api-version="6.0.0" id="89354bf4-1e7e-4f48-a086-79ef4c3299eb" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.deployment">
+  <description><![CDATA[Get all deployment objects using paging ]]></description>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="url" t="string"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+if (restHost == null || url == null) return null;
+
+var object = System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,username,password,customHeaders,url, parameters);
+
+var content = object.content;
+
+var page = 1;
+var allContent = content;
+
+while (object.last == false) {
+    if (parameters == null || parameters == "") newParameters = "page=" + page;
+    else newParameters = parameters + "&page=" + page;
+    object = System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,username,password,customHeaders,url, newParameters);
+    content = object.content;
+    allContent = allContent.concat(content);
+    page++;
+}
+
+return allContent;]]></script>
+</dunes-script-module>

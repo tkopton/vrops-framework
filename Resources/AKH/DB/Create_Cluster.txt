@@ -1,0 +1,11 @@
+CREATE TABLE Cluster
+(
+VlanId int NOT NULL
+,Produktion-L1 varchar(50)
+,Produktion-L2 varchar(50)
+,Produktion-L3 varchar(50)
+,Schulung varchar(50)
+,Entwicklung varchar(50)
+,Test varchar(50)
+,PRIMARY KEY(VlanID)
+)

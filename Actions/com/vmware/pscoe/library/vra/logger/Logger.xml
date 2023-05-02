@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="Logger" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.vra.logger.Logger" version="2.4.3" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.logger">
+  <description><![CDATA[
+ 
+]]></description>
+  <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.library.vra.dispatcher.logger");
+var levels = {
+	'error': 0,
+	'warning': 1,
+	'warn': 1,
+	'info': 2,
+	'debug': 3
+};
+return function (targets) {
+	this.log = function (message, messageType) {
+		for (var target in targets) {
+			var verbosity = targets[target].verbosity;
+			if (levels[verbosity] <= levels[messageType]) {
+				try {
+					var TargetClass = System.getModule("com.vmware.pscoe.library.vra.logger.targets")[target]();
+					new TargetClass().log(message, messageType, targets[target].options);
+				} catch (e) {
+					logger.error("Error logging message to: " + target + ": " + e);
+					var formattedLog = "[" + ("nologger-" + target.trim()).toUpperCase() + "]" + message;
+					logger.info(formattedLog);
+				}
+			}
+		}
+	};
+};
+]]></script>
+</dunes-script-module>

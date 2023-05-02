@@ -1,0 +1,207 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="GuestOperations" result-type="Any" api-version="6.0.0" id="f7620733-0147-4d0a-8968-b92cd41b20e3" version="1.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.guestops">
+  <param n="guest" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+
+var GuestOperations = function() {
+
+	var workingDirectory = null;
+	var tmpDirectory = null;
+	var environment = null;
+
+	var timeout = 30;
+	var cleanUpGuest = true;
+	var profilesCategoryPath = "PSCoE/Library/GuestOperations"
+	this.PROFILES_CATEGORY_PATH = profilesCategoryPath
+
+	/**
+	 * Sets the working directory
+	 * @param workingDirectory
+	 */
+	this.setWorkingDirectory = function(argWorkingDirectory) {
+		workingDirectory = argWorkingDirectory;
+	}
+	
+	/**
+	 * Sets the temp directory
+	 * @param tmpDirectory
+	 */
+	this.setTmpDirectory = function (argTmpDirectory) {
+		tmpDirectory = argTmpDirectory;
+	}
+
+	/**
+	 * Sets the environment variables to be added to the orginial environment
+	 * @param environment
+	 */
+	
+	this.setEnvironment = function(argEnvironment) {
+		environment = argEnvironment;
+	}
+
+	/**
+	 * Sets the timeout in minutes for command executions. Defaults to 30 minutes
+	 * @param timeout
+	 */
+	this.setTimeout = function(argTimeout) {
+		timeout = argTimeout;
+	}
+
+	/**
+	 * Sets the flag whether or not to cleanup the guest os from logs and scripts after script execution. Defaults to true
+	 * @param timeout
+	 */
+	this.setCleanUpGuest = function(argCleanUpGuest) {
+		cleanUpGuest = argCleanUpGuest;
+	}
+
+	/**
+	 * Transfers a file from the local vRO file system at the specified location srcPath in the guest at the destPath location
+	 * 
+	 * @param srcPath vRO file location
+	 * @param destPath guest os file location
+	 */
+	this.uploadFileToGuest = function(filePath, destPath) {
+		guest.transferFileToGuest(filePath, destPath);
+	}
+
+	/**
+	 * Transfers a Resource Element specified by the resourceElementPath to the specified destPath guest OS file location. 
+	 * The Resource Element content is first saved to local vRO file system and then it is transfered to the guest.
+	 * 
+	 * @param resourceElementPath
+	 * @param destPath guest OS file location
+	 */
+	this.uploadResourceElementToGuest = function(resourceElementPath, destPath) {
+		var pathTokens = resourceElementPath.split("/");
+		var elementName = pathTokens.pop();
+		var categoryPath = pathTokens.join("/");
+		var re = System.getModule("com.vmware.pscoe.library.util").getResourceElementByPath(categoryPath, elementName);
+		System.getModule("com.vmware.pscoe.library.util").validateInput(re, "Missing script resource element at: " + resourceElementPath);
+		var fileName = System.nextUUID() + "-" + re.name
+		var vroTempFolder = System.getTempDirectory();
+		var srcPath = vroTempFolder + "/" + fileName;
+		re.writeContentToFile(srcPath);
+		this.uploadFileToGuest(srcPath, destPath);
+	}
+
+	/**
+	 * Creates a file at the specified destPath location with the specified content
+	 * 
+	 * @param content file content
+	 * @param destPath guest OS file location
+	 */
+	this.uploadContentToGuest = function(content, destPath) {
+		var fileName = System.nextUUID() + "-content"
+		var vroTempFolder = System.getTempDirectory();
+		var srcPath = vroTempFolder + "/" + fileName;
+		System.getModule("com.vmware.pscoe.library.filesystem").writeFile(srcPath, content)
+		this.uploadFileToGuest(srcPath, destPath);
+	}
+
+	/**
+	 * Runs the specified cmd with args in the guest OS using the provided profileName.
+	 * 
+	 * @param cmd
+	 * @param args
+	 * @param profileName
+	 */
+	this.runCommand = function(cmd, args, profileName) {
+		var self = this;
+		return run(args, profileName, function(destPath) {
+			self.uploadContentToGuest(cmd, destPath);
+		})
+	}
+
+	/**
+	 * Runs the specified resourceElement script with args in the guest OS using the provided profileName.
+	 * 
+	 * @param script
+	 * @param args
+	 * @param profileName
+	 */
+	this.runScript = function(script, args, profileName) {
+		var self = this;
+		return run(args, profileName, function(destPath) {
+			self.uploadResourceElementToGuest(script, destPath)
+		})
+	}
+
+	var getProfileByName = function(profileName) {
+		var re = System.getModule("com.vmware.pscoe.library.util").getResourceElementByPath(profilesCategoryPath, profileName);
+		System.getModule("com.vmware.pscoe.library.util").validateInput(re, "Profile with name: " + profileName + " not found in category: " + profilesCategoryPath);
+		return JSON.parse(re.getContentAsMimeAttachment().content);
+	}
+
+	var run = function(args, profileName, saveFunc) {
+		var profile = getProfileByName(profileName);
+		var fileName = System.nextUUID() + "-command." + profile.scriptExtension;
+		var separator = profile.separator;
+		var guestTmpFolder = tmpDirectory != null ? tmpDirectory : profile.tmpFolder;;
+		guest.createFolderInGuest(guestTmpFolder);
+		var destPath = guestTmpFolder + separator + fileName;
+		saveFunc(destPath);
+		return executeScript(destPath, fileName, args, profile)
+	}
+
+	var readOut = function(srcPath, destPath) {
+		try {
+			guest.downloadFileFromGuest(srcPath, destPath);
+			return System.getModule("com.vmware.pscoe.library.filesystem").readFile(destPath);
+		} catch (e) {
+			System.warn("Error getting output: " + e);
+		}
+		return null;
+	}
+
+	var executeScript = function(destPath, fileName, args, profile) {
+		var runScriptArguments = profile.runScriptArguments;
+		var vars = {
+			scriptPath: destPath,
+			stdOutPath: destPath + ".out",
+			stdErrPath: destPath + ".err",
+			args: args
+		};
+
+		runScriptArguments = System.getModule("com.vmware.pscoe.library.templates.engines").mark(runScriptArguments, vars);
+		var originalEnvironment = guest.getGuestEnvironment();
+		var newEnvironment = environment ? originalEnvironment.concat(environment) : originalEnvironment;
+		var programPath = profile.scriptProgram;
+		var execAttributes = {};
+		var pid = guest.executeCommand(programPath, runScriptArguments, workingDirectory, newEnvironment);
+		var endDate = new Date();
+		endDate.setMinutes(endDate.getMinutes() + timeout);
+		while (true) {
+			var process = guest.findGuestProcess(pid);
+
+			if (process != null && process.endTime != null) {
+				execAttributes.exitCode = process.exitCode;
+				break;
+			}
+			if (endDate.getTime() < (new Date()).getTime()) {
+				throw "Timeout waiting for process to complete";
+			}
+			System.sleep(1000);
+		}
+		var vroTempFolder = System.getTempDirectory();
+		execAttributes.stdOut = readOut(vars.stdOutPath, vroTempFolder + '/' + fileName + ".out");
+		execAttributes.stdErr = readOut(vars.stdErrPath, vroTempFolder + '/' + fileName + ".err");
+		System.log("Clean up temporary files in the Guest[" + cleanUpGuest + "]");
+		if (cleanUpGuest) {
+			for each(var filePath in [vars.scriptPath, vars.stdOutPath, vars.stdErrPath]) {
+				try {
+					guest.deleteFileInGuest(filePath);
+				} catch (e) {
+					System.error("Unable to cleanup Guest:" + e);
+				}
+			}
+		}
+		return execAttributes;
+	}
+
+}
+
+return new GuestOperations();
+
+]]></script>
+</dunes-script-module>

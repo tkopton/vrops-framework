@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="19f77361-2da8-4a36-aba7-d7b9f3831fde" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Retreive Adapter Instances Token]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="token" type="string"/>
+  </input>
+  <attrib name="vRopsRestHost" type="REST:RESTHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f89cebf6-4986-481b-b264-64dd5662b5aa'&dunesName='REST:RESTHost']]></value>
+  </attrib>
+  <attrib name="getAdapterInstances" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f89cebf6-4986-481b-b264-64dd5662b5aa:c0f1a7ca-2609-4c4a-93f9-175a58b50817'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.90909090909091" x="445.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[getAdapterInstances]]></display-name>
+    <script encoded="false"><![CDATA[getAdapterInstances.defaultContentType = "application/json";
+var request = getAdapterInstances.createRequest();
+request.setHeader("accept","application/json");
+request.setHeader("Authorization","vRealizeOpsToken " + token);
+var response = request.execute();
+
+System.log("Returned status code: " + response);
+var contentAsString = response.contentAsString;
+System.log("Content as String: " + contentAsString);
+]]></script>
+    <in-binding>
+      <bind name="vRopsRestHost" type="REST:RESTHost" export-name="vRopsRestHost"/>
+      <bind name="getAdapterInstances" type="REST:RESTOperation" export-name="getAdapterInstances"/>
+      <bind name="token" type="string" export-name="token"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="token">
+      <desc><![CDATA[token]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

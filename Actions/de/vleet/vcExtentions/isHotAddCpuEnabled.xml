@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isHotAddCpuEnabled" result-type="boolean" api-version="6.0.0" id="5dcabbff-6946-4d60-ab6f-01ec0be43623" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vcExtentions">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return vcvm.config.cpuHotAddEnabled;]]></script>
+</dunes-script-module>

@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="46fb4e8b-0b28-4899-a6bb-34391c771c5c" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[tkopton-applySSCState]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="region" type="string"/>
+    <param name="stateFile" type="string"/>
+  </input>
+  <attrib name="sscHost" type="REST:RESTHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='3a8dcc00-c3e4-498c-8ada-73f252505e9c'&dunesName='REST:RESTHost']]></value>
+  </attrib>
+  <attrib name="applySSCState" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='3a8dcc00-c3e4-498c-8ada-73f252505e9c:77c574fa-537a-4343-aa1b-830d4665bd65'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <attrib name="sscConfig" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='8b850758-e7e6-4d11-b5c1-0a673354e14f'&dunesName='ConfigurationElement']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="400.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Apply State File]]></display-name>
+    <script encoded="false"><![CDATA[var xsrftoken = sscConfig.getAttributeWithKey("xsrfToken").value;
+var request = null;
+var response = null;
+var headers = null;
+var jsonObject = null;
+
+var jsonBody = {
+    "resource": "cmd",
+    "method": "route_cmd",
+    "kwarg": {
+        "cmd": "local",
+        "fun": "state.apply",
+        "tgt": {
+            "salt": {
+                "tgt": "ansible.internal.kopton.eu",
+                "tgt_type": "glob"
+            }
+        },
+        "arg": {
+            "arg": [
+                stateFile
+            ],
+            "kwarg": {
+                "pillar": {
+                    "region": region
+                }
+            }
+        }
+    }
+};
+
+var myRESTRequest = new RESTRequest()
+var requestBody = JSON.stringify(jsonBody);
+myRESTRequest = applySSCState.createRequest(null, requestBody);
+
+myRESTRequest.setHeader("Accept", "*/*");
+myRESTRequest.setHeader("Content-Type", "application/json");
+// TO DO: Make the xsrf Token a configuration item
+myRESTRequest.setHeader("X-Xsrftoken", xsrftoken);
+
+System.log("\n*** Executing Job results call ***");
+response = myRESTRequest.execute();
+System.log("Status Code: " + response.statusCode);
+
+jsonObject = JSON.parse(response.contentAsString);
+System.log("**************** JOB RESULTS ****************\n");
+System.log(response.contentAsString);
+System.log("rig: " + jsonObject.riq);
+System.log("ret: " + jsonObject.ret);
+System.log("error: " + jsonObject.error);
+System.log("warnings: " + jsonObject.warnings.length);
+
+// TO DO: Config Items usage example
+// System.log(vropsNewTokenValidity);
+// vropsConfig.setAttributeWithKey("vropsTokenValue", vropsNewToken);
+// vropsConfig.setAttributeWithKey("vropsTokenValidity", vropsNewTokenValidity);]]></script>
+    <in-binding>
+      <bind name="sscHost" type="REST:RESTHost" export-name="sscHost"/>
+      <bind name="region" type="string" export-name="region"/>
+      <bind name="applySSCState" type="REST:RESTOperation" export-name="applySSCState"/>
+      <bind name="sscConfig" type="ConfigurationElement" export-name="sscConfig"/>
+      <bind name="stateFile" type="string" export-name="stateFile"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="260.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="link" linked-workflow-id="3727890c-2283-4906-a4c1-d4dae6c90873">
+    <display-name><![CDATA[tkopton-getSSCToken]]></display-name>
+    <in-binding/>
+    <out-binding/>
+    <description><![CDATA[ ]]></description>
+    <position y="60.0" x="150.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

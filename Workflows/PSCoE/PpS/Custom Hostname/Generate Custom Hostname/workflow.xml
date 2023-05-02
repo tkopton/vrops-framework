@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="dcb5e43b-e37a-47f9-b60d-4f43bc4ee61a" version="0.0.11" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Generate Custom Hostname]]></display-name>
+  <error-handler name="item14" throw-bind-name="assertError">
+    <position y="272.68181818181813" x="485.0"/>
+  </error-handler>
+  <position y="45.40909090909091" x="45.0"/>
+  <input>
+    <param name="template" type="string">
+      <description><![CDATA[Expanded hostname template (ex: {PropValue1.PropValue2)separator###]]></description>
+    </param>
+    <param name="validation" type="Properties"/>
+    <param name="loggerObj" type="string"/>
+    <param name="minLength" type="number"/>
+    <param name="maxLength" type="number"/>
+    <param name="vCACVm" type="vCAC:VirtualMachine"/>
+  </input>
+  <attrib name="generatedHostname" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The generated hostname]]></description>
+  </attrib>
+  <attrib name="maxNameGenerationAttempts" type="number" read-only="false" conf-id="119b0e4f-040d-4d1f-bb7a-07dbd5338347" conf-key="maxNameGenerationAttempts">
+    <value encoded="n"><![CDATA[3.0]]></value>
+  </attrib>
+  <attrib name="currentNameGenerationAttempt" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[Currrent name generation attempt]]></description>
+  </attrib>
+  <attrib name="assertError" type="String" read-only="false">
+    <value encoded="n"><![CDATA[Unable to generate custom hostname. Increase the number of retries in the maxNameGenerationAttempts attribute or synchronize vRA with the DNS host, vCenter Server, and AD.]]></value>
+    <description><![CDATA[The text to log]]></description>
+  </attrib>
+  <attrib name="excludedMachineNames" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Used in auto back-filling mechanism when the DNS, vCenter or AD checks are on]]></description>
+  </attrib>
+  <attrib name="isHostnameValid" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Used to confirm that DNS, AD and vCenter validations are successful]]></description>
+  </attrib>
+  <workflow-note x="280.0" y="33.363636363636346" w="580.0" h="199.0" color="d7d7d7ff">
+    <description><![CDATA[Generate and Validate name]]></description>
+  </workflow-note>
+  <workflow-note x="440.0" y="260.6363636363636" w="420.0" h="71.0" color="ffbfbfff">
+    <description><![CDATA[Default erro handler]]></description>
+  </workflow-note>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item7" type="custom-condition" alt-out-name="item14">
+    <display-name><![CDATA[Should retry?]]></display-name>
+    <script encoded="false"><![CDATA[
+System.getModule("com.vmware.pscoe.library.vra.logger").debug(loggerObject, "Have another " + maxNameGenerationAttempts - currentNameGenerationAttempt + " retries.");
+
+return currentNameGenerationAttempt < maxNameGenerationAttempts;]]></script>
+    <in-binding>
+      <bind name="maxNameGenerationAttempts" type="number" export-name="maxNameGenerationAttempts"/>
+      <bind name="currentNameGenerationAttempt" type="number" export-name="currentNameGenerationAttempt"/>
+      <bind name="loggerObject" type="string" export-name="loggerObj"/>
+    </in-binding>
+    <position y="172.68181818181816" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item7" prototype-id="increase-counter" out-name="item6" content-mode="x" type="task">
+    <display-name><![CDATA[tryCount++]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="currentNameGenerationAttempt">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="currentNameGenerationAttempt">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="119.04545454545453" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item10" throw-bind-name="assertError" type="task">
+    <display-name><![CDATA[Validate Name]]></display-name>
+    <script encoded="false"><![CDATA[var Logger = System.getModule("com.vmware.pscoe.library.logging").getLogger();
+
+System.getModule("com.vmware.pscoe.library.vra.logger").debug(loggerObject, "Verifying hostname: " + hostname);
+// validate hostname - always apply this check
+var TemplateValidator = System.getModule("com.vmware.pscoe.pspps.customhostname.validation").TemplateValidator() ;
+TemplateValidator.validateHostname(hostname);
+// hostname validations - will be applied according to the custom properties from the vRA blueprint
+var assertDone = false;
+isHostnameValid = true;
+for (var system in validation) {
+	if (validation.get(system)) {
+		try{
+			var assert = System.getModule("com.vmware.pscoe.pspps.customhostname.validation")["assert" + system];
+			if (assert) {
+				// expected to throw exception if hostname is not valid or already taken.
+				assert(hostname);
+				assertDone = true;
+			}
+			Logger.info(system + " validation succeded");
+		} catch(err) {
+			if(!excludedMachineNames) {
+				excludedMachineNames = new Array();
+			}
+	        excludedMachineNames.push(hostname);
+			Logger.info(hostname + " already exists in AD, vC or DNS");
+			isHostnameValid = false;
+			break;
+		}
+	}
+}
+
+if (!assertDone) {
+	System.getModule("com.vmware.pscoe.library.vra.logger").debug(loggerObject, "No hostname validators configured. Skipping name validation.");
+}]]></script>
+    <in-binding>
+      <bind name="hostname" type="string" export-name="generatedHostname">
+        <description><![CDATA[Currently generated full name (resolvedName with ##s replaced with the actual number)]]></description>
+      </bind>
+      <bind name="validation" type="Properties" export-name="validation">
+        <description><![CDATA[key-value Custom Properties which are used to resolve the naming format (ie: transform from "{prop1}{prop2}{%%}" to "AB{%%})]]></description>
+      </bind>
+      <bind name="loggerObject" type="string" export-name="loggerObj"/>
+      <bind name="template" type="string" export-name="template">
+        <description><![CDATA[Expanded hostname template (ex: {PropValue1.PropValue2)separator###]]></description>
+      </bind>
+      <bind name="excludedMachineNames" type="Array/string" export-name="excludedMachineNames"/>
+    </in-binding>
+    <out-binding>
+      <bind name="excludedMachineNames" type="Array/string" export-name="excludedMachineNames"/>
+      <bind name="isHostnameValid" type="boolean" export-name="isHostnameValid"/>
+    </out-binding>
+    <description><![CDATA[Executes the configured Validation workflow.  If an exception is thrown, a new name will be generated]]></description>
+    <position y="55.40909090909091" x="444.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item6" type="task">
+    <display-name><![CDATA[Log Start]]></display-name>
+    <script encoded="false"><![CDATA[System.getModule("com.vmware.pscoe.library.vra.logger").info(loggerObject, "Starting Generate Custom Hostname Workflow");]]></script>
+    <in-binding>
+      <bind name="loggerObject" type="string" export-name="loggerObj"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task">
+    <display-name><![CDATA[Log Error]]></display-name>
+    <script encoded="false"><![CDATA[System.getModule("com.vmware.pscoe.library.vra.logger").error(loggerObject, "Cannot use hostname " + generatedHostname);
+]]></script>
+    <in-binding>
+      <bind name="loggerObject" type="string" export-name="loggerObj"/>
+      <bind name="generatedHostname" type="string" export-name="generatedHostname">
+        <description><![CDATA[The generated hostname]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="119.04545454545453" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item0" type="task">
+    <display-name><![CDATA[Store in Config Elemennt if Autonaming Mode Enabled]]></display-name>
+    <script encoded="false"><![CDATA[var Logger = System.getModule("com.vmware.pscoe.library.logging").getLogger();
+
+var VM_NAME_PROPERTY = "VirtualMachineName";
+Logger.info("Generated host name - " + generatedHostname);
+
+var vmEntity = vCACVm.getEntity();
+if(!!vmEntity) {
+	var inputProperties = new Properties();
+	inputProperties.put(VM_NAME_PROPERTY, generatedHostname);
+	System.getModule("com.vmware.library.vcac").updateEntity(vmEntity,inputProperties, null);
+	Logger.info("Virtual Machine's name successfully changed to " + generatedHostname);
+} else {
+	Logger.error("VM not passed correctly. Virtual Machine's name remains unchanged.");
+}]]></script>
+    <in-binding>
+      <bind name="generatedHostname" type="string" export-name="generatedHostname">
+        <description><![CDATA[The generated hostname]]></description>
+      </bind>
+      <bind name="vCACVm" type="vCAC:VirtualMachine" export-name="vCACVm"/>
+      <bind name="excludedIndexes" type="Array/string" export-name="excludedMachineNames"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="724.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item9" type="task" script-module="com.vmware.pscoe.pspps.customhostname/generateHostname">
+    <display-name><![CDATA[generateHostname]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.pscoe.pspps.customhostname").generateHostname(resolvedHostnameTemplate,minLength,maxLength,excludedIndexes) ;]]></script>
+    <in-binding>
+      <bind name="resolvedHostnameTemplate" type="string" export-name="template">
+        <description><![CDATA[The resolved hostname template (ex: {Prop1_Value}.{Prop2_Value}separator####) where #'s will be replaced with a generated index]]></description>
+      </bind>
+      <bind name="minLength" type="number" export-name="minLength"/>
+      <bind name="maxLength" type="number" export-name="maxLength"/>
+      <bind name="excludedIndexes" type="Array/string" export-name="excludedMachineNames"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="generatedHostname"/>
+    </out-binding>
+    <description><![CDATA[Generates a custom hostname based on a template. Example format: {CustomProp1_Value}.{CustomProp2_Value)separator####.]]></description>
+    <position y="55.40909090909091" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item13" type="condition" alt-out-name="item4" comparator="0">
+    <display-name><![CDATA[Is name valid?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (isHostnameValid == true) ;]]></script>
+    <in-binding>
+      <bind name="isHostnameValid" type="boolean" export-name="isHostnameValid"/>
+    </in-binding>
+    <condition name="isHostnameValid" type="boolean" comparator="0" label="null">false</condition>
+    <position y="45.40909090909091" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item12" throw-bind-name="assertError" type="end" end-mode="1">
+    <position y="272.68181818181813" x="764.5"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item12" type="task">
+    <display-name><![CDATA[Log Failure]]></display-name>
+    <script encoded="false"><![CDATA[var Logger = System.getModule("com.vmware.pscoe.library.logging").getLogger();
+
+Logger.error("No valid custom hostname was generated after " + maxNameGenerationAttempts + " attempts.");]]></script>
+    <in-binding>
+      <bind name="maxNameGenerationAttempts" type="number" export-name="maxNameGenerationAttempts"/>
+    </in-binding>
+    <out-binding/>
+    <position y="282.68181818181813" x="584.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="template">
+      <desc><![CDATA[Resolved hostname (ex: {PropValue1.PropValue2)separator###]]></desc>
+    </p-param>
+    <p-param name="validation">
+      <desc><![CDATA[validation]]></desc>
+    </p-param>
+    <p-param name="loggerObj">
+      <desc><![CDATA[loggerObj]]></desc>
+    </p-param>
+    <p-param name="minLength">
+      <desc><![CDATA[minLength]]></desc>
+    </p-param>
+    <p-param name="maxLength">
+      <desc><![CDATA[maxLength]]></desc>
+    </p-param>
+    <p-param name="vCACVm">
+      <desc><![CDATA[vCACVm]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

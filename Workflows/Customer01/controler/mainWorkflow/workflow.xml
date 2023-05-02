@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="workflow:name=generic" id="a91229f0-c127-497a-a30a-49ad77491459" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[mainWorkflow]]></display-name>
+  <description><![CDATA[This workflow will run all required workflow. Only this workflow needs to be scheduled
+
+This workflows collects the data from vCenter then creates/Updates/deletes switches and creates/Updates/deletes their PortGroups]]></description>
+  <error-handler name="item10" throw-bind-name="errorCode">
+    <position y="227.22727272727272" x="585.0"/>
+  </error-handler>
+  <position y="50.0" x="100.0"/>
+  <attrib name="vCSwitches" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="collection" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="RESTHost" type="REST:RESTHost" read-only="false" conf-id="9f16cb09-818d-4334-8216-b1311fe5ca01" conf-key="restHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="resourceSwitch" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Cisco Virtual Switch]]></value>
+  </attrib>
+  <attrib name="vropsSwitch" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="switchDel" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="objectName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[vROPS Collection]]></value>
+  </attrib>
+  <attrib name="lockOwner" type="string" read-only="false">
+    <value encoded="n"><![CDATA[DaimlerBenz]]></value>
+  </attrib>
+  <attrib name="lockAquired" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <workflow-note x="220.0" y="26.86363636363636" w="260.0" h="119.0">
+    <description><![CDATA[Locking Mechanismen to make sure only one instance of this program is run at all times]]></description>
+  </workflow-note>
+  <workflow-note x="540.0" y="190.90909090909088" w="380.0" h="118.18181818181817">
+    <description><![CDATA[Locking Mechanismen to make sure only one instance of this program is run at all times]]></description>
+  </workflow-note>
+  <workflow-note x="1060.0" y="100.0" w="280.0" h="63.63636363636363">
+    <description><![CDATA[Locking Mechanismen to make sure only one instance of this program is run at all times]]></description>
+  </workflow-note>
+  <workflow-note x="500.0" y="18.18181818181818" w="100.0" h="81.81818181818181" color="b0ebebff">
+    <description><![CDATA[Collect from vCenter]]></description>
+  </workflow-note>
+  <workflow-note x="920.0" y="27.27272727272727" w="580.0" h="63.63636363636363" color="ffbfbfff">
+    <description><![CDATA[Delete Switches that dont exist anymore]]></description>
+  </workflow-note>
+  <workflow-note x="640.0" y="27.272727272727273" w="260.0" h="72.72727272727272" color="b0ebceff">
+    <description><![CDATA[Create and update Switches]]></description>
+  </workflow-note>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[getswitches]]></display-name>
+    <script encoded="false"><![CDATA[vCSwitches=collection.keys;
+]]></script>
+    <in-binding>
+      <bind name="collection" type="Properties" export-name="collection"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vCSwitches" type="Array/string" export-name="vCSwitches"/>
+    </out-binding>
+    <position y="55.40909090909091" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="foreach">
+    <display-name><![CDATA[Foreach (switchLevel)]]></display-name>
+    <in-binding>
+      <bind name="collection" type="Properties" export-name="collection"/>
+      <bind name="switchName" type="Array/string" export-name="*vCSwitches"/>
+    </in-binding>
+    <out-binding/>
+    <reference type="Workflow" id="2adb33ef-d089-4659-b0c2-2ce235abc757"/>
+    <position y="55.40909090909091" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="link" linked-workflow-id="dd03f5c2-73a6-44c1-8531-67d950dab8ba">
+    <display-name><![CDATA[collect Info]]></display-name>
+    <in-binding/>
+    <out-binding>
+      <bind name="collection" type="Properties" export-name="collection"/>
+    </out-binding>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task" script-module="com.vmware.PSO.vROPS/getvROPSAllOfKind">
+    <display-name><![CDATA[getvROPSAllOfKind]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.PSO.vROPS").getvROPSAllOfKind(RESTHost,resourceKind) ;]]></script>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="resourceKind" type="string" export-name="resourceSwitch"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="vropsSwitch"/>
+    </out-binding>
+    <position y="55.40909090909091" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item6" type="link" linked-workflow-id="e78830e1-bf54-4d4b-8572-1f29bacb01e0">
+    <display-name><![CDATA[makeLists]]></display-name>
+    <in-binding>
+      <bind name="readList" type="Array/string" export-name="vCSwitches"/>
+      <bind name="existingList" type="Array/string" export-name="vropsSwitch"/>
+    </in-binding>
+    <out-binding>
+      <bind name="addList" type="Array/string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="delList" type="Array/string" export-name="switchDel"/>
+    </out-binding>
+    <position y="55.40909090909091" x="1064.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item8" type="custom-condition" alt-out-name="item11">
+    <display-name><![CDATA[DeleteSwitches?]]></display-name>
+    <script encoded="false"><![CDATA[if (switchDel.length>0){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="switchDel" type="Array/string" export-name="switchDel"/>
+    </in-binding>
+    <position y="45.40909090909091" x="1204.5"/>
+  </workflow-item>
+  <workflow-item name="item7" type="end" end-mode="0">
+    <position y="172.68181818181816" x="1244.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item11" type="link" linked-workflow-id="20f71082-75bd-4f2d-a54b-06b10d72d8c7">
+    <display-name><![CDATA[deleteSwitchResources]]></display-name>
+    <in-binding>
+      <bind name="portGroups" type="Array/string" export-name="switchDel"/>
+      <bind name="resourceKind" type="string" export-name="resourceSwitch"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="1344.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item12" type="task" script-module="com.vmware.PSO.vROPS/aquireLock">
+    <display-name><![CDATA[aquireLock]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.PSO.vROPS").aquireLock(objectName,lockOwner) ;]]></script>
+    <in-binding>
+      <bind name="objectName" type="string" export-name="objectName"/>
+      <bind name="lockOwner" type="string" export-name="lockOwner"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" export-name="lockAquired"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item9" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="227.22727272727272" x="844.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item9" type="task" script-module="com.vmware.PSO.vROPS/releaseLock">
+    <display-name><![CDATA[releaseLock]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.PSO.vROPS").releaseLock(objectName,lockOwner) ;]]></script>
+    <in-binding>
+      <bind name="objectName" type="string" export-name="objectName"/>
+      <bind name="lockOwner" type="string" export-name="lockOwner"/>
+    </in-binding>
+    <out-binding/>
+    <position y="237.22727272727272" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item7" type="task" script-module="com.vmware.PSO.vROPS/releaseLock">
+    <display-name><![CDATA[releaseLock]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.PSO.vROPS").releaseLock(objectName,lockOwner) ;]]></script>
+    <in-binding>
+      <bind name="objectName" type="string" export-name="objectName"/>
+      <bind name="lockOwner" type="string" export-name="lockOwner"/>
+    </in-binding>
+    <out-binding/>
+    <position y="119.04545454545453" x="1204.5"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item3" type="condition" alt-out-name="item14" comparator="0">
+    <display-name><![CDATA[lock Aquired?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (lockAquired == true) ;]]></script>
+    <in-binding>
+      <bind name="lockAquired" type="boolean" export-name="lockAquired"/>
+    </in-binding>
+    <condition name="lockAquired" type="boolean" comparator="0" label="null">false</condition>
+    <position y="45.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item13" type="end" end-mode="0">
+    <position y="172.68181818181816" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item14" prototype-id="system-warning" out-name="item13" type="task" interaction="l">
+    <display-name><![CDATA[System warning]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.warn("Another instance of the collection is running at this time. The execution of this instance has been skiped");
+]]></script>
+    <in-binding/>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'warn']]></description>
+    <position y="119.04545454545453" x="345.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

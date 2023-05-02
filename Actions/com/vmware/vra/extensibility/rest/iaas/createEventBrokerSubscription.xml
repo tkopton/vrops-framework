@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createEventBrokerSubscription" result-type="void" api-version="6.0.0" id="abcc612e-16a9-4390-b371-a7fbc5b3fa4d" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <param n="description" t="string"><![CDATA[]]></param>
+  <param n="disabled" t="boolean"><![CDATA[]]></param>
+  <param n="eventTopicId" t="string"><![CDATA[]]></param>
+  <param n="blocking" t="boolean"><![CDATA[]]></param>
+  <param n="runnableType" t="string"><![CDATA[]]></param>
+  <param n="runnableId" t="string"><![CDATA[]]></param>
+  <param n="timeout" t="string"><![CDATA[]]></param>
+  <param n="priority" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || eventTopicId == null || name == null) return null;
+
+var customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+
+var url = "/event-broker/api/subscriptions"
+var subscription = {
+  "id":  System.nextUUID(),
+  "type": "RUNNABLE",
+  "name": name,
+  "description": description,
+  "disabled": disabled,
+  "eventTopicId": eventTopicId,
+  "subscriberId": "temporary-value",
+  "blocking": blocking,
+  "criteria": "",
+  "runnableType": runnableType, //"extensibility.vro",
+  "runnableId": runnableId,
+  "timeout": timeout, // 0
+  "priority": priority, // 10
+  "recoverRunnableType": null,
+  "recoverRunnableId": null,
+  "constraints": {
+    "projectId": null
+  }
+}
+var content = JSON.stringify(subscription);
+
+var operation = "POST";
+
+try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+		//ID is returned in location headed
+	} catch (e) {
+		throw "POST " + url + "Failed" +
+        "\n Error : " + e;
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<package>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='39f63a77-6d8e-4bf8-854e-94fc228f2269'&dunesName='ConfigurationElement']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Action?id='6938f8e8-ae49-4da8-9a3a-0a7ea34e585e'&dunesName='Action'&name='tk_vraRefreshToken'&category='com.vmware.tkopton']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='9d370b73-b458-4a39-b53e-d63c42b5f198'&dunesName='Workflow']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Workflow?id='e2cb8c67-b007-4a84-a826-35c8a6e453af'&dunesName='Workflow']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='fdcb8307-c0fd-4d7f-960d-ced06a0f38ad'&dunesName='ConfigurationElement']]></elm>
+<used-plugin name='REST' version='2.4.1' />
+</package>

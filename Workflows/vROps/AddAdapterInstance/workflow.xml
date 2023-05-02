@@ -1,0 +1,118 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="6dea4a6f-de14-42d5-9bef-96c20a442d5d" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[AddAdapterInstance]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="user" type="string"/>
+    <param name="password" type="string"/>
+    <param name="vCUrl" type="string"/>
+    <param name="name" type="string"/>
+    <param name="description" type="string"/>
+    <param name="credentialName" type="string"/>
+  </input>
+  <attrib name="jsonBody" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="addAdapterInstance" type="REST:RESTOperation" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:b19e84a8-3b19-4018-95a3-e5fee2f9822e'&dunesName='REST:RESTOperation']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[createJsonBody]]></display-name>
+    <script encoded="false"><![CDATA[jsonBody = {
+  "name" : "VC Adapter Instance",
+  "description" : "A vCenter Adapter Instance",
+  "collectorId" : "1",
+  "adapterKindKey" : "VMWARE",
+  "resourceIdentifiers" : [ {
+    "name" : "AUTODISCOVERY",
+    "value" : "true"
+  }, {
+    "name" : "PROCESSCHANGEEVENTS",
+    "value" : "true"
+  }, {
+    "name" : "VCURL",
+    "value" : "https://VC_IP_Address"
+  } ],
+  "credential" : {
+    "id" : null,
+    "name" : "New Principal Credential",
+    "adapterKindKey" : "VMWARE",
+    "credentialKindKey" : "PRINCIPALCREDENTIAL",
+    "fields" : [ {
+      "name" : "USER",
+      "value" : "user_name"
+    }, {
+      "name" : "PASSWORD",
+      "value" : "passwd"
+    } ],
+    "others" : [ ],
+    "otherAttributes" : {
+    }
+  },
+  "others" : [ ],
+  "otherAttributes" : {
+  }
+};
+
+jsonBody.name = name;
+jsonBody.description = description;
+jsonBody.resourceIdentifiers[2].value = vCUrl;
+jsonBody.credential.name = credentialName;
+jsonBody.credential.fields[0].value = user;
+jsonBody.credential.fields[1].value = password;
+]]></script>
+    <in-binding>
+      <bind name="user" type="string" export-name="user"/>
+      <bind name="password" type="string" export-name="password"/>
+      <bind name="vCUrl" type="string" export-name="vCUrl"/>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="credentialName" type="string" export-name="credentialName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[addAdapter]]></display-name>
+    <script encoded="false"><![CDATA[System.log(JSON.stringify(jsonBody));
+requestBody = JSON.stringify(jsonBody);
+
+request = addAdapterInstance.createRequest(null, requestBody);
+request.contentType = "application/json";
+response = request.execute();
+
+System.log(response.statusCode);
+System.log(response.contentAsString);]]></script>
+    <in-binding>
+      <bind name="jsonBody" type="string" export-name="jsonBody"/>
+      <bind name="addAdapterInstance" type="REST:RESTOperation" export-name="addAdapterInstance"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="user">
+      <desc><![CDATA[user]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[password]]></desc>
+    </p-param>
+    <p-param name="vCUrl">
+      <desc><![CDATA[vCUrl]]></desc>
+    </p-param>
+    <p-param name="name">
+      <desc><![CDATA[name]]></desc>
+    </p-param>
+    <p-param name="description">
+      <desc><![CDATA[description]]></desc>
+    </p-param>
+    <p-param name="credentialName">
+      <desc><![CDATA[credentialName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

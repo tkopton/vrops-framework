@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNetworksFromProject" result-type="Array/string" api-version="6.0.0" id="06d8a611-0a4d-4886-8232-cdb9d5ea2db9" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.customactions">
+  <param n="projectId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Get Configuration Element Values
+var category = Server.getConfigurationElementCategoryWithPath("NetworkSelection");
+var configElement = null;
+for each (var configuration in category.configurationElements) {
+	if (configuration.name == "ConfigNetworkSelection") {
+		configElement = configuration;
+        break;
+	}
+}
+if (!configElement)throw "no ConfigElement found";
+var vraRestHost = configElement.getAttributeWithKey("vraRestHost").value;
+var vraUsername = configElement.getAttributeWithKey("vraUsername").value;
+var vraPassword = configElement.getAttributeWithKey("vraPassword").value;
+System.log(vraRestHost);
+
+
+// Returns a collection of REST:RESTHost object types from the inventory service plugin
+var getHosts = RESTHostManager.getHosts()
+
+// Iterates the collection to return the REST:RESTHost object type and perform a match on the name attribute provided as an input parameter and returns the REST:RESTHost type if true.
+for(var restHostId in getHosts){	
+	var restHost = RESTHostManager.getHost(getHosts[restHostId])
+	if(restHost.name == vraRestHost){	
+		myresthost = restHost;
+	} 
+} 
+
+//Get refreshtoken
+var requestBody = "{\"username\": \"" + vraUsername + "\", \"password\": \"" + vraPassword + "\"}"
+var request = myresthost.createRequest("POST", "/csp/gateway/am/api/login?access_token", requestBody);
+request.setHeader("Content-Type","application/json");
+request.setHeader("Accept","application/json");
+var response = request.execute();
+var responseJSON = JSON.parse(response.contentAsString);
+var refreshtokenstring = "{\"refreshToken\"\: \"" + responseJSON.refresh_token + "\"}";
+//System.log (refreshtokenstring);
+
+//Authenticate
+var request = myresthost.createRequest("POST","/iaas/login", refreshtokenstring);
+request.setHeader("Content-Type","application/json");
+request.setHeader("Accept","application/json");
+var response = request.execute();
+var responseJSON = JSON.parse(response.contentAsString);
+var token = responseJSON.token;
+//System.log("Aquired vRA Token: " + token);
+
+
+//Get network constraint tag from project
+System.log ("Project-ID: #" + projectId + "#");
+var networktaglist = [];
+if (projectId == null) {
+	System.log ("Project-ID is not set");
+	}
+	else {
+	var request = myresthost.createRequest("GET","/project-service/api/projects/" + projectId);
+    request.setHeader("Content-Type","application/json");
+    request.setHeader("Accept","application/json");
+    request.setHeader("Authorization", "Bearer " + token);
+
+	var projectdetails = request.execute();
+    var networkprofiletagkey="";
+    var networkprofiletagvalue="";
+//	System.log (projectdetails.contentAsString);
+    projectdetailsJSON = JSON.parse(projectdetails.contentAsString);
+    networkprofiletag = projectdetailsJSON.constraints.network.conditions;
+    for each (var item in projectdetailsJSON.constraints.network.conditions){
+	    if (item.expression.key == "project"){
+            System.log(item.expression.value)
+            var networkprofiletagkey=item.expression.key;
+            var networkprofiletagvalue=item.expression.value;
+		    }
+	    }
+    System.log(networkprofiletagkey);
+    networkprofiletagkey='project'
+    networkprofiletagvalue='demo-project'
+
+// Get network profile ID by constraint tag
+	var request = myresthost.createRequest("GET","/iaas/api/network-profiles");
+    request.setHeader("Content-Type","application/json");
+    request.setHeader("Accept","application/json");
+    request.setHeader("Authorization", "Bearer " + token);
+
+	var networkprofilelist = request.execute();
+    var profilenetworks="";
+    networkprofilelistJSON= JSON.parse(networkprofilelist.contentAsString)
+//    System.log (networkprofilelist.contentAsString);
+    for each (var item in networkprofilelistJSON.content) {
+        for each (var tag in item.tags) {
+//            System.log(tag.value);
+            if (tag.key == networkprofiletagkey && tag.value == networkprofiletagvalue) {
+                var networkprofileid = item.id;
+                var profilenetworkslist = [];
+                profilenetworks = item["_links"]["fabric-networks"].hrefs;
+            }
+        }
+    }
+//    System.log(networkprofileid);
+//    System.log(profilenetworks);
+
+// Get network tags from profileid
+    for each (var networklink in profilenetworks) {
+        var request = myresthost.createRequest("GET",networklink);
+        request.setHeader("Content-Type","application/json");
+        request.setHeader("Accept","application/json");
+        request.setHeader("Authorization", "Bearer " + token);
+        networkdetails = request.execute();
+        networkdetailsJSON = JSON.parse(networkdetails.contentAsString)
+        for each (tag in networkdetailsJSON.tags) {
+            if (tag.key == "network") {
+                networktag = tag.key + ":" + tag.value;
+            }
+        networktaglist.push(networktag);
+        }
+    }
+System.log(networktaglist);
+
+}
+
+
+
+return networktaglist;]]></script>
+</dunes-script-module>

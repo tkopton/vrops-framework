@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="cb13dbeb-aeb1-4ae9-bcea-0002f713e637" version="0.0.0" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Tags with Filter]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="tagKey" type="string"/>
+  </input>
+  <output>
+    <param name="tagProperties" type="Properties"/>
+    <param name="tagArray" type="Array/string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="380.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Get tags by Key]]></display-name>
+    <script encoded="false"><![CDATA[//For Custom forms - See action GetTagsByKey
+
+var configPath = "vra_config";
+var configName = "vra_credentials";
+var restHost = System.getModule("com.vmware.util").getRestHostFromConfig(configPath, configName, "vra_resthost")
+var accessToken = System.getModule("com.vmware.vra.extensibility.config").getVraAccessToken();
+var bearer = "Bearer " + accessToken;
+var customHeaders = new Properties();
+customHeaders.put("Authorization", bearer);
+
+if (tagKey) {
+    System.log("filtering by tag key " + tagKey)
+	var tagObject = getObjectFromUrl(encodeURI("/iaas/api/tags?$filter=key eq " + tagKey));
+	if (tagObject != null) {
+       tagProperties = object2Properties(tagObject['content'])
+	}
+}
+
+var tagItems = tagObject['content']
+
+tagArray = [];
+
+for(var i = 0; i < tagItems.length; i++){
+    System.debug(tagItems[i].key + ":" + tagItems[i].value)
+    tagArray.push(tagItems[i].key + ":" + tagItems[i].value)
+}
+
+function getObjectFromUrl(url) {
+	return System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,null,null, customHeaders, url);
+}
+
+function object2Properties(obj) {
+    return System.getModule("com.vmware.vra.extensibility.presentation").object2Properties(obj);
+}
+
+function getPropertiesText(properties, text, level) {
+    return System.getModule("com.vmware.vra.extensibility.presentation").getPropertiesText(properties, text, level);
+}]]></script>
+    <in-binding>
+      <bind name="tagKey" type="string" export-name="tagKey"/>
+    </in-binding>
+    <out-binding>
+      <bind name="tagProperties" type="Properties" export-name="tagProperties"/>
+      <bind name="tagArray" type="Array/string" export-name="tagArray"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.5" x="200.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="tagKey">
+      <desc><![CDATA[tagKey]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

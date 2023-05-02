@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getConfigElement" result-type="Array/ConfigurationElement" api-version="6.0.0" id="c387b792-c4a0-4803-848f-8411ad21f721" version="0.0.0" allowed-operations="evf" category-name="com.vmware.tkopton">
+  <param n="configCategoryPath" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var configCategory = Server.getConfigurationElementCategoryWithPath(configCategoryPath);
+
+if(configCategory != null) {
+	var allElements = configCategory.configurationElements;
+	var myResults = [];
+	
+	for (i=0; i<allElements.length; i++) {
+		System.log("Configuration element found: " + allElements[i].name);
+		myResults.push(allElements[i]);
+	}
+	
+	return myResults;
+	
+} else {
+	throw "Path not found!";
+}
+
+]]></script>
+</dunes-script-module>

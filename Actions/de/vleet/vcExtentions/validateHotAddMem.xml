@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="validateHotAddMem" result-type="string" api-version="6.0.0" id="a38bf902-7e81-42fd-8c56-678ad8244c9b" version="0.0.0" allowed-operations="evf" category-name="de.vleet.vcExtentions">
+  <param n="vcvm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <param n="useHotAdd" t="boolean"><![CDATA[]]></param>
+  <param n="memory" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var message = null;
+if(useHotAdd && (memory < System.getModule("de.vleet.vra.tools").getMemGBFromVM(vcvm))){
+	message = "Cannot decrease Memory if hotadd is enabled. Disable hotadd or Enter a higher value";
+}
+return message;]]></script>
+</dunes-script-module>

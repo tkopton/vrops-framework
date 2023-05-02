@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="67caba2e-abde-43be-a9d7-5925d43d3094" version="0.1.0">
+  <display-name><![CDATA[mail.Config]]></display-name>
+  <atts>
+    <att name="AdminMailAddr" type="string" read-only="false">
+      <value encoded="n"><![CDATA[VMWare-Servermanagement@akhwien.at]]></value>
+    </att>
+  </atts>
+</config-element>

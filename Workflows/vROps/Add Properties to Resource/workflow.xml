@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="1c5350d9-a860-4882-9839-794b1a1cfdff" version="0.0.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Add Properties to Resource]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="resourceId" type="string"/>
+    <param name="key_01_value" type="string"/>
+    <param name="key_02_value" type="string"/>
+    <param name="description_value" type="string"/>
+  </input>
+  <attrib name="addPropertiesUsingPushAdapterKind" type="REST:RESTOperation" read-only="false" conf-id="229043a2-9cac-4cbb-9457-4ff800999267" conf-key="addPropsUsingPushAdapterKind">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="adapterKindKey" type="string" read-only="false">
+    <value encoded="n"><![CDATA[CiscoEnv]]></value>
+  </attrib>
+  <attrib name="encodedAdapterKind" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="properties" type="Array/Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="724.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Add Properties]]></display-name>
+    <script encoded="false"><![CDATA[var content = {
+	"property-content" : []
+};
+var timestamp = (new Date()).getTime();
+
+for each (var property in properties)
+{
+	var statKey = property.get("statKey");
+	var values = property.get("values");
+	var propertyContent = createPropertyContent(statKey, values, timestamp);
+	content["property-content"].push(propertyContent);
+}
+
+var params = [resourceId];	
+System.log("Adding properties... " + JSON.stringify(content));
+
+/**
+var request = addPropertiesUsingPushAdapterKind.createRequest(params, JSON.stringify(content));
+
+var response = request.execute();
+
+if(response.statusCode >= 400) {
+	throw "HTTPError: status code: " + response.statusCode;
+}
+**/
+
+
+function createPropertyContent(statKey, values, timestamp)
+{
+	var propertyContent = {
+    	"statKey" : statKey,
+    	"timestamps" : [timestamp],
+    	"values" : [values]	
+  	};
+
+	return propertyContent;
+}
+]]></script>
+    <in-binding>
+      <bind name="adapterKindKey" type="string" export-name="encodedAdapterKind"/>
+      <bind name="resourceId" type="string" export-name="resourceId"/>
+      <bind name="properties" type="Array/Properties" export-name="properties"/>
+      <bind name="addPropertiesUsingPushAdapterKind" type="REST:RESTOperation" export-name="addPropertiesUsingPushAdapterKind"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="544.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task" script-module="com.vmware.pso.utils/urlEncode">
+    <display-name><![CDATA[urlEncode]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.pso.utils").urlEncode(str) ;]]></script>
+    <in-binding>
+      <bind name="str" type="string" export-name="adapterKindKey"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="encodedAdapterKind"/>
+    </out-binding>
+    <position y="55.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[setProperties]]></display-name>
+    <script encoded="false"><![CDATA[properties = [];
+
+var description = new Properties();
+description.put("statKey", "Description");
+description.put("values", description_value);
+properties.push(description);
+
+var lastSuccessfulRun = new Properties();
+lastSuccessfulRun.put("statKey", "key_01");
+lastSuccessfulRun.put("values", key_01_value);
+properties.push(lastSuccessfulRun);
+
+var property = new Properties();
+property.put("statKey", "key_02");
+property.put("values", key_02_value);
+properties.push(property);
+]]></script>
+    <in-binding>
+      <bind name="key_01_value" type="string" export-name="key_01_value"/>
+      <bind name="key_02_value" type="string" export-name="key_02_value"/>
+      <bind name="description_value" type="string" export-name="description_value"/>
+    </in-binding>
+    <out-binding>
+      <bind name="properties" type="Array/Properties" export-name="properties"/>
+    </out-binding>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="resourceId">
+      <desc><![CDATA[resourceId]]></desc>
+    </p-param>
+    <p-param name="key_01_value">
+      <desc><![CDATA[key_01_value]]></desc>
+    </p-param>
+    <p-param name="key_02_value">
+      <desc><![CDATA[key_02_value]]></desc>
+    </p-param>
+    <p-param name="description_value">
+      <desc><![CDATA[description_value]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

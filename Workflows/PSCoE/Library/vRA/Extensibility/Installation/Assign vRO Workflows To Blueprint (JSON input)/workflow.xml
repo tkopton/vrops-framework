@@ -1,0 +1,327 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e0993df0-d8e7-4c0d-b5ed-f41be793090d" version="2.4.7" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Assign vRO Workflows To Blueprint (JSON input)]]></display-name>
+  <description><![CDATA[Creates property group defining workflows to run via workflow dispatcher.
+Adds or updates a state change workflow on several blueprints and their virtual machines.
+Uses JSON input to define default values for workflow input.
+
+Disclaimer: This is an experimental version of the configuration workflow. Use with caution, as future versions might introduce changes that are not backward compatible.]]></description>
+  <position y="27.227272727272727" x="85.0"/>
+  <input>
+    <param name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4">
+      <description><![CDATA[WFIdentifier/Workflow Properties to run at the specified state]]></description>
+    </param>
+    <param name="blueprint" type="vCACCAFE:CompositeBlueprint">
+      <description><![CDATA[Blueprint to extend]]></description>
+    </param>
+    <param name="component" type="string">
+      <description><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></description>
+    </param>
+    <param name="replaceExistingProps" type="boolean">
+      <description><![CDATA[Replace the value of existing properties]]></description>
+    </param>
+    <param name="jsonParams" type="string">
+      <description><![CDATA[The JSON containing all values for input parameters]]></description>
+    </param>
+    <param name="propGroupName" type="string">
+      <description><![CDATA[The name of the property group to add the properties to]]></description>
+    </param>
+    <param name="propGroupPrefix" type="string">
+      <description><![CDATA[The prefix of the property group name (used to determine custom property prefix for input parameters)]]></description>
+    </param>
+    <param name="appendToExistingPropertyGroup" type="boolean">
+      <description><![CDATA[Add properties to property group if that already exists. If false, clear the existing property group before adding the values. (only applies if replaceExistingProps=true)]]></description>
+    </param>
+    <param name="addGeneralPropertiesToCommonGroup" type="boolean">
+      <description><![CDATA[Add general properties (not directly related to a workflow operation) to the common property group Extensibility.Common]]></description>
+    </param>
+  </input>
+  <attrib name="wfDelimiter" type="string" read-only="false" conf-id="90ee9bdb-ba13-4bf5-92ee-2ef9393f12de" conf-key="wfDelimiter">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="commonProfileName" type="string" read-only="false" conf-id="90ee9bdb-ba13-4bf5-92ee-2ef9393f12de" conf-key="commonProfileName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="cafeHost" type="vCACCAFE:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="propertyGroupIds" type="Array/string" read-only="false"/>
+  <attrib name="wfNamePrefix" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="wfPropObject" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="globalProps" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="generalProps" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="encryptedProps" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="wfValues" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="wfNames" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="appendPropertyGroupPerWorkflow" type="Array/boolean" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="finalArrayParamPrefix" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[A prefix to be added in the JSON for the list of workflows to be executed. If not specified it will be set to a default value 'wfConfigs'.]]></description>
+  </attrib>
+  <attrib name="wfToRunUpdated" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="27.227272727272727" x="1224.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="task">
+    <display-name><![CDATA[Create Prefix]]></display-name>
+    <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.library.vra.dispatcher");
+wfNamePrefix = propGroupName;
+
+if (propGroupPrefix && propGroupPrefix != "") {
+	var prefixIndex = propGroupName.indexOf(propGroupPrefix);
+	if(prefixIndex != -1){
+		var prefixLength = propGroupPrefix.length;
+		wfNamePrefix = propGroupName.slice(prefixIndex + prefixLength);
+	}
+}
+//Remove all non-alphabetic chars from the beginning
+wfNamePrefix = wfNamePrefix.replace(/^[^a-zA-Z]*/,'');
+logger.debug("wfNamePrefix " + wfNamePrefix);
+]]></script>
+    <in-binding>
+      <bind name="propGroupPrefix" type="string" export-name="propGroupPrefix"/>
+      <bind name="propGroupName" type="string" export-name="propGroupName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="wfNamePrefix" type="string" export-name="wfNamePrefix"/>
+    </out-binding>
+    <position y="37.22727272727273" x="184.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task">
+    <display-name><![CDATA[Get configuration values]]></display-name>
+    <script encoded="false"><![CDATA[cafeHost = vCACCAFEEntitiesFinder.getHostForEntity(blueprint);
+
+encryptedProperties = [];
+wfPropObject = null;
+globalProps = [];
+generalProps = new Properties();
+finalArrayParamPrefix = "wfConfigs";
+
+var jsonObj = JSON.parse(jsonParams);
+
+for (var key in jsonObj) {
+	if (key == "encryptedProperties") {
+		encryptedProperties = jsonObj[key];
+		continue;
+	}
+	var wfPropValue = jsonObj[key];
+	
+	if (wfPropValue instanceof Object) {
+		if (wfPropObject == null) {
+			wfPropObject = wfPropValue;
+			finalArrayParamPrefix = key;
+		}
+	} else {
+		globalProps.push(key);
+		generalProps.put(key, wfPropValue);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="jsonParams" type="string" export-name="jsonParams"/>
+      <bind name="blueprint" type="vCACCAFE:CompositeBlueprint" export-name="blueprint"/>
+    </in-binding>
+    <out-binding>
+      <bind name="cafeHost" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+      <bind name="encryptedProperties" type="Array/string" export-name="encryptedProps"/>
+      <bind name="generalProps" type="Properties" export-name="generalProps"/>
+      <bind name="globalProps" type="Array/string" export-name="globalProps"/>
+      <bind name="wfPropObject" type="Any" export-name="wfPropObject"/>
+      <bind name="finalArrayParamPrefix" type="string" export-name="finalArrayParamPrefix"/>
+    </out-binding>
+    <position y="37.22727272727273" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item3" type="task">
+    <display-name><![CDATA[Get workflow names and parameters]]></display-name>
+    <script encoded="false"><![CDATA[if (wfPropObject != null) {
+	if (wfPropObject instanceof Array) {
+		var values = {};
+		values[finalArrayParamPrefix] = [];
+		wfNames = [];
+		for (var i = 0; i < wfPropObject.length; i++) {
+			values[finalArrayParamPrefix].push(wfPropObject[i].wfParameters);
+			wfNames.push(JSON.stringify(wfPropObject[i].wfIdentifierNames));
+		}
+		wfValues = System.getModule("com.vmware.pscoe.library.util").jsonToProperties(values);
+	} else {
+		wfValues = System.getModule("com.vmware.pscoe.library.util").jsonToProperties(wfPropObject.wfParameters);
+		wfNames =  JSON.stringify(wfPropObject.wfIdentifierNames);
+	}
+} else {
+	throw "JSON workflow configuration is null.";
+}]]></script>
+    <in-binding>
+      <bind name="wfPropObject" type="Any" export-name="wfPropObject"/>
+      <bind name="finalArrayParamPrefix" type="string" export-name="finalArrayParamPrefix"/>
+    </in-binding>
+    <out-binding>
+      <bind name="wfValues" type="Properties" export-name="wfValues"/>
+      <bind name="wfNames" type="Any" export-name="wfNames"/>
+    </out-binding>
+    <position y="37.22727272727273" x="464.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item0" type="task" script-module="com.vmware.pscoe.library.vra.dispatcher.configuration/setBlueprintProperties">
+    <display-name><![CDATA[setBlueprintProperties]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.pscoe.library.vra.dispatcher.configuration").setBlueprintProperties(blueprint,componentName,host,commonProfileName,propertyGroupIds,wfConfiguredNames,wfToRun,wfDelimiter,workflowState,arrayParamPrefix) ;]]></script>
+    <in-binding>
+      <bind name="blueprint" type="vCACCAFE:CompositeBlueprint" export-name="blueprint"/>
+      <bind name="componentName" type="string" export-name="component"/>
+      <bind name="host" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+      <bind name="commonProfileName" type="string" export-name="commonProfileName"/>
+      <bind name="propertyGroupIds" type="Array/string" export-name="propertyGroupIds"/>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRunUpdated"/>
+      <bind name="wfDelimiter" type="string" export-name="wfDelimiter"/>
+      <bind name="workflowState" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="wfConfiguredNames" type="Any" export-name="wfNames"/>
+      <bind name="arrayParamPrefix" type="string" export-name="finalArrayParamPrefix"/>
+    </in-binding>
+    <out-binding/>
+    <position y="37.22727272727273" x="1044.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[Get Append Flag per workflow]]></display-name>
+    <script encoded="false"><![CDATA[appendPropertyGroupPerWorkflow = [];
+
+for (var i in wfToRun) {
+	appendPropertyGroupPerWorkflow[i] = ( i == 0 ? appendToExistingPropertyGroup : true);
+}]]></script>
+    <in-binding>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRun"/>
+      <bind name="appendToExistingPropertyGroup" type="boolean" export-name="appendToExistingPropertyGroup"/>
+    </in-binding>
+    <out-binding>
+      <bind name="appendPropertyGroupPerWorkflow" type="Array/boolean" export-name="appendPropertyGroupPerWorkflow"/>
+    </out-binding>
+    <position y="37.22727272727273" x="604.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item6" type="foreach">
+    <display-name><![CDATA[Foreach (Create/Update vRO Workflow Configuration)]]></display-name>
+    <in-binding>
+      <bind name="wfName" type="Array/string" export-name="*wfToRunUpdated.wfIdentifierName"/>
+      <bind name="wf" type="Array/Workflow" export-name="*wfToRunUpdated.workflow"/>
+      <bind name="globalProps" type="Array/string" export-name="globalProps">
+        <description><![CDATA[List of Global Properties]]></description>
+      </bind>
+      <bind name="isConcurrent" type="Array/boolean" export-name="*wfToRunUpdated.isConcurrent">
+        <description><![CDATA[Should the workflow allow concurrent executions]]></description>
+      </bind>
+      <bind name="continueOnError" type="Array/boolean" export-name="*wfToRunUpdated.continueOnError">
+        <description><![CDATA[Should provisioning continue if this wokrflow fails]]></description>
+      </bind>
+      <bind name="defaultValues" type="Properties" export-name="wfValues"/>
+      <bind name="replaceExistingProps" type="boolean" export-name="replaceExistingProps">
+        <description><![CDATA[Flag indicating if the workflow will replace an existing properties values]]></description>
+      </bind>
+      <bind name="cafeHost" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+      <bind name="defaultValuesList" type="Array/string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="sendEmailOnError" type="Array/boolean" export-name="*wfToRunUpdated.sendEmailOnError"/>
+      <bind name="customPropertiesPrefix" type="Array/string" export-name="*wfToRunUpdated.customPropertiesPrefix"/>
+      <bind name="workflowToRunOnError" type="Array/Workflow" export-name="*wfToRunUpdated.wfToRunOnFailure">
+        <description><![CDATA[Workflow to be run on failure]]></description>
+      </bind>
+      <bind name="stopAndWaitOnError" type="Array/boolean" export-name="*wfToRunUpdated.triggerUserInteractionOnError"/>
+      <bind name="propertyGroupName" type="string" export-name="propGroupName">
+        <description><![CDATA[(Optional) The name of property group which will contains couple of workflow configurations]]></description>
+      </bind>
+      <bind name="arrayParamPrefix" type="string" export-name="finalArrayParamPrefix">
+        <description><![CDATA[(Optional) Prefix for parameters when a workflow configuration is an array of properties]]></description>
+      </bind>
+      <bind name="encryptedProperties" type="Array/string" export-name="encryptedProps">
+        <description><![CDATA[(Optional) Encrypted properties]]></description>
+      </bind>
+      <bind name="generalProps" type="Properties" export-name="generalProps"/>
+      <bind name="appendToExistingPropertyGroup" type="Array/boolean" export-name="*appendPropertyGroupPerWorkflow"/>
+      <bind name="addGeneralPropertiesToCommonGroup" type="boolean" export-name="addGeneralPropertiesToCommonGroup"/>
+      <bind name="retryCount" type="Array/number" export-name="*wfToRunUpdated.retryCount"/>
+      <bind name="retryDelay" type="Array/number" export-name="*wfToRunUpdated.retryDelay"/>
+    </in-binding>
+    <out-binding>
+      <bind name="propertyGroupId" type="Array/string" export-name="*propertyGroupIds"/>
+    </out-binding>
+    <reference type="Workflow" id="36a5f6d4-9748-48cb-ba95-6d862856c3ca"/>
+    <position y="37.22727272727273" x="884.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item7" type="task">
+    <display-name><![CDATA[Update wfToRun]]></display-name>
+    <script encoded="false"><![CDATA[wfToRunUpdated = [];
+
+for (var i in wfToRun) {
+	var wfConfig = wfToRun[i];
+	if (!wfConfig.customPropertiesPrefix) {
+		wfConfig.customPropertiesPrefix = wfNamePrefix;
+	}
+	
+	wfToRunUpdated.push(wfConfig);
+}]]></script>
+    <in-binding>
+      <bind name="wfToRun" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRun"/>
+      <bind name="wfNamePrefix" type="string" export-name="wfNamePrefix"/>
+    </in-binding>
+    <out-binding>
+      <bind name="wfToRunUpdated" type="Array/CompositeType(wfIdentifierName:string,workflow:Workflow,workflowState:string,sendEmailOnError:boolean,customPropertiesPrefix:string,wfToRunOnFailure:Workflow,triggerUserInteractionOnError:boolean,continueOnError:boolean,isConcurrent:boolean,retryCount:number,retryDelay:number):WorkflowIdentifierPropertiesV2_4" export-name="wfToRunUpdated"/>
+    </out-binding>
+    <position y="37.22727272727273" x="744.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Blueprint mapping]]></title>
+      <desc><![CDATA[Select which Blueprint will trigger a workflow for the selected state]]></desc>
+      <p-param name="blueprint">
+        <desc><![CDATA[Blueprint to extend]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="component">
+        <desc><![CDATA[Select Component to be assigned with the workflows at the specified state. Leave empty for assigmnet on the composite blueprint]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.pscoe.library.vra","getComponentNames").call( #blueprint , true )]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[vRealize Orchestrator Workflows]]></title>
+      <p-param name="wfToRun">
+        <desc><![CDATA[Workflows to run at the specified state]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Configuration properties]]></title>
+      <p-param name="jsonParams">
+        <desc><![CDATA[The JSON containing all values for input parameters]]></desc>
+        <p-qual name="textInput" type="void"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+      <p-param name="propGroupName">
+        <desc><![CDATA[The name of the property group to add the properties to]]></desc>
+      </p-param>
+      <p-param name="propGroupPrefix">
+        <desc><![CDATA[The prefix of the property group name (used to determine custom property prefix for input parameters)]]></desc>
+      </p-param>
+      <p-param name="replaceExistingProps">
+        <desc><![CDATA[Replace the value of existing properties]]></desc>
+      </p-param>
+      <p-param name="appendToExistingPropertyGroup">
+        <desc><![CDATA[Add properties to property group if that already exists. If false, clear the existing property group before adding the values. (only applies if replaceExistingProps=true)]]></desc>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#replaceExistingProps == false]]></p-qual>
+      </p-param>
+      <p-param name="addGeneralPropertiesToCommonGroup">
+        <desc><![CDATA[Add general properties (not directly related to a workflow operation) to the common property group Extensibility.Common]]></desc>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

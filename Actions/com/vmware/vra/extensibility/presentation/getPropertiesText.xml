@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPropertiesText" result-type="string" api-version="6.0.0" id="d9696eaf-5589-4809-b4cd-1d1df40f204a" version="0.0.0" allowed-operations="evf" category-name="com.vmware.vra.extensibility.presentation">
+  <param n="properties" t="Properties"><![CDATA[]]></param>
+  <param n="text" t="string"><![CDATA[]]></param>
+  <param n="level" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+return getPropertiesText(properties, text, level);
+
+function getPropertiesText(properties, text, level) {
+	for each(var key in properties.keys.sort()) {
+		var value = properties.get(key);
+		if (System.getObjectType(value) == "Properties") {
+			text += getPropertiesText(value, padLeft("{}" + key + "\n", "\t", level), level + 1);
+		} else {
+			if (value != null && System.getObjectClassName(value) == "Array") {
+				text += padLeft("[]" + key + " : " + "\n", "\t", level);
+				var i = 0;
+				for each(var element in value) {
+					if (value != null && System.getObjectClassName(element) == "Properties") text += getPropertiesText(element, padLeft(i + " : {}" + key + "\n", "\t", level + 1), level + 2);
+					else text += padLeft(i + " : " + element + "\n", "\t", level + 1);
+					i++;
+				}
+			} else {
+				if (value == null) value = "null";
+				text += padLeft(key + " : " + value.toString().replace(/\n/g, "\n" + padLeft("", "\t", level + 1)) + "\n", "\t", level);
+			}
+		}
+	}
+	return text;
+}
+
+function padLeft(string, character, numberOfCharacters) {
+	var pre = "";
+	for (var i = 0; i < numberOfCharacters; i++) {
+		pre += character;
+	}
+	return pre + string;
+}]]></script>
+</dunes-script-module>

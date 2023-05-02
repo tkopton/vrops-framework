@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isAutofillingIndexesEnabled" result-type="void" api-version="6.0.0" id="5047be78-7a48-4946-ba83-3f1dfa7a0b79" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.pspps.customhostname">
+  <script encoded="false"><![CDATA[var config = System.getModule("com.vmware.pscoe.pspps.customhostname").getConfigurationElement("PSCoE/PpS", "Custom Hostname Configuration");
+	
+if (config) {
+	config.reload();
+	var shouldFullfillIndexes = config.getAttributeWithKey("shouldAutofillIndexes").value;
+	return shouldFullfillIndexes;
+} else {
+	throw new Error("Configuration file error.");
+}]]></script>
+</dunes-script-module>

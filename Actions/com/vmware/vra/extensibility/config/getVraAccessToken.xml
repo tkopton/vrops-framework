@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVraAccessToken" result-type="string" api-version="6.0.0" id="5b62ff2f-7f16-45eb-9980-833ef7d078ed" version="0.4.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.config">
+  <description><![CDATA[Get the access token using refresh token]]></description>
+  <script encoded="false"><![CDATA[
+var configPath = 'vra_config';
+var configName = 'vra_credentials';
+var tokenKey = 'refresh_token';
+var baseUrlKey = 'vra_host'
+
+
+for each(var configElement in Server.getConfigurationElementCategoryWithPath(configPath).configurationElements)
+{
+	if(configElement.name == configName){
+		var refreshToken = configElement.getAttributeWithKey(tokenKey)['value'];
+        var baseUrl = configElement.getAttributeWithKey(baseUrlKey)['value']
+        var config = configElement;
+        break;
+	}
+}
+
+var transientHost = RESTHostManager.createHost("DynamicRequest");
+var restHost = RESTHostManager.createTransientHostFrom(transientHost);
+restHost.url = baseUrl;
+
+return executeApiCall(refreshToken, 0)
+
+
+function executeApiCall(token, counter){
+    // create request
+    var method = "POST"
+    var template = "/iaas/api/login"
+    var data = {"refreshToken": token}
+    var postContent = JSON.stringify(data);
+    System.log(restHost);
+    var request = restHost.createRequest(method, template, postContent);
+    request.contentType = 'application/json';
+
+    // execute request
+    var response = request.execute()
+    
+    // process results
+    System.debug("Status code: " + response.statusCode);
+    // check if it is third attempt to get access token
+    if (counter == 2)
+    {
+        throw 'Refresh token was updated, but still failed to get access token'
+    }
+    else if(response.statusCode == 200)
+    {
+        var content = JSON.parse(response.contentAsString);
+        //System.debug(content['token'])
+        return content['token']
+    }
+    // check if refresh token was invalid/expired, update refresh token and try to get access token again
+    else if (response.contentAsString.indexOf('Invalid refresh token')  != -1)
+    {
+        System.warn('Refresh Token expired. Trying to get new refresh token...');
+        newToken = System.getModule("com.vmware.vra.extensibility.config").getVraRefreshToken(config)
+        return executeApiCall(newToken, counter + 1)
+    }
+    else
+    {
+        throw 'Something else went wrong'
+    }
+}]]></script>
+</dunes-script-module>

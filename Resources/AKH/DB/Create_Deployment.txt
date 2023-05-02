@@ -1,0 +1,28 @@
+CREATE TABLE deployment
+(
+DeploymentID varchar(50) NOT NULL
+,Hostname varchar(50) NOT NULL
+,DomainSuffix varchar(50) NOT NULL
+,Requestor varchar(50) NOT NULL
+,RequestTime datetime NOT NULL
+,Description varchar(50) NOT NULL
+,Usage varchar(50) NOT NULL
+,AntiVirus varchar(50) NOT NULL
+,BackupIntervall varchar(50) NOT NULL
+,BackupType varchar(50) NOT NULL
+,SLA varchar(50) NOT NULL
+,vCenter varchar(50) NOT NULL
+,ReplicationRPO varchar(50) NOT NULL
+,ReplicationDestination varchar(50) NOT NULL
+,ReplicationQuiescing varchar(50) NOT NULL
+,Monitoring varchar(50) NOT NULL
+,MonitoringType varchar(50) NOT NULL
+,IP varchar(50) NOT NULL
+,AKHManager_Status varchar(250)
+,ServerDB_Status varchar(250)
+,DNS_Status varchar(250)
+,vRA_Status varchar(50) NOT NULL
+,vRA_Timestamp datetime NOT NULL
+,Owner varchar(50) NOT NULL
+,PRIMARY KEY (DeploymentID)
+);

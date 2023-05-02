@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="fa2505ea-97d6-4cdb-901e-737ab6a31607" version="0.0.1" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Register VC Site]]></display-name>
+  <description><![CDATA[Register login credentials for a vCenter Server site that is paired with a local site.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="remoteSite" type="VR:VcRemoteSite"/>
+    <param name="username" type="string"/>
+    <param name="password" type="SecureString"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="564.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.library.vr.setup/registerVcRemoteSite">
+    <display-name><![CDATA[registerVcRemoteSite]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vr.setup").registerVcRemoteSite(remoteSite,username,password) ;]]></script>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task" script-module="com.vmware.library.vr/loginRemoteSite">
+    <display-name><![CDATA[loginRemoteSite]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vr").loginRemoteSite(remoteSite) ;]]></script>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite">
+        <description><![CDATA[Remote vSphere Site]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="365.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Site]]></title>
+      <p-param name="remoteSite">
+        <desc><![CDATA[Site]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="username">
+        <desc><![CDATA[Username]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="password">
+        <desc><![CDATA[Password]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

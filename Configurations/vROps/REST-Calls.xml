@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="229043a2-9cac-4cbb-9457-4ff800999267" version="0.0.0">
+  <display-name><![CDATA[REST-Calls]]></display-name>
+  <atts>
+    <att name="addStatsUsingPushAdapterKind" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:2a545293-1117-4f41-8995-1c8a377b50a8'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="addResourceUsingPushAdapter" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:2a293cd7-c3fa-4e29-9b3f-aa615a83e2dd'&dunesName='REST:RESTOperation']]></value>
+    </att>
+    <att name="addPropsUsingPushAdapterKind" type="REST:RESTOperation" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='61df4713-060f-452d-8af9-6792927eeb55:4ecdf8b5-a5b2-41b9-bd84-8079b1ead786'&dunesName='REST:RESTOperation']]></value>
+    </att>
+  </atts>
+</config-element>

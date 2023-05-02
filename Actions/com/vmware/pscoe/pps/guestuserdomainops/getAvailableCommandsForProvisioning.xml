@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAvailableCommandsForProvisioning" result-type="Array/string" api-version="6.0.0" id="c743a938-4334-4eed-a5f7-dac9cdca43b5" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.pps.guestuserdomainops">
+  <script encoded="false"><![CDATA[var resourceElementCategory = Server.getResourceElementCategoryWithPath("PSCoE/Library/GuestUserDomainOperations");
+var resElements = resourceElementCategory.resourceElements;
+var resElementNames = new Array();
+
+for each(var resElem in resElements) {
+	//Collect resource element name
+	resElementNames.push(resElem.name);
+}
+
+return resElementNames;]]></script>
+</dunes-script-module>

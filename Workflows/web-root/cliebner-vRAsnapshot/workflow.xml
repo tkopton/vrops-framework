@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="086020c4-9ae4-43c0-b44c-98865e712a36" version="1.0.0" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[cliebner-vRAsnapshot]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="inputProperties" type="Properties"/>
+  </input>
+  <output>
+    <param name="customProperties" type="string"/>
+  </output>
+  <attrib name="vCenterVM" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="userName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="name" type="string" read-only="false">
+    <value encoded="n"><![CDATA[vRAsnapshot]]></value>
+  </attrib>
+  <attrib name="description" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Super vRA]]></value>
+  </attrib>
+  <attrib name="memory" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="quiesce" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="49.900001525878906" x="613.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="task">
+    <display-name><![CDATA[log Payload]]></display-name>
+    <script encoded="false"><![CDATA[System.log("inputProperties: ");
+System.log(JSON.stringify(inputProperties, null, 2));
+
+vCenterVM = System.getModule("au.com.vmware.cas").getvCenterVMFromCAS(inputProperties);
+userName =  System.getContext().getParameter("__metadata_userName");]]></script>
+    <in-binding>
+      <bind name="inputProperties" type="Properties" export-name="inputProperties"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vCenterVM" type="VC:VirtualMachine" export-name="vCenterVM"/>
+      <bind name="userName" type="string" export-name="userName"/>
+    </out-binding>
+    <position y="60.400001525878906" x="207.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="link" linked-workflow-id="BD80808080808080808080808080808053C180800122528313869552e41805bb1">
+    <display-name><![CDATA[Create Snapshot]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vCenterVM"/>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="description" type="string" export-name="description"/>
+      <bind name="memory" type="boolean" export-name="memory"/>
+      <bind name="quiesce" type="boolean" export-name="quiesce"/>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshot" type="VC:VirtualMachineSnapshot" export-name=""/>
+    </out-binding>
+    <description><![CDATA[ ]]></description>
+    <position y="60.900001525878906" x="379.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="inputProperties">
+      <desc><![CDATA[inputProperties]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

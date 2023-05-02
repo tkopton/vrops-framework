@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="2cff340c-5b46-4b17-8d3c-aa0d29c78a1f" version="0.0.1" api-version="6.0.0" allowed-operations="vfe" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Call Salt Stack Config Server 2]]></display-name>
+  <description><![CDATA[Call a Salt Stack Config Server via RPC API]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="saltHost" type="string">
+      <description><![CDATA[Salt Stack Config Host in format: https://<fqdn or IP>]]></description>
+    </param>
+    <param name="username" type="string">
+      <description><![CDATA[Username of the Salt Stack Config Server]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Password of the Salt Stack Config Server. Must have the access to call the method]]></description>
+    </param>
+    <param name="validateSSL" type="boolean">
+      <description><![CDATA[Should be set to false]]></description>
+    </param>
+    <param name="command" type="string">
+      <description><![CDATA[Format:
+<interface><method>
+eg. cmd.route_cmd
+all methods without ()
+e.g. get_versions instead of get_versions()]]></description>
+    </param>
+    <param name="cmd" type="string"/>
+    <param name="fun" type="string"/>
+    <param name="stateFile" type="string"/>
+    <param name="target" type="string"/>
+    <param name="pillar" type="string"/>
+    <param name="master" type="string"/>
+    <param name="in_0" type="string"/>
+  </input>
+  <attrib name="response" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[{}]]></value>
+    <description><![CDATA[Response of the Salt Stack Call]]></description>
+  </attrib>
+  <attrib name="obj1" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj2" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj3" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj4" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj5" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj6" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj7" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj8" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj9" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="obj10" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="jobid" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <in-binding/>
+    <position y="50.0" x="680.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="task">
+    <display-name><![CDATA[Prepare Inputs]]></display-name>
+    <script encoded="false"><![CDATA[obj1 = '{"cmd":"' + cmd + '"}';
+obj2 = '{"fun":"' + fun + '"}';
+obj3 = '{"tgt":{"' + master + '": {"tgt": "' + target + '", "tgt_type": "glob"}}}';
+obj4 = '{"arg":{"arg": ["' + stateFile + '"], "kwarg": {"pillar": {"region": "' + pillar + '"}}}}';
+obj5 = '{}';
+obj6 = '{}';
+obj7 = '{}';
+obj8 = '{}';
+obj9 = '{}';
+obj10 = '{}';]]></script>
+    <in-binding>
+      <bind name="cmd" type="string" export-name="cmd"/>
+      <bind name="fun" type="string" export-name="fun"/>
+      <bind name="target" type="string" export-name="target"/>
+      <bind name="stateFile" type="string" export-name="stateFile"/>
+      <bind name="pillar" type="string" export-name="pillar"/>
+      <bind name="master" type="string" export-name="master"/>
+    </in-binding>
+    <out-binding>
+      <bind name="obj1" type="string" export-name="obj1"/>
+      <bind name="obj2" type="string" export-name="obj2"/>
+      <bind name="obj3" type="string" export-name="obj3"/>
+      <bind name="obj4" type="string" export-name="obj4"/>
+      <bind name="obj5" type="string" export-name="obj5"/>
+      <bind name="obj6" type="string" export-name="obj6"/>
+      <bind name="obj7" type="string" export-name="obj7"/>
+      <bind name="obj8" type="string" export-name="obj8"/>
+      <bind name="obj9" type="string" export-name="obj9"/>
+      <bind name="obj10" type="string" export-name="obj10"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item5" type="task">
+    <display-name><![CDATA[Get Job ID]]></display-name>
+    <script encoded="false"><![CDATA[if(response){
+    jobid = response.response[1]
+    System.warn("Current Job ID: " + jobid )
+}]]></script>
+    <in-binding>
+      <bind name="response" type="Properties" export-name="response"/>
+    </in-binding>
+    <out-binding>
+      <bind name="jobid" type="string" export-name="jobid"/>
+    </out-binding>
+    <description><![CDATA[Simple task with custom script capability.]]></description>
+    <position y="60.0" x="400.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item3" type="task" script-module="com.vmware.pso.drv.demo/callSalt">
+    <display-name><![CDATA[callSalt]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.pso.drv.demo").callSalt(saltHost,username,password,validateSSL,command,obj1,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10);
+]]></script>
+    <in-binding>
+      <bind name="saltHost" type="string" export-name="saltHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="validateSSL" type="boolean" export-name="validateSSL"/>
+      <bind name="command" type="string" export-name="command">
+        <description><![CDATA[<interface>.<method> without()]]></description>
+      </bind>
+      <bind name="obj1" type="string" export-name="obj1">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj2" type="string" export-name="obj2">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj3" type="string" export-name="obj3">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj4" type="string" export-name="obj4">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj5" type="string" export-name="obj5">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj6" type="string" export-name="obj6">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj7" type="string" export-name="obj7">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj8" type="string" export-name="obj8">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj9" type="string" export-name="obj9">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+      <bind name="obj10" type="string" export-name="obj10">
+        <description><![CDATA[{key: value} or {}]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="response"/>
+    </out-binding>
+    <description><![CDATA[Add a note to the workflow schema.]]></description>
+    <position y="60.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item0" type="link" linked-workflow-id="616b129f-ba2b-4ba0-bd29-badd2f2abffa">
+    <display-name><![CDATA[Get Job Status from Salt Stack Call]]></display-name>
+    <in-binding>
+      <bind name="saltHost" type="string" export-name="saltHost">
+        <description><![CDATA[Salt Stack Config Host in format: https://<fqdn or IP>]]></description>
+      </bind>
+      <bind name="username" type="string" export-name="username">
+        <description><![CDATA[Username of the Salt Stack Config Server]]></description>
+      </bind>
+      <bind name="password" type="SecureString" export-name="password">
+        <description><![CDATA[Password of the Salt Stack Config Server. Must have the access to call the method]]></description>
+      </bind>
+      <bind name="validateSSL" type="boolean" export-name="validateSSL">
+        <description><![CDATA[Should be set to false]]></description>
+      </bind>
+      <bind name="jobId" type="string" export-name="jobid"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[ ]]></description>
+    <position y="60.0" x="520.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

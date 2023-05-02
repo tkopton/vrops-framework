@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="4b475989-15f0-459c-9f76-0fe93f5072c3" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[jsonTest_01]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <attrib name="jsonTemplate" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='c4d420c8-68e7-49ad-a941-30a925698bb3'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[readJSON]]></display-name>
+    <script encoded="false"><![CDATA[//vRO Scriptable task to parse a resource element and show values
+
+//inputs:
+//jsonTemplate : ResourceElement
+
+//Get the content of the Resource Element
+template = jsonTemplate.getContentAsMimeAttachment();
+
+//Use JSON.parse to parse content in to a useable object
+jsonObject = JSON.parse(template.content);
+
+var ships = jsonObject.StarFleet["Ships"];
+var shipProperties;
+var shipMetrics;
+
+for (ship in ships)
+{
+	System.log(ships[ship].Name);
+	
+	shipProperties = ships[ship].Properties;
+	shipMetrics = ships[ship].Metrics;
+	
+	for (property in shipProperties)
+	{
+		System.log(ships[ship].Properties[property].Class);
+		System.log(ships[ship].Properties[property].Registry);
+		System.log(ships[ship].Properties[property].Captain);
+	}
+	
+	for (metric in shipMetrics)
+	{
+		System.log(ships[ship].Metrics[metric].CurrentSpeed);
+		System.log(ships[ship].Metrics[metric].ShieldStatus);
+	}
+}
+]]></script>
+    <in-binding>
+      <bind name="jsonTemplate" type="ResourceElement" export-name="jsonTemplate"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

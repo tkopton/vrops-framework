@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="25b118fa-0ebb-4449-bec7-d252761ff0e6" version="0.2.0" api-version="6.0.0" allowed-operations="evf" icon-id="958104c4-98f3-4be9-ad83-7bdb307f891d" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[logAllPropsOfVCVM]]></display-name>
+  <description><![CDATA[Author: Daniel Langenhan (daniel_langenhan@yahoo.com.au)
+http://langenhan.info/software/logallprops.html
+
+This workflow will log the content of a VCAC:VirtualMachine by using its assoiated VC:VirtualMachine into the logs (System.log). The property can consists of multiple properties in properties as well as arrays. 
+The workflow will also log all system context variables (mostly used with vRA).
+
+The debugFlag (can be NULL) can be null. If set to false the workflow is not executed. This can be used to make sure that the logging will only work in a debug situtation.
+The exclusion (can be NULL) can be any full "path" for the log e.g. /vROPlugins/SSH or even /vROPlugins/* to exclude all properties (or array members) in /vROPlugins ]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vcVM" type="VC:VirtualMachine"/>
+    <param name="debugFlag" type="boolean">
+      <description><![CDATA[(Optional) if Null it will work as true. False will switch exit without executing]]></description>
+    </param>
+    <param name="exclusions" type="Array/string"/>
+  </input>
+  <attrib name="payload" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="684.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[vcacEntityProps]]></display-name>
+    <script encoded="false"><![CDATA[vcacvm=Server.findAllForType("vCAC:VirtualMachine", "ExternalReferenceId eq '" + vcVM.id + "'")[0];
+if (vcacvm != null){
+	var output=new Array();
+	ents=vcacvm.getEntity();
+	props=ents.getProperties();
+	System.log("## Entity Props ##################################");
+	for each (key in props.keys){
+		output.push("/"+key+" (string): "+props.get(key));
+	}
+	output.sort();
+	for each (line in output){
+		System.log(line);
+	}	
+}
+
+]]></script>
+    <in-binding>
+      <bind name="vcVM" type="VC:VirtualMachine" export-name="vcVM"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task" script-module="de.vleet.vra.tools/getPropertiesFromVCVMquiet">
+    <display-name><![CDATA[getPropertiesFromVCVMquiet]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("de.vleet.vra.tools").getPropertiesFromVCVMquiet(vcvm) ;]]></script>
+    <in-binding>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcVM"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="payload"/>
+    </out-binding>
+    <position y="55.90909090909091" x="225.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="link" linked-workflow-id="4442e79f-dc72-49f9-bfcd-9dcf555fe871">
+    <display-name><![CDATA[logAllProps]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="debugFlag" type="boolean" export-name="debugFlag"/>
+      <bind name="exclusions" type="Array/string" export-name="exclusions"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="365.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vcVM">
+      <desc><![CDATA[vC VM]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="debugFlag">
+      <desc><![CDATA[debugFlag]]></desc>
+      <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="exclusions">
+      <desc><![CDATA[exclusions from the loh list (e.g. /vROPlugins/SSH )]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

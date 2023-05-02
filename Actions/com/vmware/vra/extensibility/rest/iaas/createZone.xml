@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createZone" result-type="string" api-version="6.0.0" id="bf47ffe1-a247-4a5b-9799-edbcc1c12767" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <param n="description" t="string"><![CDATA[]]></param>
+  <param n="regionId" t="string"><![CDATA[]]></param>
+  <param n="folder" t="string"><![CDATA[]]></param>
+  <param n="placementPolicy" t="string"><![CDATA[]]></param>
+  <param n="tagsToMatch" t="Properties"><![CDATA[]]></param>
+  <param n="tags" t="Properties"><![CDATA[]]></param>
+  <param n="customProperties" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || regionId == null || name == null) return null;
+
+var customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+
+
+var customPropertiesObject = System.getModule("com.vmware.vra.extensibility.rest.iaas").propertiesToCustomPropertiesObject(customProperties); 
+var tagsObject = System.getModule("com.vmware.vra.extensibility.rest.iaas").propertiesToTagsObject(tags); 
+var tagsToMatchObject = System.getModule("com.vmware.vra.extensibility.rest.iaas").propertiesToTagsObject(tagsToMatch); 
+
+
+var url = "/iaas/api/zones"
+var zone = 
+{
+  "customProperties": customPropertiesObject,
+  "folder": folder,
+  "regionId": regionId,
+  "tagsToMatch": tagsToMatchObject,
+  "name": name,
+  "description": description,
+  "placementPolicy": placementPolicy,
+  "tags": tagsObject
+}
+
+var content = JSON.stringify(zone);
+var operation = "POST";
+
+try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+		var object = JSON.parse(contentAsString);
+    return object.id;
+	} catch (e) {
+		throw "POST " + url + "Failed" +
+        "\n Error : " + e;
+}]]></script>
+</dunes-script-module>

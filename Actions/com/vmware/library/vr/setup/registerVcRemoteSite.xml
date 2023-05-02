@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="registerVcRemoteSite" result-type="void" api-version="6.0.0" id="9707de87-9283-4940-be35-74a8d0d0cc6c" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vr.setup">
+  <description><![CDATA[Register login credentials for a vCenter Server site that is paired with a local site.]]></description>
+  <param n="remoteSite" t="VR:VcRemoteSite"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[VRPluginConfig.registerRemoteVcSite(remoteSite, username, password)]]></script>
+</dunes-script-module>

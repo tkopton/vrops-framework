@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c41364be-5a48-47d0-965b-18f48f853d4f" version="0.1.9" api-version="6.0.0" allowed-operations="evf" icon-id="ee034e9a-82cb-46cc-ab42-806691471b2f" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[configReplication]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="Rz1RemoteSite" type="VR:VcRemoteSite"/>
+    <param name="Rz1SiteRemotePassword" type="SecureString"/>
+    <param name="Rz1SiteRemoteUsername" type="string"/>
+    <param name="Rz2RemoteSite" type="VR:VcRemoteSite"/>
+    <param name="Rz1Site" type="VR:Site"/>
+    <param name="vROAdminCreds" type="Credential"/>
+    <param name="Rz2Site" type="VR:Site"/>
+    <param name="Rz2SiteRemoteUsername" type="string"/>
+    <param name="Rz2SiteRemotePassword" type="SecureString"/>
+    <param name="TimeOut" type="number"/>
+    <param name="SleepTime" type="number"/>
+  </input>
+  <attrib name="configurationElement" type="ConfigurationElement" read-only="false" conf-id="c264b2f1-e638-473e-8e4b-e9f671e2e304" conf-key="replicationConfigElement">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="rz1RemoteDS" type="VR:RemoteDatastore" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="rz2RemoteDS" type="VR:RemoteDatastore" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="link" linked-workflow-id="fa2505ea-97d6-4cdb-901e-737ab6a31607">
+    <display-name><![CDATA[Register VC Site]]></display-name>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="Rz1RemoteSite"/>
+      <bind name="username" type="string" export-name="Rz1SiteRemoteUsername"/>
+      <bind name="password" type="SecureString" export-name="Rz1SiteRemotePassword"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Register login credentials for a vCenter Server site that is paired with a local site.]]></description>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="link" linked-workflow-id="fa2505ea-97d6-4cdb-901e-737ab6a31607">
+    <display-name><![CDATA[Register VC Site]]></display-name>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="Rz2RemoteSite"/>
+      <bind name="username" type="string" export-name="Rz2SiteRemoteUsername"/>
+      <bind name="password" type="SecureString" export-name="Rz2SiteRemotePassword"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Register login credentials for a vCenter Server site that is paired with a local site.]]></description>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" type="input">
+    <display-name><![CDATA[User interaction]]></display-name>
+    <in-binding>
+      <bind name="security.group" type="LdapGroup" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[Any user member of this security group will be authorized to answer this 'Input']]></description>
+      </bind>
+      <bind name="security.assignees" type="Array/LdapUser" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[Any user member of this array will be authorized to answer this 'Input']]></description>
+      </bind>
+      <bind name="security.assignee.groups" type="Array/LdapGroup" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[Any user member of any group in this array will be authorized to answer this 'Input']]></description>
+      </bind>
+      <bind name="timeout.date" type="Date" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[If not null, this input item will wait until date and will continue workflow execution.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="rz1RemoteDS" type="VR:RemoteDatastore" export-name="rz1RemoteDS"/>
+      <bind name="rz2RemoteDS" type="VR:RemoteDatastore" export-name="rz2RemoteDS"/>
+    </out-binding>
+    <presentation>
+      <p-param name="rz1RemoteDS">
+        <desc><![CDATA[RZ1 - Remote target DataStore]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="linkedEnumeration" type="Array/VR:RemoteDatastore"><![CDATA[GetAction("com.vmware.library.vr","getRemoteVcSiteDatastores").call( #Rz1RemoteSite )]]></p-qual>
+      </p-param>
+      <p-param name="rz2RemoteDS">
+        <desc><![CDATA[RZ2 - Remote target DataStore]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="linkedEnumeration" type="Array/VR:RemoteDatastore"><![CDATA[GetAction("com.vmware.library.vr","getRemoteVcSiteDatastores").call( #Rz2RemoteSite )]]></p-qual>
+      </p-param>
+    </presentation>
+    <position y="55.90909090909091" x="485.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//vco
+configurationElement.setAttributeWithKey("replicationCred",vROAdminCreds);
+configurationElement.setAttributeWithKey("repTaskTimeOut",TimeOut);
+configurationElement.setAttributeWithKey("repTaskSleepTime",SleepTime);
+
+//RZ1
+configurationElement.setAttributeWithKey("rz1_site",Rz1Site);
+configurationElement.setAttributeWithKey("rz1_remoteSite",Rz1RemoteSite);
+configurationElement.setAttributeWithKey("rz1_remoteDS",rz1RemoteDS);
+configurationElement.setAttributeWithKey("rz1_remoteUser",Rz1SiteRemoteUsername);
+configurationElement.setAttributeWithKey("rz1_remotePass",Rz1SiteRemotePassword);
+//RZ2
+configurationElement.setAttributeWithKey("rz2_site",Rz2Site);
+configurationElement.setAttributeWithKey("rz2_remoteSite",Rz2RemoteSite);
+configurationElement.setAttributeWithKey("rz2_remoteDS",rz2RemoteDS);
+configurationElement.setAttributeWithKey("rz2_remoteUser",Rz2SiteRemoteUsername);
+configurationElement.setAttributeWithKey("rz2_remotePass",Rz2SiteRemotePassword);]]></script>
+    <in-binding>
+      <bind name="Rz1RemoteSite" type="VR:VcRemoteSite" export-name="Rz1RemoteSite"/>
+      <bind name="Rz1SiteRemotePassword" type="SecureString" export-name="Rz1SiteRemotePassword"/>
+      <bind name="Rz1SiteRemoteUsername" type="string" export-name="Rz1SiteRemoteUsername"/>
+      <bind name="Rz2RemoteSite" type="VR:VcRemoteSite" export-name="Rz2RemoteSite"/>
+      <bind name="Rz1Site" type="VR:Site" export-name="Rz1Site"/>
+      <bind name="vROAdminCreds" type="Credential" export-name="vROAdminCreds"/>
+      <bind name="Rz2Site" type="VR:Site" export-name="Rz2Site"/>
+      <bind name="Rz2SiteRemoteUsername" type="string" export-name="Rz2SiteRemoteUsername"/>
+      <bind name="Rz2SiteRemotePassword" type="SecureString" export-name="Rz2SiteRemotePassword"/>
+      <bind name="configurationElement" type="ConfigurationElement" export-name="configurationElement"/>
+      <bind name="rz1RemoteDS" type="VR:RemoteDatastore" export-name="rz1RemoteDS"/>
+      <bind name="rz2RemoteDS" type="VR:RemoteDatastore" export-name="rz2RemoteDS"/>
+      <bind name="TimeOut" type="number" export-name="TimeOut"/>
+      <bind name="SleepTime" type="number" export-name="SleepTime"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="624.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Basic]]></title>
+      <p-param name="vROAdminCreds">
+        <desc><![CDATA[vRO Administrator Credentials]]></desc>
+      </p-param>
+      <p-param name="TimeOut">
+        <desc><![CDATA[TimeOut [sec]]]></desc>
+        <p-qual kind="static" name="defaultValue" type="number"><![CDATA[600.0]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="SleepTime">
+        <desc><![CDATA[SleepTime [sec]]]></desc>
+        <p-qual kind="static" name="defaultValue" type="number"><![CDATA[5.0]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[RZ1 Replication]]></title>
+      <p-param name="Rz1Site">
+        <desc><![CDATA[RZ1 - Replication Appliance]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="Rz1RemoteSite">
+        <desc><![CDATA[Rz1 - RemoteSite]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="Rz1SiteRemoteUsername">
+        <desc><![CDATA[RZ1 Remote Site username]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="Rz1SiteRemotePassword">
+        <desc><![CDATA[RZ1 Remote Site password]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[RZ2 Replication]]></title>
+      <p-param name="Rz2Site">
+        <desc><![CDATA[RZ2 - Appliance]]></desc>
+      </p-param>
+      <p-param name="Rz2RemoteSite">
+        <desc><![CDATA[RZ2- Remote Site]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="Rz2SiteRemoteUsername">
+        <desc><![CDATA[RZ2 - Remote Site Username]]></desc>
+      </p-param>
+      <p-param name="Rz2SiteRemotePassword">
+        <desc><![CDATA[RZ2 - RemoteSite UserName]]></desc>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

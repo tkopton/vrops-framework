@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="2350386a-7219-4c1c-b665-53f1e63d479d" version="0.0.4" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Add Stats to Resource]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="resourceId" type="string"/>
+    <param name="mb_free" type="number"/>
+    <param name="cpu_usage" type="number"/>
+    <param name="disk_free" type="number"/>
+  </input>
+  <attrib name="addStats" type="REST:RESTOperation" read-only="false" conf-id="019c21a9-4027-4aa2-a788-9f96bdccb021" conf-key="AddStats">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="adapterKindKey" type="string" read-only="false" conf-id="9b1872e9-534a-4c2b-abb3-c454b02422ce" conf-key="smokeTestAdapterKind">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="encodedAdapterKind" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="stats" type="Array/Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="724.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Add Properties]]></display-name>
+    <script encoded="false"><![CDATA[var content = {
+	"stat-content" : []
+};
+var timestamp = (new Date()).getTime();
+
+for each (var stat in stats)
+{
+	var statKey = stat.get("statKey");
+	var data = stat.get("data");
+	var statContent = createStatContent(statKey, data, timestamp);
+	content["stat-content"].push(statContent);
+}
+
+var params = [resourceId];	
+System.log("Adding stats... " + JSON.stringify(content));
+var request = addStats.createRequest(params, JSON.stringify(content));
+System.log("Content type: " + request.contentType);
+System.log("Full URL: " + request.fullUrl);
+var response = request.execute();
+
+if(response.statusCode >= 400) {
+	throw "HTTPError: status code: " + response.statusCode;
+}
+
+function createStatContent(statKey, values, timestamp)
+{
+	var statContent = {
+    	"statKey" : statKey,
+    	"timestamps" : [timestamp],
+    	"data" : [values]	
+  	};
+
+	return statContent;
+}
+
+]]></script>
+    <in-binding>
+      <bind name="adapterKindKey" type="string" export-name="encodedAdapterKind"/>
+      <bind name="resourceId" type="string" export-name="resourceId"/>
+      <bind name="stats" type="Array/Properties" export-name="stats"/>
+      <bind name="addStats" type="REST:RESTOperation" export-name="addStats"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="544.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task" script-module="com.vmware.pso.utils/urlEncode">
+    <display-name><![CDATA[urlEncode]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.pso.utils").urlEncode(str) ;]]></script>
+    <in-binding>
+      <bind name="str" type="string" export-name="adapterKindKey"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="encodedAdapterKind"/>
+    </out-binding>
+    <position y="55.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[setStats]]></display-name>
+    <script encoded="false"><![CDATA[stats = [];
+
+var mbFree = new Properties();
+mbFree.put("statKey", "RAM free in MB");
+mbFree.put("data", mb_free);
+stats.push(mbFree);
+
+var cpuUsage = new Properties();
+cpuUsage.put("statKey", "CPU Usage in %");
+cpuUsage.put("data", cpu_usage);
+stats.push(cpuUsage);
+
+var diskFree = new Properties();
+diskFree.put("statKey", "Disk free in GB");
+diskFree.put("data", disk_free);
+stats.push(diskFree);
+
+
+]]></script>
+    <in-binding>
+      <bind name="mb_free" type="number" export-name="mb_free"/>
+      <bind name="cpu_usage" type="number" export-name="cpu_usage"/>
+      <bind name="disk_free" type="number" export-name="disk_free"/>
+    </in-binding>
+    <out-binding>
+      <bind name="stats" type="Array/Properties" export-name="stats"/>
+    </out-binding>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="resourceId">
+      <desc><![CDATA[resourceId]]></desc>
+    </p-param>
+    <p-param name="mb_free">
+      <desc><![CDATA[mb_free]]></desc>
+    </p-param>
+    <p-param name="cpu_usage">
+      <desc><![CDATA[cpu_usage]]></desc>
+    </p-param>
+    <p-param name="disk_free">
+      <desc><![CDATA[disk_free]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCafeHostFromObject" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.vra.getCafeHostFromObject" version="2.4.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra">
+  <description><![CDATA[
+ @param obj
+    
+]]></description>
+  <param n="obj" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFEEntitiesFinder.getHostForEntity(obj);
+]]></script>
+</dunes-script-module>

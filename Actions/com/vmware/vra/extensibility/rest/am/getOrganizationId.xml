@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getOrganizationId" result-type="string" api-version="6.0.0" id="751b2351-d792-4a1d-8c8e-c9f66728f797" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.vra.extensibility.rest.am">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Must have restHost && (custom headers or (username and password))
+if (restHost == null  || (customHeaders == null && (username == null || password == null))) return null;
+
+if ((customHeaders == null || customHeaders == undefined || customHeaders.keys.length == 0)) customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+
+var url = "/csp/gateway/am/api/loggedin/user/orgs?expand";
+
+var json = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, "GET", url, null, customHeaders);
+var object = JSON.parse(json);
+return object.items[0].id;]]></script>
+</dunes-script-module>

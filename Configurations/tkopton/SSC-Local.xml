@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="8b850758-e7e6-4d11-b5c1-0a673354e14f" version="0.0.0">
+  <display-name><![CDATA[SSC-Local]]></display-name>
+  <atts>
+    <att name="xsrfToken" type="string" read-only="false">
+      <value encoded="n"><![CDATA[]]></value>
+      <description><![CDATA[SSC Token]]></description>
+    </att>
+    <att name="sscJobId" type="string" read-only="false">
+      <value encoded="n"><![CDATA[]]></value>
+      <description><![CDATA[Current SSC Job ID]]></description>
+    </att>
+  </atts>
+</config-element>

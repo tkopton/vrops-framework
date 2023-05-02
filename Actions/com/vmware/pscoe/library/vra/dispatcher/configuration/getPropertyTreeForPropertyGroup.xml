@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPropertyTreeForPropertyGroup" result-type="Properties" api-version="6.0.0" id="C747BF0B-85D2-49FB-8402-7D8BAE1E7F85" version="2.0.1" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher.configuration">
+  <description><![CDATA[Build a tree from property group with property name and property value.]]></description>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="propertyGroupLabel" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var propertiesTree = new Properties();
+var logger = System.getModule("com.vmware.pscoe.library.logging").getLogger("com.vmware.pscoe.library.vra.dispatcher.getPropertyTreeForPropertyGroup", null);
+
+var propertyGroupObj = System.getModule("com.vmware.pscoe.library.vra").PropertyGroup(host);
+if(propertyGroupObj) {
+	try {
+		var pg = propertyGroupObj.get(propertyGroupLabel);
+		var pgTree = buildPropertiesTree(pg);				
+		propertiesTree.put(propertyGroupLabel, pgTree);
+	} catch (e) {
+		logger.warn("Error getting property group " + propertyGroupLabel + ". Error is: " + e);
+	}
+} else {
+	logger.error("Error in creating property group!");
+}
+
+//Converts properties with key of type number to array.
+propertiesTree = convertPropertiesToArray(propertiesTree);
+
+logger.debug("Properties tree: " + JSON.stringify(propertiesTree));
+
+return propertiesTree;
+
+
+//Functions ***********
+function buildPropertiesTree(pg) {
+	var properties = new Properties();
+	for (var name in pg.properties) {
+		var pgNames = name.split(".");
+		var value = pg.properties[name]["value"];
+		rec(pgNames, 0, properties, value);
+	}
+	
+	return properties;
+}
+
+function rec(pgNames, index, properties, value) {
+	if(index == (pgNames.length-1)) {
+		properties.put(pgNames[index], value);
+	} else {
+		var existingProp = findProperty(properties, pgNames[index]);
+		if(existingProp != null) {
+			rec(pgNames, index+1, existingProp, value);
+		} else {
+			var innerProperties = new Properties();
+			rec(pgNames, index+1, innerProperties, value);
+			properties.put(pgNames[index], innerProperties);
+		}
+	}
+}
+
+function findProperty(properties, name) {
+		if(properties && properties.get(name)) {
+			return properties.get(name);
+		}
+	return null;
+}
+
+//This function converts properties with key of type number to array.
+function convertPropertiesToArray(properties) {
+	var sortedProps = sortByKey(properties);
+	var array = new Array();
+	var newProp = new Properties();
+	for(var key in sortedProps) {
+		if(key.match(/^\d+$/)) {
+			var value = properties.get(key);
+			if(value instanceof Properties) {
+				value = convertPropertiesToArray(value);
+			}
+			array.push(value);
+		} else {
+			var value = properties.get(key);
+			if(value instanceof Properties) {
+				value = convertPropertiesToArray(value);
+			}
+			newProp.put(key, value);
+		}
+	}
+	if(array.length > 0) {
+		for(var key in newProp) {
+			array.push( {key : newProp.get(key)} );
+		}
+		return array;
+	} else {
+		return newProp;
+	}
+}
+
+
+function sortByKey(unordered) {
+
+var ordered = {};
+Object.keys(unordered).sort().forEach(function(key) {
+  ordered[key] = unordered[key];
+});
+
+return ordered;
+}]]></script>
+</dunes-script-module>

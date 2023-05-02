@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="PropertyIterator" result-type="Any" api-version="6.0.0" id="com.vmware.pscoe.library.vra.dispatcher.PropertyIterator" version="2.4.3" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher">
+  <description><![CDATA[
+]]></description>
+  <script encoded="false"><![CDATA[function applyValue(name, val, saveFunc) {
+	var newName = null;
+	var i = null;
+	if (val instanceof Array) {
+		for (i in val) {
+			newName = name +  "." + i;
+			applyValue(newName, val[i], saveFunc);
+		}
+	} else if (val instanceof Properties) {
+		for (var ii in val.keys) {
+			i = val.keys[ii];
+			newName = name +  "." + i;
+			applyValue(newName, val.get(i), saveFunc);
+		}
+	} else {
+		saveFunc(name, val);
+	}
+}
+
+return function(baseName, value) {
+	this.baseName = baseName;
+	this.value = value;
+	
+	this.forEach = function(callback) {
+		applyValue(this.baseName, this.value, callback);	
+	};
+};
+
+]]></script>
+</dunes-script-module>

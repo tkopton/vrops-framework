@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getServerDBStatusFromDeploy" result-type="string" api-version="6.0.0" id="7fb2d5e2-1268-4443-893d-da00877b9784" version="0.0.1" allowed-operations="evf" category-name="at.akhwien.db">
+  <param n="JDBCString" t="string"><![CDATA[]]></param>
+  <param n="DBUser" t="string"><![CDATA[]]></param>
+  <param n="DBUserPassword" t="SecureString"><![CDATA[]]></param>
+  <param n="deploymentId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[sqlStatement="SELECT ServerDB_Status FROM deployment WHERE DeploymentId='" + deploymentId + "';";
+var main = new JDBCConnection();
+var con;
+var returnValue;
+try  {
+	con = main.getConnection( JDBCString, DBUser, DBUserPassword );
+	var stat = con.createStatement();
+	var results = stat.executeQuery( sqlStatement );
+	
+	results.next();
+	returnValue = results.getStringAt(1);
+	stat.close();
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+	return returnValue;
+}]]></script>
+</dunes-script-module>

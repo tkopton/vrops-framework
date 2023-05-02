@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e02cb0b4-d2ac-4c47-a409-7122c6964b24" version="0.0.12" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Image Mapping Patch JSON]]></display-name>
+  <position y="0.45454545454545325" x="25.0"/>
+  <input>
+    <param name="json" type="string"/>
+    <param name="regionId" type="string"/>
+    <param name="imageMappingName" type="string"/>
+    <param name="newImageName" type="string"/>
+    <param name="newImageId" type="string"/>
+    <param name="newImageExternalId" type="string"/>
+  </input>
+  <output>
+    <param name="newImageMappings" type="string"/>
+    <param name="ImageMappingId" type="string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="0.0" x="304.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Model JSON]]></display-name>
+    <script encoded="false"><![CDATA[json = JSON.parse(json);
+newImageMappings = {"imageMapping":{}}
+var regionRef = "/iaas/api/regions/" + regionId;
+for each (var item in json.content){
+	if (item["_links"].region.href == regionRef){
+		ImageMappingId = item.id;
+		newImageMappings.imageMapping = item.imageMappings.mapping;
+		}
+	}
+newImageMappings.imageMapping[imageMappingName].name = newImageName;
+newImageMappings.imageMapping[imageMappingName].id = newImageId;
+newImageMappings.imageMapping[imageMappingName].externalId = newImageExternalId;
+newImageMappings.imageMapping[imageMappingName].description = "Template: "+newImageName;
+
+newImageMappings = JSON.stringify(newImageMappings);]]></script>
+    <in-binding>
+      <bind name="json" type="string" export-name="json"/>
+      <bind name="regionId" type="string" export-name="regionId"/>
+      <bind name="imageMappingName" type="string" export-name="imageMappingName"/>
+      <bind name="newImageName" type="string" export-name="newImageName"/>
+      <bind name="newImageId" type="string" export-name="newImageId"/>
+      <bind name="newImageExternalId" type="string" export-name="newImageExternalId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="newImageMappings" type="string" export-name="newImageMappings"/>
+      <bind name="ImageMappingId" type="string" export-name="ImageMappingId"/>
+    </out-binding>
+    <position y="9.954545454545453" x="124.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="json">
+      <desc><![CDATA[json]]></desc>
+    </p-param>
+    <p-param name="regionId">
+      <desc><![CDATA[regionId]]></desc>
+    </p-param>
+    <p-param name="imageMappingName">
+      <desc><![CDATA[imageMappingName]]></desc>
+    </p-param>
+    <p-param name="newImageName">
+      <desc><![CDATA[newImageName]]></desc>
+    </p-param>
+    <p-param name="newImageId">
+      <desc><![CDATA[newImageId]]></desc>
+    </p-param>
+    <p-param name="newImageExternalId">
+      <desc><![CDATA[newImageExternalId]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

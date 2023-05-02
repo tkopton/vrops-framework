@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getServicesFromProperty" result-type="Array/string" api-version="6.0.0" id="a7bbb279-1135-4bf3-bba1-99a4407ad813" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility">
+  <param n="serviceSwaggerProp" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (serviceSwaggerProp != null) return serviceSwaggerProp.keys.sort();]]></script>
+</dunes-script-module>

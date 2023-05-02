@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="38b2e120-511d-4f43-a2d9-666480b1f766" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Test getServicesForOrganizationName]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="orgName" type="string">
+      <description><![CDATA[Organization]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="servicesArray" type="Array/string"/>
+    <param name="contentAsString" type="string"/>
+  </output>
+  <attrib name="auth_user" type="string" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_user">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="auth_pwd" type="SecureString" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_pwd">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="restOperation" type="REST:RESTOperation" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="restOperation">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Get Services for Org]]></display-name>
+    <script encoded="false"><![CDATA[// Enter "name" as the last field of the next line to return only the names of the services...
+var data = new data("core/get","Service", "SELECT Service JOIN Organization ON Service.org_id=Organization.id  WHERE Organization.name='"+orgName+"'", "*");
+
+var inputData = JSON.stringify(data);
+//System.log("JSON Input DATA : " + inputData);
+var content = "";
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, content);
+//set the request content type
+request.contentType = "application/json";
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+if ( response.statusCode >= 400 ) {
+	throw "HTTPError: status code: " + response.statusCode;
+}	
+var contentAsString = response.contentAsString;
+var jsonResponse = JSON.parse(contentAsString);
+System.log("contentAsString: "+contentAsString);
+//var requestCode = jsonResponse.code;
+//var requestMessage = jsonResponse.message;
+
+var servicesArray = new Array();
+for each (obj in jsonResponse.objects){
+	var objFields = obj.fields;
+	servicesArray.push(obj.fields.name);
+	//System.log("Name: "+obj.fields.name);	
+}
+
+function data(operation,className,key,outPutFields)
+{
+	this["operation"]=operation;
+	this["class"]=className;
+	this["key"]=key;
+	this["output_fields"]=outPutFields;
+}]]></script>
+    <in-binding>
+      <bind name="orgName" type="string" export-name="orgName"/>
+      <bind name="auth_user" type="string" export-name="auth_user"/>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd"/>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+    </in-binding>
+    <out-binding>
+      <bind name="servicesArray" type="Array/string" export-name="servicesArray"/>
+      <bind name="contentAsString" type="string" export-name="contentAsString"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="orgName">
+      <desc><![CDATA[Organization]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

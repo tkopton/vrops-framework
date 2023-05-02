@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="2f0cf5bb-fbe3-4610-ae01-333e849ead2c" version="0.1.2" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[getvLanDetail]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vlanID" type="string"/>
+  </input>
+  <output>
+    <param name="vlanGate" type="string"/>
+    <param name="vlanStartIP" type="string"/>
+    <param name="vlanEndIP" type="string"/>
+    <param name="vlanFQDN" type="string"/>
+  </output>
+  <attrib name="JDBCString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUserPassword" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Get Vlan Detail]]></display-name>
+    <script encoded="false"><![CDATA[sqlStatement="SELECT * FROM Network WHERE  VLANID='" + vlanID + "';";
+var main = new JDBCConnection();
+var con;
+var returnValue;
+try  {
+	con = main.getConnection( JDBCString, DBUser, DBUserPassword );
+	var stat = con.createStatement();
+	var results = stat.executeQuery( sqlStatement );
+	
+	results.next();
+	vlanGate = results.getStringAt(8);
+	startip= results.getStringAt(9);
+	endip= results.getStringAt(10);
+	vlanFQDN= results.getStringAt(5);
+	stat.close();
+	
+	//getbase IP
+	temp=vlanGate.split(".");
+	temp.pop();
+	baseip=temp.join(".");
+	vlanStartIP=baseip+"."+startip;
+	vlanEndIP=baseip+"."+endip;
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+	System.warn(returnValue);
+}
+
+]]></script>
+    <in-binding>
+      <bind name="vlanID" type="string" export-name="vlanID"/>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vlanGate" type="string" export-name="vlanGate"/>
+      <bind name="vlanStartIP" type="string" export-name="vlanStartIP"/>
+      <bind name="vlanEndIP" type="string" export-name="vlanEndIP"/>
+      <bind name="vlanFQDN" type="string" export-name="vlanFQDN"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vlanID">
+      <desc><![CDATA[vlanID]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<package>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/Action?id='06d8a611-0a4d-4886-8232-cdb9d5ea2db9'&dunesName='Action'&name='getNetworksFromProject'&category='com.vmware.customactions']]></elm>
+<elm src-category='null'><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='bc44d7ea-8d80-440c-a6b6-cfb1a4b9507a'&dunesName='ConfigurationElement']]></elm>
+</package>

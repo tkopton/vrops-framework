@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="99e3cea7-b274-4fbe-b380-4491205b0aa5" version="0.0.0">
+  <display-name><![CDATA[config.replication]]></display-name>
+  <atts>
+    <att name="replicationCred" type="Credential" read-only="false">
+      <value encoded="n"><![CDATA[vro-admin02@comp01.local:__NULL__]]></value>
+    </att>
+    <att name="rz1_site" type="VR:Site" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local'&dunesName='VR:Site']]></value>
+    </att>
+    <att name="rz1_remoteSite" type="VR:VcRemoteSite" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='HMSSRV-35d9766a-2334-453c-801c-64873527bd39'&dunesName='VR:VcRemoteSite']]></value>
+    </att>
+    <att name="rz1_remoteDS" type="string" read-only="false">
+      <value encoded="n"><![CDATA[LOCAL_0000]]></value>
+    </att>
+    <att name="rz1_remoteUser" type="string" read-only="false">
+      <value encoded="n"><![CDATA[administrator@vsphere.local]]></value>
+    </att>
+    <att name="rz1_remotePass" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="rz2_site" type="VR:Site" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='s030a1515.comp01.local'&dunesName='VR:Site']]></value>
+    </att>
+    <att name="rz2_remoteSite" type="VR:VcRemoteSite" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='HMSSRV-35d9766a-2334-453c-801c-64873527bd39'&dunesName='VR:VcRemoteSite']]></value>
+    </att>
+    <att name="rz2_remoteDS" type="string" read-only="false">
+      <value encoded="n"><![CDATA[LOCAL_0000]]></value>
+    </att>
+    <att name="rz2_remoteUser" type="string" read-only="false">
+      <value encoded="n"><![CDATA[administrator@vsphere.local]]></value>
+    </att>
+    <att name="rz2_remotePass" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="repTaskTimeOut" type="number" read-only="false">
+      <value encoded="n"><![CDATA[600.0]]></value>
+    </att>
+    <att name="repTaskSleepTime" type="number" read-only="false">
+      <value encoded="n"><![CDATA[5.0]]></value>
+    </att>
+  </atts>
+</config-element>

@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="578e45dd-4448-44d4-bc03-f55a713a6ef4" version="0.1.16" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Backup of startReplicationMainWork]]></display-name>
+  <position y="45.40909090909091" x="45.0"/>
+  <input>
+    <param name="vcvm" type="VC:VirtualMachine"/>
+    <param name="sourceDatacenter" type="string"/>
+    <param name="rpo" type="number"/>
+    <param name="quiesceGuestEnabled" type="boolean"/>
+  </input>
+  <output>
+    <param name="replicationDestination" type="string"/>
+  </output>
+  <attrib name="SourceSite" type="VR:Site" read-only="false"/>
+  <attrib name="remoteSite" type="VR:VcRemoteSite" read-only="false"/>
+  <attrib name="remoteDatastore" type="VR:RemoteDatastore" read-only="false"/>
+  <attrib name="networkCompressionEnabled" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <attrib name="enableMPIT" type="boolean" read-only="false"/>
+  <attrib name="replicationConfig" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ConfigurationElement?id='99e3cea7-b274-4fbe-b380-4491205b0aa5'&dunesName='ConfigurationElement']]></value>
+  </attrib>
+  <attrib name="vROCredentials" type="Credential" read-only="false" conf-id="99e3cea7-b274-4fbe-b380-4491205b0aa5" conf-key="replicationCred">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[New credential]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="684.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[get replication target]]></display-name>
+    <script encoded="false"><![CDATA[
+sourceVC=sourceDatacenter.split("-")[1];
+if (sourceVC=="2"){
+	rzSource="rz2";
+} else {
+	rzSource="rz1";
+}
+site=replicationConfig.getAttributeWithKey(rzSource+"_site").value;
+remoteSite=replicationConfig.getAttributeWithKey(rzSource+"_remoteSite").value;
+remoteDatastore=replicationConfig.getAttributeWithKey(rzSource+"_remoteDS").value;
+temp=remoteSite.uri;
+remoteSiteString=temp.toString().split("/");
+replicationDestination=(remoteSiteString[2].split(":"))[0];]]></script>
+    <in-binding>
+      <bind name="replicationConfig" type="ConfigurationElement" export-name="replicationConfig"/>
+      <bind name="sourceDatacenter" type="string" export-name="sourceDatacenter"/>
+    </in-binding>
+    <out-binding>
+      <bind name="remoteDatastore" type="VR:RemoteDatastore" export-name="remoteDatastore"/>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite"/>
+      <bind name="replicationDestination" type="string" export-name="replicationDestination"/>
+      <bind name="site" type="VR:Site" export-name="SourceSite"/>
+    </out-binding>
+    <position y="55.40909090909091" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item3" prototype-id="change-credential" out-name="item2" content-mode="x" type="task">
+    <display-name><![CDATA[Change 2 VRO credential]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+if (newCredential != null) {
+	workflow.changeCredential(newCredential) ;
+}
+else  {
+	throw "'newCredential' is NULL";
+}
+]]></script>
+    <in-binding>
+      <bind name="newCredential" type="Credential" export-name="vROCredentials">
+        <description><![CDATA[New credential]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Change current execution credential]]></description>
+    <position y="55.40909090909091" x="144.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="d14a8838-c5fb-4eaf-83ab-2e406e369c80">
+    <display-name><![CDATA[Configure Replication_Silent]]></display-name>
+    <in-binding>
+      <bind name="site" type="VR:Site" export-name="SourceSite"/>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite"/>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vcvm"/>
+      <bind name="datastore" type="VR:RemoteDatastore" export-name="remoteDatastore"/>
+      <bind name="quiesceGuestEnabled" type="boolean" export-name="quiesceGuestEnabled"/>
+      <bind name="rpo" type="number" export-name="rpo"/>
+      <bind name="networkCompressionEnabled" type="boolean" export-name="networkCompressionEnabled"/>
+      <bind name="enableMPIT" type="boolean" export-name="enableMPIT"/>
+      <bind name="instancesPerDay" type="number" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="numDays" type="number" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding>
+      <bind name="resultGroup" type="VR:VcToVcSourceGroup" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Configure a virtual machine for replication from this site to another vSphere site.]]></description>
+    <position y="55.40909090909091" x="504.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vcvm">
+      <desc><![CDATA[vcvm]]></desc>
+    </p-param>
+    <p-param name="sourceDatacenter">
+      <desc><![CDATA[sourceDatacenter]]></desc>
+    </p-param>
+    <p-param name="rpo">
+      <desc><![CDATA[rpo]]></desc>
+    </p-param>
+    <p-param name="quiesceGuestEnabled">
+      <desc><![CDATA[quiesceGuestEnabled]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

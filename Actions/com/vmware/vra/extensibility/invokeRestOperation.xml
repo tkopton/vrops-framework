@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="invokeRestOperation" result-type="string" api-version="6.0.0" id="6fe4dfa7-d3bb-41a2-b8e3-53584a1592cb" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="operation" t="string"><![CDATA[]]></param>
+  <param n="url" t="string"><![CDATA[]]></param>
+  <param n="content" t="string"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="parameters" t="Array/string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null) throw "restHost is null";
+if (operation == null) throw "operation is null";
+if (url == null) throw "url is null";
+
+var op = new RESTOperation("op");
+op.method = operation;
+op.urlTemplate = url;
+op.host = restHost;
+	
+if (operation.toUpperCase() === "POST" || operation.toUpperCase() === "PUT") {
+	op.defaultContentType = "application/json";
+}
+
+var restOperation = RESTHostManager.createTransientOperationFrom(op);
+
+if (parameters == null) parameters = new Array();
+var request = restOperation.createRequest(parameters, content);
+
+request.setHeader("Content-Type", "application/json");
+if (customHeaders != null) request.setHeader("Authorization", customHeaders.get("Authorization"));
+System.debug("********************** NEW REQUEST **********************");
+System.debug(request.getMethod() + " " + request.fullUrl);
+
+if (content != null) {
+    try {
+        var contentObject = JSON.parse(content);
+        System.debug("Content : \n" + JSON.stringify(contentObject,null,2));
+    } catch(e) {System.debug("Content : \n" + content)}  
+}
+
+var response = request.execute();
+
+statusCode = response.statusCode;
+contentAsString = response.contentAsString;
+
+if (statusCode != 200 && statusCode != 201 && statusCode != 202 && statusCode != 203 && statusCode != 204) 
+throw "HTTP " + statusCode + " : " + contentAsString;
+
+System.debug("Status code: " + statusCode);
+
+contentAsString = response.contentAsString;
+//System.debug("Content as string: \n" + contentAsString);
+
+headers = response.getAllHeaders();
+System.debug("Response Headers :");
+for each (var header in headers){
+	System.debug("\t" + header.toString());
+}
+
+if (contentAsString != null) {
+    try {
+        var contentAsStringObject = JSON.parse(contentAsString);
+        System.debug("Response content : \n" + JSON.stringify(contentAsStringObject,null,2));
+    } catch(e) {System.debug("Response content : \n" + contentAsString)}  
+}
+
+System.debug("********************** END OF REQUEST **********************");
+return contentAsString;]]></script>
+</dunes-script-module>

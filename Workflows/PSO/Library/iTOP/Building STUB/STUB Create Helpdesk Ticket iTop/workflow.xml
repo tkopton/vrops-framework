@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item4" object-name="Workflow:name=generic" id="647cdeb9-978c-4277-a9dd-fe1b5dc96b42" version="1.0.14" api-version="6.0.0" allowed-operations="evf" editor-version="1.6" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[STUB Create Helpdesk Ticket iTop]]></display-name>
+  <description><![CDATA[Creates new Request in the iTop helpdesk]]></description>
+  <position y="90.0" x="160.0"/>
+  <input>
+    <param name="inputProperties" type="Properties"/>
+  </input>
+  <output>
+    <param name="statusCode" type="number">
+      <description><![CDATA[Status code of the HTTP request]]></description>
+    </param>
+    <param name="contentLength" type="number">
+      <description><![CDATA[Length of the request response]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[Response headers]]></description>
+    </param>
+    <param name="contentAsString" type="string">
+      <description><![CDATA[Response content as string]]></description>
+    </param>
+    <param name="fieldsArray" type="Array/string"/>
+    <param name="requestCode" type="string"/>
+    <param name="requestMessage" type="string"/>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="statusCodeAttribute" type="number" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="content" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input content]]></description>
+  </attrib>
+  <attrib name="defaultContentType" type="string" read-only="false">
+    <value encoded="n"><![CDATA[application/json]]></value>
+    <description><![CDATA[Input content type]]></description>
+  </attrib>
+  <attrib name="restOperation" type="REST:RESTOperation" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="restOperation">
+    <description><![CDATA[REST operation to be used for the call]]></description>
+  </attrib>
+  <attrib name="auth_user" type="string" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_user">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <attrib name="auth_pwd" type="SecureString" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_pwd">
+    <description><![CDATA[Input parameter]]></description>
+  </attrib>
+  <attrib name="attr_orgname" type="string" read-only="false">
+    <value encoded="n"><![CDATA[IT Department]]></value>
+  </attrib>
+  <attrib name="attr_firstname" type="string" read-only="false">
+    <value encoded="n"><![CDATA[vRealize]]></value>
+  </attrib>
+  <attrib name="attr_lastname" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Automation]]></value>
+  </attrib>
+  <attrib name="ticket_subject" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="ticket_description" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="VCenterVM" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="username" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item3" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[REST call]]></display-name>
+    <script encoded="false"><![CDATA[var callerId = new callerId(lastName,firstName);
+var fields = new fields('SELECT Organization WHERE name = "'+orgName+ '"', callerId, requestTitle, requestDescription);
+var data = new data("core/create", "create user", "UserRequest", "ref, id, friendlyname, caller_id_friendlyname, title, description", fields);
+
+var inputData = JSON.stringify(data);
+//System.log("JSON DATA : " + inputData);
+
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+var request = restOperation.createRequest(inParamtersValues, content);
+//set the request content type
+request.contentType = defaultContentType;
+//System.log("Request: " + request);
+//System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+//System.log("Response: " + response);
+statusCode = response.statusCode;
+statusCodeAttribute = statusCode;
+System.log("Status code: " + statusCode);
+contentLength = response.contentLength;
+headers = response.getAllHeaders();
+contentAsString = response.contentAsString;
+System.log("Content as string: " + contentAsString);
+System.log("");
+System.log("==== Attempt to retrieve values ====");
+var jsonResponse = JSON.parse(contentAsString);
+var objects = jsonResponse.objects;
+//Not sure how to get to the specific user request data
+
+for  (var e in objects) {
+	System.log(e);
+	var requestObject = objects[e];
+	//System.log("requestObject String: "+JSON.stringify(requestObject));
+	var requestCode = requestObject.code;
+	var requestMessage = requestObject.message;
+	System.log("Request Code: "+requestCode);
+	System.log("Request Message: "+requestMessage);
+	System.log("===  Fields: ===");
+	var requestFieldsObject = requestObject.fields;
+	/*
+	System.log("Ref (ticket id): "+requestFieldsObject.ref);
+	System.log("caller_id_friendlyname: "+requestFieldsObject.caller_id_friendlyname);
+	System.log("Title: "+requestFieldsObject.title);
+	System.log("Description: "+requestFieldsObject.description);
+	*/
+	var jsonString = JSON.stringify(requestFieldsObject);
+	var fieldsArray = System.getModule("com.vmware.coe.json").getJSONstringAsArrayOfStrings(jsonString);
+	for each (f in fieldsArray){
+		System.log(f.split(":")[0] + ": " + f.split(":")[1]);
+	}
+	//System.log("requestFieldsObject String: "+JSON.stringify(requestFieldsObject));
+}
+
+
+function callerId(name, firstName) {
+	this["name"] = name;
+	this["first_name"] = firstName;
+}
+
+function fields(orgId, callerId, title, description) {
+	this["org_id"] = orgId;
+	this["caller_id"] = callerId;
+	this["title"] = title;
+	this["description"] = description;
+}
+
+function data(operation,comment,className,outPutFields, fields)
+{
+	this["operation"]=operation;
+	this["comment"]=comment;
+	this["class"]=className;
+	this["output_fields"]=outPutFields;
+	this["fields"] = fields;
+}]]></script>
+    <in-binding>
+      <bind name="content" type="string" export-name="content"/>
+      <bind name="auth_user" type="string" export-name="auth_user"/>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd"/>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+      <bind name="defaultContentType" type="string" export-name="defaultContentType"/>
+      <bind name="firstName" type="string" export-name="attr_firstname"/>
+      <bind name="lastName" type="string" export-name="attr_lastname"/>
+      <bind name="orgName" type="string" export-name="attr_orgname"/>
+      <bind name="requestTitle" type="string" export-name="ticket_subject"/>
+      <bind name="requestDescription" type="string" export-name="ticket_description"/>
+    </in-binding>
+    <out-binding>
+      <bind name="statusCode" type="number" export-name="statusCode"/>
+      <bind name="contentLength" type="number" export-name="contentLength"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="contentAsString" type="string" export-name="contentAsString"/>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+      <bind name="fieldsArray" type="Array/string" export-name="fieldsArray"/>
+      <bind name="requestCode" type="string" export-name="requestCode"/>
+      <bind name="requestMessage" type="string" export-name="requestMessage"/>
+    </out-binding>
+    <position y="182.68181818181816" x="125.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <in-binding/>
+    <position y="309.0454545454545" x="165.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <in-binding/>
+    <position y="254.5" x="265.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[Check status code]]></display-name>
+    <script encoded="false"><![CDATA[if ( statusCodeAttribute != 200 ) {
+	throw "HTTPError: status code: " + statusCodeAttribute;
+} else {
+	return true;
+}	]]></script>
+    <in-binding>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+    </in-binding>
+    <out-binding/>
+    <position y="254.5" x="125.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="task">
+    <display-name><![CDATA[Read VM properties]]></display-name>
+    <script encoded="false"><![CDATA[System.log("inputProperties: ");
+System.log(JSON.stringify(inputProperties, null, 2));
+
+VCenterVM = System.getModule("au.com.vmware.cas").getvCenterVMFromCAS(inputProperties);
+username =  System.getContext().getParameter("__metadata_userName");	
+System.log("vCenterVM: " + VCenterVM);		
+System.log("Username: " + username);
+var vmname = VCenterVM.Name;
+System.log("vCenterVM: " + vmname);
+var ticket_subject = "Deployment of VM " + vmname + " has started.";
+var ticket_description = "Deployment of VM "+ vmname + " has been deployed from vRA8" + "\n" + "Username: " + username;]]></script>
+    <in-binding>
+      <bind name="ticket_subject" type="string" export-name="ticket_subject"/>
+      <bind name="ticket_description" type="string" export-name="ticket_description"/>
+      <bind name="inputProperties" type="Properties" export-name="inputProperties"/>
+      <bind name="VCenterVM" type="VC:VirtualMachine" export-name="VCenterVM"/>
+      <bind name="username" type="string" export-name="username"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ticket_subject" type="string" export-name="ticket_subject"/>
+      <bind name="ticket_description" type="string" export-name="ticket_description"/>
+    </out-binding>
+    <position y="120.0" x="120.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Create a new Request]]></title>
+    </p-step>
+    <p-param name="inputProperties">
+      <desc><![CDATA[vCACVmProperties]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

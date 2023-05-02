@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="eca46ba0-9ef5-4ae4-8efb-946ebb9a81d6" version="0.1.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[ChangeToolsUpgradeMode]]></display-name>
+  <position y="9.045454545454543" x="45.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine">
+      <description><![CDATA[The VM to change]]></description>
+    </param>
+    <param name="newkey" type="string"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="9.045454545454543" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[upgradeAtPowerCycle]]></display-name>
+    <script encoded="false"><![CDATA[System.log("VM Name: " + vm.name);
+System.log ("Current Tools Upgrades configuration : " + vm.config.tools.toolsUpgradePolicy);
+ 
+if (vm.config.tools.toolsUpgradePolicy!=newkey) {
+ var configSpec = new VcVirtualMachineConfigSpec();
+ var toolsSpec = new VcToolsConfigInfo();
+ toolsSpec.toolsUpgradePolicy = newkey;
+ configSpec.tools = toolsSpec;
+ var task = vm.reconfigVM_Task(configSpec);
+ System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,true,2);
+ 
+ System.log ("Changed Tools Upgrades configuration: " + vm.config.tools.toolsUpgradePolicy);
+ }
+else System.log ("Nothing to do!");]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[The VM to change]]></description>
+      </bind>
+      <bind name="newkey" type="string" export-name="newkey"/>
+    </in-binding>
+    <out-binding/>
+    <position y="19.045454545454543" x="165.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vm">
+      <desc><![CDATA[The VM to change]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="newkey">
+      <desc><![CDATA[newkey]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#manual#;#string#upgradeAtPowerCycle#}#]]></p-qual>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

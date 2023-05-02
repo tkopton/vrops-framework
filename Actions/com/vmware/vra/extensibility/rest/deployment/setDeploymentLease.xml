@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setDeploymentLease" result-type="string" api-version="6.0.0" id="6c24f095-2f85-4da5-b5b6-37f32290128f" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.vra.extensibility.rest.deployment">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="deploymentId" t="string"><![CDATA[]]></param>
+  <param n="leaseDate" t="Date"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || deploymentId == null ) return null;
+
+var operation = "POST";
+var url = "/deployment/api/deployments/" +  deploymentId + "/requests";
+
+var leaseDateFormatted = System.formatDate(leaseDate,"yyyy-MM-dd'T'HH:mm:ss'.000Z'")
+
+var object = {
+  "actionId": "Deployment.ChangeLease",
+  "targetId": deploymentId,
+  "inputs": {"Lease Expiration Date": leaseDateFormatted}
+}
+
+var content = JSON.stringify(object);
+
+var customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+try {
+		var contentAsString = System.getModule("com.vmware.vra.extensibility").invokeRestOperation(restHost, operation, url, content, customHeaders);
+		var object = JSON.parse(contentAsString);
+        return contentAsString;
+	} catch (e) {
+		throw("Unable to POST object url : " + url + "\n" + e + "\nWith Content : " + content);
+}
+]]></script>
+</dunes-script-module>

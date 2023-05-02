@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="4442e79f-dc72-49f9-bfcd-9dcf555fe871" version="0.2.0" api-version="6.0.0" allowed-operations="evf" icon-id="958104c4-98f3-4be9-ad83-7bdb307f891d" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[logAllProps]]></display-name>
+  <description><![CDATA[Author: Daniel Langenhan (daniel_langenhan@yahoo.com.au)
+http://langenhan.info/software/logallprops.html
+
+This workflow will log the content of a property into the logs (System.log). The property can consists of multiple properties in properties as well as arrays. 
+The workflow will also log all system context variables (mostly used with vRA).
+
+The debugFlag (can be NULL) can be null. If set to false the workflow is not executed. This can be used to make sure that the logging will only work in a debug situtation.
+The exclusion (can be NULL) can be any full "path" for the log e.g. /vROPlugins/SSH or even /vROPlugins/* to exclude all properties (or array members) in /vROPlugins ]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+    <param name="debugFlag" type="boolean">
+      <description><![CDATA[(Optional) if Null it will work as true. False will switch exit without executing]]></description>
+    </param>
+    <param name="exclusions" type="Array/string"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[log all Props]]></display-name>
+    <script encoded="false"><![CDATA[if (exclusions==null){
+	var exclusions= new Array();
+}
+
+// get name of the variables type
+var toType = function(obj) {
+  return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+}
+
+// ready output
+var payloadout=new Array();
+var contextout=new Array();
+
+//semi-Recusivie display for properties of properties 
+function getSubproperties(subject,prop){
+	//properties
+	if (toType(prop) == "properties"){
+		payloadout.push(subject+" (properties) ["+prop.keys.length+"]");
+		for each (subkey in prop.keys) {
+			subcontent=prop.get(subkey);
+			if (toType(subcontent) == "properties"){
+			//additional subproperties
+				getSubproperties((subject+"/"+subkey),subcontent);
+			}
+			//array
+			if (toType(subcontent) == "array"){
+				payloadout.push(subject+"/"+subkey+" (array/"+toType(subcontent[0])+") ["+subcontent.length+"]");
+				for (i=0;i<subcontent.length;i++) {
+					if (exclusions.indexOf(subject+"/"+subkey+"/*")>=0){ 
+						payloadout.push(subject+"/"+subkey+"["+i+"] : ****");
+					} else {
+						payloadout.push(subject+"/"+subkey+"["+i+"] : " + subcontent[i]);
+					}
+				}
+			} 			
+			else {
+			//finish recusive
+				if ((exclusions.indexOf(subject+"/"+subkey)>=0) ||(exclusions.indexOf(subject+"/*")>=0)){ 
+					payloadout.push((subject+"/"+subkey) + " ("+toType(subcontent)+"): ****");
+				} else{
+					payloadout.push((subject+"/"+subkey) + " ("+toType(subcontent)+"): " + subcontent);
+				}
+			}
+		}
+	}
+}
+
+//get system contex variables (mostly used with vRA)
+System.log("## Context #####################################");
+contNames = System.getContext().parameterNames();
+for each (contName in contNames){
+	contextout.push(contName+" ("+toType(System.getContext().getParameter(contName))+"): "+System.getContext().getParameter(contName));
+}
+//make it look nice by sorting it alphanumerical
+contextout.sort();
+for each (line in contextout){
+	System.log(line);
+}	
+
+//get the content of the properties
+System.log("## Payload #####################################");
+getSubproperties("",payload);
+//make it look nice by sorting it alphanumerical
+payloadout.sort();
+for each (line in payloadout){
+	System.log(line);
+}	
+System.log("#############################################");]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="exclusions" type="Array/string" export-name="exclusions"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="custom-condition" alt-out-name="item3">
+    <display-name><![CDATA[run workflow?]]></display-name>
+    <script encoded="false"><![CDATA[if (debugFlag || (debugFlag==null)){
+	return true
+} else {
+	return false	
+}]]></script>
+    <in-binding>
+      <bind name="debugFlag" type="boolean" export-name="debugFlag"/>
+    </in-binding>
+    <position y="45.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="109.04545454545453" x="244.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+    <p-param name="debugFlag">
+      <desc><![CDATA[(Optional) if Null it will work as YES. No will switch exit without executing]]></desc>
+    </p-param>
+    <p-param name="exclusions">
+      <desc><![CDATA[exclusions from the loh list (e.g. /vROPlugins/SSH )]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

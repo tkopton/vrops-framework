@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="workflow:name=generic" id="2991048c-79fb-4093-a3bd-f37adf328d3a" version="0.1.6" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[stopReplication]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="sourceDatacenter" type="string"/>
+    <param name="vcvm" type="VC:VirtualMachine"/>
+  </input>
+  <attrib name="wfToken" type="WorkflowToken" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Workflow execution token]]></description>
+  </attrib>
+  <attrib name="sleepTime" type="number" read-only="false" conf-id="99e3cea7-b274-4fbe-b380-4491205b0aa5" conf-key="repTaskSleepTime">
+    <value encoded="n"><![CDATA[2.0]]></value>
+    <description><![CDATA[Time to sleep in seconds]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="counter" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[counter to increment]]></description>
+  </attrib>
+  <attrib name="timeout" type="number" read-only="false" conf-id="99e3cea7-b274-4fbe-b380-4491205b0aa5" conf-key="repTaskTimeOut">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item5" type="task" launched-workflow-id="ea4c4e07-a1f4-416e-8667-b8bb8929905e">
+    <display-name><![CDATA[stopReplicationMainWork]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+var workflowToLaunch = Server.getWorkflowWithId("ea4c4e07-a1f4-416e-8667-b8bb8929905e");
+if (workflowToLaunch == null) {
+	throw "Workflow not found";
+}
+
+var workflowParameters = new Properties();
+workflowParameters.put("sourceDatacenter",sourceDatacenter);
+workflowParameters.put("vcvm",vcvm);
+var wfToken = workflowToLaunch.execute(workflowParameters);]]></script>
+    <in-binding>
+      <bind name="sourceDatacenter" type="string" export-name="sourceDatacenter"/>
+      <bind name="vcvm" type="VC:VirtualMachine" export-name="vcvm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="wfToken" type="WorkflowToken" export-name="wfToken">
+        <description><![CDATA[Workflow execution token]]></description>
+      </bind>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="45.40909090909091" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="custom-condition" alt-out-name="item6">
+    <display-name><![CDATA[completed]]></display-name>
+    <script encoded="false"><![CDATA[if (wfToken.state =="completed"){
+return true;
+} else {
+return false;
+}]]></script>
+    <in-binding>
+      <bind name="wfToken" type="WorkflowToken" export-name="wfToken"/>
+    </in-binding>
+    <position y="45.40909090909091" x="604.5"/>
+  </workflow-item>
+  <workflow-item name="item4" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="109.04545454545453" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item5" prototype-id="sleep" out-name="item3" content-mode="x" type="task">
+    <display-name><![CDATA[Sleep]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+if ( sleepTime != null )  {
+	System.sleep(sleepTime*1000);
+}
+else  {
+	throw "'sleepTime' is NULL";
+}
+]]></script>
+    <in-binding>
+      <bind name="sleepTime" type="number" export-name="sleepTime">
+        <description><![CDATA[Time to sleep in seconds]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Sleep a given number of seconds]]></description>
+    <position y="55.40909090909091" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item7" type="custom-condition" alt-out-name="item9">
+    <display-name><![CDATA[failed / Cancled?]]></display-name>
+    <script encoded="false"><![CDATA[if ((wfToken.state =="failed")||(wfToken.state =="canceled")){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="wfToken" type="WorkflowToken" export-name="wfToken"/>
+    </in-binding>
+    <position y="109.04545454545453" x="605.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item4" type="task">
+    <display-name><![CDATA[getException]]></display-name>
+    <script encoded="false"><![CDATA[if (wfToken.state =="canceled"){
+	errorCode="Manuellý cancled";
+} else {
+	errorCode=wfToken.exception;
+}
+]]></script>
+    <in-binding>
+      <bind name="wfToken" type="WorkflowToken" export-name="wfToken"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+    </out-binding>
+    <position y="119.04545454545453" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item8" prototype-id="increase-counter" out-name="item5" content-mode="x" type="task">
+    <display-name><![CDATA[Increase counter]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="counter">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="counter">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="119.04545454545453" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item11" type="custom-condition" alt-out-name="item8">
+    <display-name><![CDATA[timeout]]></display-name>
+    <script encoded="false"><![CDATA[if ((counter*sleepTime)>=timeout){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="counter"/>
+      <bind name="timeout" type="number" export-name="timeout"/>
+      <bind name="sleepTime" type="number" export-name="sleepTime"/>
+    </in-binding>
+    <position y="109.04545454545453" x="464.5"/>
+  </workflow-item>
+  <workflow-item name="item10" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="236.3181818181818" x="505.0"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item10" type="task">
+    <display-name><![CDATA[Timeout Error]]></display-name>
+    <script encoded="false"><![CDATA[wfToken.cancel();
+errorCode="Replication task timeout after "+timeout+"sec";]]></script>
+    <in-binding>
+      <bind name="timeout" type="number" export-name="timeout"/>
+      <bind name="wfToken" type="WorkflowToken" export-name="wfToken"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+    </out-binding>
+    <position y="182.68181818181816" x="465.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="sourceDatacenter">
+      <desc><![CDATA[sourceDatacenter]]></desc>
+    </p-param>
+    <p-param name="vcvm">
+      <desc><![CDATA[vcvm]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

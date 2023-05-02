@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="e5bf7598-00fb-4300-96d7-40bebb80c7f2" version="0.1.6" api-version="6.0.0" allowed-operations="evf" icon-id="c48d5477-8201-4aad-96b8-7f71cae5dd27" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[simulateDNSAction]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="DNSAction" type="string"/>
+    <param name="deploymentId" type="string"/>
+  </input>
+  <attrib name="JDBCString" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="JDBCString">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUser" type="string" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUser">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DBUserPassword" type="SecureString" read-only="false" conf-id="58c3ef46-179e-4056-b74a-7a6a4180c3d8" conf-key="DBUserPassword">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="DNSResult" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[update DNS Flag in DB]]></display-name>
+    <script encoded="false"><![CDATA[sqlStatement="UPDATE deployment SET " 
+		+ "DNS_Status ='"+DNSAction+"'"
+		+ ",vRA_Timestamp = GETDATE()"
+		+ " WHERE DeploymentID='" + deploymentId + "';";
+System.log(sqlStatement);		
+var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( JDBCString, DBUser, DBUserPassword );
+	var stat = con.createStatement();
+	var result = stat.execute( sqlStatement );
+	stat.close();
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+}]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+      <bind name="DNSAction" type="string" export-name="DNSAction"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="task" script-module="at.akhwien.db/getDNSStatusFromDeploymentID">
+    <display-name><![CDATA[getDNSStatusFromDeploymentID]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").getDNSStatusFromDeploymentID(JDBCString,DBUser,DBUserPassword,deploymentId) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="DNSResult"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item5" type="task" script-module="at.akhwien.db/getDNSStatusFromDeploymentID">
+    <display-name><![CDATA[getDNSStatusFromDeploymentID]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("at.akhwien.db").getDNSStatusFromDeploymentID(JDBCString,DBUser,DBUserPassword,deploymentId) ;]]></script>
+    <in-binding>
+      <bind name="JDBCString" type="string" export-name="JDBCString"/>
+      <bind name="DBUser" type="string" export-name="DBUser"/>
+      <bind name="DBUserPassword" type="SecureString" export-name="DBUserPassword"/>
+      <bind name="deploymentId" type="string" export-name="deploymentId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="DNSResult"/>
+    </out-binding>
+    <position y="55.40909090909091" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item4" prototype-id="system-log" out-name="item1" type="task" interaction="l">
+    <display-name><![CDATA[System log]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.log(DNSResult);
+]]></script>
+    <in-binding>
+      <bind name="DNSResult" type="string" export-name="DNSResult"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'log']]></description>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item5" prototype-id="system-log" out-name="item0" type="task" interaction="l">
+    <display-name><![CDATA[System log]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.log(DNSResult);
+]]></script>
+    <in-binding>
+      <bind name="DNSResult" type="string" export-name="DNSResult"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'log']]></description>
+    <position y="55.40909090909091" x="764.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="DNSAction">
+      <desc><![CDATA[DNS Action]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#added#;#string#error: Simulated#;#string#deleted#;#string#add#;#string#delete#}#]]></p-qual>
+    </p-param>
+    <p-param name="deploymentId">
+      <desc><![CDATA[deploymentId]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

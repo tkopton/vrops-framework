@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="1183b058-a0f5-4f14-a45d-6a2c77fe688a" editor-version="2.0" version="0.0.2" api-version="6.0.0" restartMode="1" resumeFromFailedMode="0">
+    <display-name>add tag cg</display-name>
+    <position y="50.0" x="100.0"/>
+    <input>
+        <param name="vm" type="VC:VirtualMachine">
+            <description>VM to which tag will be assigned</description>
+        </param>
+    </input>
+    <output/>
+    <attrib name="vcenter" type="VAPI:VAPIEndpoint">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='ENDPOINT--https___vcsa.cpod-cmbu-vcf01.az-muc.cloud-garage.net_api'&amp;dunesName='VAPI:VAPIEndpoint'</value>
+    </attrib>
+    <attrib name="tagId" type="string">
+        <value encoded="n">urn:vmomi:InventoryServiceTag:af2abe46-a9f0-4704-98cd-0fb6d7507ce9:GLOBAL</value>
+        <description>ID of the vCenter Tag</description>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="50.0" x="300.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.cse.vapi/assigns_a_vCenter_Tag_to_a_VM" comparator="0">
+        <display-name>assigns_a_vCenter_Tag_to_a_VM</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.cse.vapi").assigns_a_vCenter_Tag_to_a_VM(endpoint,tagId,vm);
+</script>
+        <in-binding>
+            <bind name="endpoint" type="VAPI:VAPIEndpoint" export-name="vcenter">
+                <description>VAPI Endpoint</description>
+            </bind>
+            <bind name="tagId" type="string" export-name="tagId">
+                <description>ID of the vCenter Tag</description>
+            </bind>
+            <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+                <description>VM to which tag will be assigned</description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="string" export-name=""/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="60.0" x="160.0"/>
+    </workflow-item>
+</ns2:workflow>

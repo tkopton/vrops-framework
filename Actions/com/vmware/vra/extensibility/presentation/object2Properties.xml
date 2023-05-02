@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="object2Properties" result-type="Properties" api-version="6.0.0" id="81092478-7183-48cc-921a-dca6d308d73d" version="0.0.0" allowed-operations="evf" category-name="com.vmware.vra.extensibility.presentation">
+  <param n="obj" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+return object2Properties(obj);
+
+function object2Properties(obj) {
+	var prop = new Properties();
+	if (obj != undefined) {
+		for each(var key in Object.keys(obj)) {
+			var value = obj[key];
+			if (value != null && System.getObjectClassName(value) == "Object") prop.put(key, object2Properties(value));
+			else {
+				if (value != null && System.getObjectClassName(value) == "Array") {
+					var arr = new Array();
+					for each(var element in value) {
+						if (element != null && System.getObjectClassName(element) == "Object") arr.push(object2Properties(element));
+						else arr.push(element);
+					}
+					prop.put(key, arr);
+				} else prop.put(key, value);
+			}
+		}
+	}
+	return prop;
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="bc44d7ea-8d80-440c-a6b6-cfb1a4b9507a" version="0.0.0">
+  <display-name><![CDATA[ConfigNetworkSelection]]></display-name>
+  <atts>
+    <att name="vraRestHost" type="string" read-only="false">
+      <value encoded="n"><![CDATA[vra]]></value>
+    </att>
+    <att name="vraUsername" type="string" read-only="false">
+      <value encoded="n"><![CDATA[cferber]]></value>
+    </att>
+    <att name="vraPassword" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+  </atts>
+</config-element>

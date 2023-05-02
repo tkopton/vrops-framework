@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="12e3dfe6-eae2-42c1-8f8b-38162e3f5427" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[enbw-test03]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <output>
+    <param name="myContentSize" type="number"/>
+    <param name="myMimeType" type="string"/>
+  </output>
+  <attrib name="jsonTemplate" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='00755dd4-acc5-469d-9749-c9abab53e1f9'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//completeMessage ="{ \"name\":\"John\", \"age\":30, \"cars\": { \"car1\":\"Ford\", \"car2\":\"BMW\", \"car3\":\"Fiat\" } }";
+
+
+//Get the content of the Resource Element
+var template = jsonTemplate.getContentAsMimeAttachment();
+var rawContent = template.content;
+
+//Use JSON.parse to parse content in to a useable object
+var jsonObject = JSON.parse(template.content);
+
+//Now we can manipulate individual values, which makes the template dynamic
+//jsonObject['name'] = reservationName;
+//jsonObject['subTenantId'] = subtenantId;
+
+//Convert object back to string ready to POST
+//payload = JSON.stringify(jsonObject);
+
+myContentSize = jsonTemplate.contentSize;
+myMimeType = jsonTemplate.mimeType;
+
+System.log(myContentSize);
+System.log(myMimeType);
+
+//rawContent is being parsed by the vRLI JSON parser
+System.log(rawContent);
+System.log(jsonObject);
+]]></script>
+    <in-binding>
+      <bind name="jsonTemplate" type="ResourceElement" export-name="jsonTemplate"/>
+    </in-binding>
+    <out-binding>
+      <bind name="myContentSize" type="number" export-name="myContentSize"/>
+      <bind name="myMimeType" type="string" export-name="myMimeType"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

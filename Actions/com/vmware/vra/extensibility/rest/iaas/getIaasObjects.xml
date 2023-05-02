@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getIaasObjects" result-type="Array/Any" api-version="6.0.0" id="a72bdfdb-a960-4d81-8f27-f102625675d9" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <description><![CDATA[Get all IaaS objects using paging ]]></description>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="url" t="string"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+if (restHost == null || url == null) return null;
+
+var iaasObject = System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,username,password,customHeaders,url, parameters);
+var content = iaasObject.content;
+
+var skip = 0;
+var elementsLeft = iaasObject.totalElements - iaasObject.numberOfElements;
+var allContent = content;
+var numberOfElements = iaasObject.numberOfElements
+
+while (elementsLeft >0) {
+    var skip = skip + numberOfElements;
+    if (parameters == null) parameters = "$skip=" + skip;
+    else parameters = parameters + "&$skip=" + skip;
+    iaasObject = System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,username,password,customHeaders,url, parameters);
+    content = iaasObject.content;
+    elementsLeft = elementsLeft - iaasObject.numberOfElements;
+    allContent = allContent.concat(content);
+}
+
+return allContent;]]></script>
+</dunes-script-module>

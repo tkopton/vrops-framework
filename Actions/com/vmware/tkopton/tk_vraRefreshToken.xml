@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="tk_vraRefreshToken" result-type="boolean" api-version="6.0.0" id="6938f8e8-ae49-4da8-9a3a-0a7ea34e585e" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.tkopton">
+  <param n="getBToken" t="REST:RESTOperation"><![CDATA[]]></param>
+  <param n="getRToken" t="REST:RESTOperation"><![CDATA[]]></param>
+  <param n="vRAConfig" t="ConfigurationElement"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[getRefreshToken();
+getBearerToken();
+
+function getRefreshToken() {
+    var jsonBody = {
+        "username": "",
+        "password": ""
+    };
+
+    jsonBody.username = (vRAConfig.getAttributeWithKey("vraUserName")).value;
+    jsonBody.password = (vRAConfig.getAttributeWithKey("vraUserPassword")).value;
+
+    var inParamtersValues = null;
+    var acceptHeadersValue = "";
+
+    var requestBody = JSON.stringify(jsonBody);
+    var request = getRToken.createRequest(inParamtersValues, requestBody);
+    request.contentType = "application/json";
+    request.setHeader("accept", "application/json");
+
+    var response = request.execute();
+    var statusCode = response.statusCode;
+    var statusCodeAttribute = statusCode;
+    var contentLength = response.contentLength;
+    var headers = response.getAllHeaders();
+    var contentAsString = response.contentAsString;
+
+    var jsonObject = JSON.parse(response.contentAsString);
+    var vraRefreshToken = jsonObject.refresh_token;
+
+    vRAConfig.setAttributeWithKey("vraRefreshToken", vraRefreshToken);
+}
+
+function getBearerToken() {
+    var jsonBody = {
+        "refreshToken": ""
+    };
+
+    jsonBody.refreshToken = (vRAConfig.getAttributeWithKey("vraRefreshToken")).value;
+
+    var inParamtersValues = null;
+    var acceptHeadersValue = "";
+
+    var requestBody = JSON.stringify(jsonBody);
+    var request = getBToken.createRequest(inParamtersValues, requestBody);
+    request.contentType = "application/json";
+    request.setHeader("accept", "application/json");
+
+    var response = request.execute();
+    var statusCode = response.statusCode;
+    var statusCodeAttribute = statusCode;
+    var contentLength = response.contentLength;
+    var headers = response.getAllHeaders();
+    var contentAsString = response.contentAsString;
+
+    var jsonObject = JSON.parse(response.contentAsString);
+    var vraBearerToken = jsonObject.token;
+
+    vRAConfig.setAttributeWithKey("vraBearerToken", vraBearerToken);
+}
+]]></script>
+</dunes-script-module>

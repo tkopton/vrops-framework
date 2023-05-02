@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updatevRAStatus" result-type="boolean" api-version="6.0.0" id="e7a9b1d4-7039-47df-9c65-cae13c63ebb3" version="0.0.0" allowed-operations="evf" category-name="at.akhwien.db">
+  <param n="JDBCString" t="string"><![CDATA[]]></param>
+  <param n="DBUser" t="string"><![CDATA[]]></param>
+  <param n="DBUserPassword" t="SecureString"><![CDATA[]]></param>
+  <param n="deploymentId" t="string"><![CDATA[]]></param>
+  <param n="newStatus" t="string"><![CDATA[]]></param>
+  <param n="oldStatus" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[sqlStatement="UPDATE deployment SET " 
+		+ "vRA_Status ='"+newStatus+"'"
+		+ " WHERE DeploymentID='" + deploymentId + "'"
+		if (oldStatus!=null){
+			sqlStatement=sqlStatement+ " and vRA_Status='"+oldStatus+"';";
+		} else {
+			sqlStatement=sqlStatement+";";
+		}
+		
+var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( JDBCString, DBUser, DBUserPassword );
+	var stat = con.createStatement();
+	var result = stat.execute( sqlStatement );
+	stat.close();
+	if ( result == 0 )  {
+		return true;
+	} else  {
+		return false;
+	}
+	
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVmsByTag" result-type="Array/VC:VirtualMachine" api-version="6.0.0" id="98e759a8-9c96-40bc-b195-5e5cecb4bb6e" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.cse.vapi">
+  <param n="vc" t="VC:SdkConnection"><![CDATA[]]></param>
+  <param n="tagName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var endpoint = VAPIManager.findEndpoint("https://"+ vc.id + "/api");
+System.log ("entpoint: " + endpoint)
+var client = endpoint.client();
+
+var service = new com_vmware_cis_tagging_tag(client);
+var list = service.list();
+
+for each (var tagId in list) {
+    if (service.get(tagId).name == tagName) {
+        var foundTagId = tagId;
+        break;
+    }    
+}
+
+if (foundTagId != null) {
+    var vms = [];
+    service = new com_vmware_cis_tagging_tag__association(client);
+    var attachedObjectsList = service.list_attached_objects(foundTagId);
+   
+    for each (var attachedObject in attachedObjectsList) {
+        var managedObject = new VcManagedObjectReference();
+        managedObject.type = attachedObject.type;
+        managedObject.value = attachedObject.id;
+        vms.push(VcPlugin.convertToVimManagedObject(vc , managedObject));
+    }
+    return vms;
+}]]></script>
+</dunes-script-module>

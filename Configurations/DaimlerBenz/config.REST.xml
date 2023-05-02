@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="9f16cb09-818d-4334-8216-b1311fe5ca01" version="0.2.0">
+  <display-name><![CDATA[config.REST]]></display-name>
+  <atts>
+    <att name="restHost" type="REST:RESTHost" read-only="false"/>
+    <att name="restUser" type="string" read-only="false">
+      <value encoded="n"><![CDATA[]]></value>
+    </att>
+    <att name="restPassword" type="SecureString" read-only="false"/>
+    <att name="AddVMsAsChildren" type="boolean" read-only="false">
+      <description><![CDATA[Should VMs be added to children of VMs]]></description>
+    </att>
+  </atts>
+</config-element>

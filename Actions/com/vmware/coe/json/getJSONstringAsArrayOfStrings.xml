@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getJSONstringAsArrayOfStrings" result-type="Array/string" api-version="6.0.0" id="94d669b2-2ca3-40d0-8c96-e13637d6ff22" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.coe.json">
+  <description><![CDATA[Given a JSON object as a string (JSON.stringify(jsonObject)), return an array of key:value strings in the format [key:value,key:value,key:value]]]></description>
+  <param n="jsonString" t="string"><![CDATA[Stringified JSON object]]></param>
+  <script encoded="false"><![CDATA[var fieldsArray = new Array();
+if(jsonString != null && jsonString.length > 2){
+	// Remove beginning and ending curly braces
+	var fieldsString = jsonString.substring(1,(jsonString.length - 1));
+	fieldsArray = fieldsString.split(",");
+}else{
+	System.warn("JSON String not detected, unable to return non-null Array object");
+	Server.warn("JSON String not detected, unable to return non-null Array object",jsonString);
+}
+return fieldsArray;
+]]></script>
+</dunes-script-module>

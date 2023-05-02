@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="97806779-6f64-40f6-8769-6b665c986946" version="0.2.0" api-version="6.0.0" allowed-operations="evf" icon-id="958104c4-98f3-4be9-ad83-7bdb307f891d" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Collection_test]]></display-name>
+  <description><![CDATA[This workflow just runs a collection of vCenter portgroups and output the Properties into the log]]></description>
+  <position y="50.0" x="100.0"/>
+  <attrib name="collection" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="link" linked-workflow-id="dd03f5c2-73a6-44c1-8531-67d950dab8ba">
+    <display-name><![CDATA[collectInfo]]></display-name>
+    <in-binding/>
+    <out-binding>
+      <bind name="collection" type="Properties" export-name="collection"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="50066e5c-5f49-4ba2-aad7-69e2b793a5d0">
+    <display-name><![CDATA[logAllProps]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="collection"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

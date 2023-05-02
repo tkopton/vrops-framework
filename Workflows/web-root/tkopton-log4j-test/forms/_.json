@@ -1,0 +1,1 @@
+{"schema":{"string01":{"id":"string01","type":{"dataType":"string"},"label":"string01","constraints":{"required":false}}},"layout":{"pages":[{"id":"page_lg95z6z5","title":"General","sections":[{"id":"section_pa0c3usa","fields":[{"id":"string01","display":"textField","signpostPosition":"right-middle","state":{"visible":true,"read-only":false}}]}]}]},"itemId":""}

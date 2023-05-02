@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="0d66f684-0a8d-4e21-9c97-f3a98379033b" version="0.0.1" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Stop Replication]]></display-name>
+  <description><![CDATA[Stop replicating a virtual machine to another vSphere site.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="remoteSite" type="VR:VcRemoteSite">
+      <description><![CDATA[Remote vSphere Site to login to.]]></description>
+    </param>
+    <param name="replication" type="VR:VcToVcSourceGroup"/>
+  </input>
+  <attrib name="unconfigureTask" type="VR:Task" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.library.vr/loginRemoteSite">
+    <display-name><![CDATA[loginRemoteSite]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vr").loginRemoteSite(remoteSite) ;]]></script>
+    <in-binding>
+      <bind name="remoteSite" type="VR:VcRemoteSite" export-name="remoteSite">
+        <description><![CDATA[Remote vSphere Site]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.library.vr.unconfigure/unconfigureReplication">
+    <display-name><![CDATA[unconfigureReplication]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vr.unconfigure").unconfigureReplication(replication) ;]]></script>
+    <in-binding>
+      <bind name="replication" type="VR:VcToVcSourceGroup" export-name="replication"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VR:Task" export-name="unconfigureTask"/>
+    </out-binding>
+    <position y="55.90909090909091" x="345.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task" script-module="com.vmware.library.vr/waitTaskEnd">
+    <display-name><![CDATA[waitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vr").waitTaskEnd(task) ;]]></script>
+    <in-binding>
+      <bind name="task" type="VR:Task" export-name="unconfigureTask">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Wait for a VC Task to end.
+When task ended, return the task result if any. ]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Site]]></title>
+      <p-param name="remoteSite">
+        <desc><![CDATA[Site]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Replication]]></title>
+      <p-param name="replication">
+        <desc><![CDATA[Replication]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[#remoteSite]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

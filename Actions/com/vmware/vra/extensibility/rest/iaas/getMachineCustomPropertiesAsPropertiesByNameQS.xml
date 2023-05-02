@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getMachineCustomPropertiesAsPropertiesByNameQS" result-type="Properties" api-version="6.0.0" id="615b13f6-93fd-4392-98b4-02b315c09687" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.iaas">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="machineName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || machineName == null) return null;
+
+
+// Here we get the customHeader once and pass it to the actions instead of the username password to avoid calling getvRA8CustomHeaders from these actions
+// Ideally we would share it either at the workflow scope or vRO server scope and update it on expired session or other possible failures
+
+if (customHeaders == null) customHeaders = System.getModule("com.vmware.vra.extensibility").getvRA8CustomHeaders(restHost, username, password);
+
+var machine = System.getModule("com.vmware.vra.extensibility.rest.iaas").getMachineByNameQS(restHost, username, password, customHeaders, machineName);
+var machineId = machine.id;
+return System.getModule("com.vmware.vra.extensibility.rest.iaas").getMachineCustomPropertiesAsProperties(restHost, username, password, customHeaders, machineId);
+]]></script>
+</dunes-script-module>

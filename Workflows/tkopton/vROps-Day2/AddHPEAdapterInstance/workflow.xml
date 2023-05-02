@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="5a1cec84-e228-42f4-91b7-9f2ebb50dbd5" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[AddHPEAdapterInstance]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="name" type="string"/>
+    <param name="endpoint" type="string"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <in-binding>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="endpoint" type="string" export-name="endpoint"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="name">
+      <desc><![CDATA[name]]></desc>
+    </p-param>
+    <p-param name="endpoint">
+      <desc><![CDATA[endpoint]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

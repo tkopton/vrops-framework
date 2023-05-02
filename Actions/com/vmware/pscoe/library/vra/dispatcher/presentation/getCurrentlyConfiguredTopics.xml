@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCurrentlyConfiguredTopics" result-type="Array/string" api-version="6.0.0" id="D8420F77-781D-4F49-922C-206D42C67178" version="0.0.0" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra.dispatcher.presentation">
+  <param n="cafeHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var subscriptionName = "Workflow Dispatcher - "
+
+var subs = vCACCAFEEntitiesFinder.findTenantWorkflowSubscriptions(cafeHost , subscriptionName);
+var names = [];
+for each (var sub in subs) {
+	names.push(sub.name.split(" - ")[1])
+}
+return names;]]></script>
+</dunes-script-module>

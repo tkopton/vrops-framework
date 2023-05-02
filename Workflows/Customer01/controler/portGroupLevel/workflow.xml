@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="a9913ef5-70ec-4db7-a221-65ebe421f44c" version="0.2.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[portGroupLevel]]></display-name>
+  <description><![CDATA[This workflow is triggered by "SwitchLevel" and will create/update/delete PortGroups]]></description>
+  <position y="127.22727272727272" x="105.0"/>
+  <input>
+    <param name="switchCollection" type="Properties"/>
+    <param name="portGroupName" type="string"/>
+    <param name="portGroupPartentSwitchName" type="string"/>
+    <param name="portGroupParentID" type="string"/>
+  </input>
+  <attrib name="portGroupCollection" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="RESTHost" type="REST:RESTHost" read-only="false" conf-id="9f16cb09-818d-4334-8216-b1311fe5ca01" conf-key="restHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="resourcePortGroup" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Cisco Virtual Port Group]]></value>
+  </attrib>
+  <attrib name="portGroupID" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="portsConfigured" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="portsUsed" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="portBinding" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="portAllocation" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="portGroupMoref" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vcPortGroupVMs" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="resourceVM" type="string" read-only="false">
+    <value encoded="n"><![CDATA[VirtualMachine]]></value>
+  </attrib>
+  <attrib name="vROPsVMs" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vmsAdd" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vmsDel" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="pgTestName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="internalID" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-note x="640.0" y="54.54545454545455" w="300.0" h="72.72727272727272" color="a1d7a1ff">
+    <description><![CDATA[Adding new PortGroup]]></description>
+  </workflow-note>
+  <workflow-note x="680.0" y="272.22727272727275" w="660.0" h="138.0" color="ceb0ebff">
+    <description><![CDATA[Manage PortGroup child relationships]]></description>
+  </workflow-note>
+  <workflow-note x="200.0" y="118.18181818181817" w="400.0" h="72.72727272727272">
+    <description><![CDATA[Extract relevant information for this PortGroup]]></description>
+  </workflow-note>
+  <workflow-note x="1060.0" y="90.9090909090909" w="300.0" h="109.09090909090908" color="bfdfffff">
+    <description><![CDATA[update Metrics and props]]></description>
+  </workflow-note>
+  <workflow-note x="880.0" y="127.27272727272728" w="180.0" h="109.09090909090908">
+    <description><![CDATA[Has the PortgroupName changed? if so update it]]></description>
+  </workflow-note>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="281.77272727272725" x="544.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item5" type="task">
+    <display-name><![CDATA[getPGName]]></display-name>
+    <script encoded="false"><![CDATA[portGroupCollection=switchCollection.get(portGroupName);
+portsConfigured=portGroupCollection.get("portGroupTotalPorts");
+portsUsed=portGroupCollection.get("portGroupUsed");
+portBinding=portGroupCollection.get("portGroupBind");
+portAllocation=portGroupCollection.get("portGroupAllocation");
+portGroupMoref=portGroupCollection.get("portGroupMoref");
+portGroupVMs=portGroupCollection.get("portGroupVMs");
+internalID=portGroupPartentSwitchName+"-"+portGroupMoref
+
+
+]]></script>
+    <in-binding>
+      <bind name="switchCollection" type="Properties" export-name="switchCollection"/>
+      <bind name="portGroupName" type="string" export-name="portGroupName"/>
+      <bind name="portGroupPartentSwitchName" type="string" export-name="portGroupPartentSwitchName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="portsConfigured" type="string" export-name="portsConfigured"/>
+      <bind name="portsUsed" type="string" export-name="portsUsed"/>
+      <bind name="portBinding" type="string" export-name="portBinding"/>
+      <bind name="portAllocation" type="string" export-name="portAllocation"/>
+      <bind name="portGroupMoref" type="string" export-name="portGroupMoref"/>
+      <bind name="portGroupCollection" type="Properties" export-name="portGroupCollection"/>
+      <bind name="portGroupVMs" type="Array/string" export-name="vcPortGroupVMs"/>
+      <bind name="internalID" type="string" export-name="internalID"/>
+    </out-binding>
+    <position y="137.22727272727272" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item6" type="condition" alt-out-name="item14" comparator="0">
+    <display-name><![CDATA[dosnt Exist?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (portGroupID == "no such object") ;]]></script>
+    <in-binding>
+      <bind name="portGroupID" type="string" export-name="portGroupID"/>
+    </in-binding>
+    <condition name="portGroupID" type="string" comparator="0" label="null">no such object</condition>
+    <position y="127.22727272727272" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item7" type="link" linked-workflow-id="6fcc43bc-e9a3-43f3-a8f7-7dc6133e5ee9">
+    <display-name><![CDATA[addPortGroup]]></display-name>
+    <in-binding>
+      <bind name="portGroupName" type="string" export-name="portGroupName"/>
+      <bind name="portGroupPartentSwitchName" type="string" export-name="portGroupPartentSwitchName"/>
+      <bind name="portGroupMoref" type="string" export-name="portGroupMoref"/>
+    </in-binding>
+    <out-binding>
+      <bind name="portGroupID" type="string" export-name="portGroupID"/>
+    </out-binding>
+    <position y="82.68181818181817" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item4" type="link" linked-workflow-id="28ccf0c6-fa7d-421b-ae23-863535a112c1">
+    <display-name><![CDATA[addPortGroupParent]]></display-name>
+    <in-binding>
+      <bind name="portGroupID" type="string" export-name="portGroupID"/>
+      <bind name="portGroupParentID" type="string" export-name="portGroupParentID"/>
+    </in-binding>
+    <out-binding/>
+    <position y="82.68181818181817" x="804.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item9" type="link" linked-workflow-id="2e188303-1b33-420f-b50f-32b744e26d8d">
+    <display-name><![CDATA[addPortGroupMetric]]></display-name>
+    <in-binding>
+      <bind name="portGroupID" type="string" export-name="portGroupID"/>
+      <bind name="portsConfigured" type="string" export-name="portsConfigured"/>
+      <bind name="portsUsed" type="string" export-name="portsUsed"/>
+    </in-binding>
+    <out-binding/>
+    <position y="137.22727272727272" x="1064.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item8" type="link" linked-workflow-id="795d4ba2-c04b-4c7c-a5da-02cb5b6ed34a">
+    <display-name><![CDATA[addPortGroupProps]]></display-name>
+    <in-binding>
+      <bind name="portGroupID" type="string" export-name="portGroupID"/>
+      <bind name="portBinding" type="string" export-name="portBinding"/>
+      <bind name="portAllocation" type="string" export-name="portAllocation"/>
+      <bind name="portName" type="string" export-name="portGroupName"/>
+      <bind name="portParent" type="string" export-name="portGroupPartentSwitchName"/>
+      <bind name="portMoref" type="string" export-name="portGroupMoref"/>
+    </in-binding>
+    <out-binding/>
+    <position y="137.22727272727272" x="1184.5"/>
+  </workflow-item>
+  <workflow-item name="item5" prototype-id="system-log" out-name="item2" type="task" interaction="l">
+    <display-name><![CDATA[System log]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.log("Current Object: "+portGroupName);
+]]></script>
+    <in-binding>
+      <bind name="portGroupName" type="string" export-name="portGroupName"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'log']]></description>
+    <position y="137.22727272727272" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item10" type="task" script-module="com.vmware.PSO.vROPS/getvROPSAllChildrenOfType">
+    <display-name><![CDATA[getvROPSAllChildrenOfType]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.PSO.vROPS").getvROPSAllChildrenOfType(RESTHost,target,resourceKind) ;]]></script>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="target" type="string" export-name="portGroupID"/>
+      <bind name="resourceKind" type="string" export-name="resourceVM"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="vROPsVMs"/>
+    </out-binding>
+    <position y="291.77272727272725" x="1184.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item11" type="link" linked-workflow-id="e78830e1-bf54-4d4b-8572-1f29bacb01e0">
+    <display-name><![CDATA[makeLists]]></display-name>
+    <in-binding>
+      <bind name="readList" type="Array/string" export-name="vcPortGroupVMs"/>
+      <bind name="existingList" type="Array/string" export-name="vROPsVMs"/>
+    </in-binding>
+    <out-binding>
+      <bind name="addList" type="Array/string" export-name="vmsAdd"/>
+      <bind name="delList" type="Array/string" export-name="vmsDel"/>
+    </out-binding>
+    <position y="291.77272727272725" x="1044.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item15" type="custom-condition" alt-out-name="item13">
+    <display-name><![CDATA[add VMs]]></display-name>
+    <script encoded="false"><![CDATA[if (vmsAdd.length>0){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="vmsAdd" type="Array/string" export-name="vmsAdd"/>
+    </in-binding>
+    <position y="281.77272727272725" x="884.5"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item13" type="link" linked-workflow-id="e33025cd-7410-460d-b30f-23e738b1123c">
+    <display-name><![CDATA[addChildren]]></display-name>
+    <in-binding>
+      <bind name="resourceKind" type="string" export-name="resourceVM"/>
+      <bind name="targetID" type="string" export-name="portGroupID"/>
+      <bind name="childNames" type="Array/string" export-name="vmsAdd"/>
+    </in-binding>
+    <out-binding/>
+    <position y="355.4090909090909" x="884.5"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item0" type="link" linked-workflow-id="8013b309-b2fa-4ad2-ae84-a972255ee2b9">
+    <display-name><![CDATA[deleteRelationships]]></display-name>
+    <in-binding>
+      <bind name="childNames" type="Array/string" export-name="vmsDel"/>
+      <bind name="resourceKind" type="string" export-name="resourceVM"/>
+      <bind name="targetID" type="string" export-name="portGroupID"/>
+    </in-binding>
+    <out-binding/>
+    <position y="355.4090909090909" x="724.5"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item12" type="custom-condition" alt-out-name="item0">
+    <display-name><![CDATA[del VMs]]></display-name>
+    <script encoded="false"><![CDATA[if (vmsDel.length>0){
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="vmsDel" type="Array/string" export-name="vmsDel"/>
+    </in-binding>
+    <position y="281.77272727272725" x="724.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="link" linked-workflow-id="0994d715-ef2b-4a33-af37-94b09fa6db6e">
+    <display-name><![CDATA[getNameAndIDFromMoref]]></display-name>
+    <in-binding>
+      <bind name="RESTHost" type="REST:RESTHost" export-name="RESTHost"/>
+      <bind name="resourceKind" type="string" export-name="resourcePortGroup"/>
+      <bind name="internalID" type="string" export-name="internalID"/>
+    </in-binding>
+    <out-binding>
+      <bind name="name" type="string" export-name="pgTestName"/>
+      <bind name="vROPsID" type="string" export-name="portGroupID"/>
+    </out-binding>
+    <position y="137.22727272727272" x="485.0"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item4" type="custom-condition" alt-out-name="item17">
+    <display-name><![CDATA[sameName?]]></display-name>
+    <script encoded="false"><![CDATA[if (portGroupName == pgTestName){
+	return true;
+} else{
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="portGroupName" type="string" export-name="portGroupName"/>
+      <bind name="pgTestName" type="string" export-name="pgTestName"/>
+    </in-binding>
+    <position y="127.22727272727272" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item4" type="link" linked-workflow-id="97c2c048-85f0-48a5-b97f-9c709ec59cd1">
+    <display-name><![CDATA[updatePortGroup]]></display-name>
+    <in-binding>
+      <bind name="portGroupName" type="string" export-name="portGroupName"/>
+      <bind name="portGroupPartentSwitchName" type="string" export-name="portGroupPartentSwitchName"/>
+      <bind name="portGroupMoref" type="string" export-name="portGroupMoref"/>
+      <bind name="portGroupID" type="string" export-name="portGroupID"/>
+    </in-binding>
+    <out-binding/>
+    <position y="200.86363636363635" x="924.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="switchCollection">
+      <desc><![CDATA[switchCollection]]></desc>
+    </p-param>
+    <p-param name="portGroupName">
+      <desc><![CDATA[portGroupName]]></desc>
+    </p-param>
+    <p-param name="portGroupPartentSwitchName">
+      <desc><![CDATA[portGroupPartentSwitchName]]></desc>
+    </p-param>
+    <p-param name="portGroupParentID">
+      <desc><![CDATA[portGroupParentID]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

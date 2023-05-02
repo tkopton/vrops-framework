@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="252b37ca-f318-46f9-ac4b-d7d76af81f5b" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[getOrganizationNames]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <output>
+    <param name="organizationNamesArray" type="Array/string"/>
+  </output>
+  <attrib name="auth_user" type="string" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_user">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="auth_pwd" type="SecureString" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="auth_pwd">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="restOperation" type="REST:RESTOperation" read-only="false" conf-id="23bd80b6-4409-43a5-ba8f-cec6099d6030" conf-key="restOperation">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="activeOnly" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Active Organizations Only]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Get Services for Org]]></display-name>
+    <script encoded="false"><![CDATA[var key = "SELECT Organization";
+if (activeOnly){
+	key += " WHERE Organization.status='Active'";
+}
+
+var data = new data("core/get","Organization", key, '*');
+
+var inputData = JSON.stringify(data);
+//System.log("JSON Input DATA : " + inputData);
+var content = "";
+
+var inParamtersValues = [auth_user,auth_pwd,inputData];
+
+System.log (inParamtersValues);
+var content = "{\"operation\":\"list_operations\"}"
+var request = restOperation.createRequest(inParamtersValues, content);
+var template = restOperation.host;
+System.log (template);
+//set the request content type
+request.contentType = "application/json";
+System.log("Request: " + request);
+System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+
+if ( response.statusCode >= 400 ) {
+	throw "HTTPError: status code: " + response.statusCode;
+}	
+
+var contentAsString = response.contentAsString;
+var jsonResponse = JSON.parse(contentAsString);
+System.log("contentAsString: "+contentAsString);
+var requestCode = jsonResponse.code;
+var requestMessage = jsonResponse.message;
+
+
+var organizationNamesArray = new Array();
+for each (obj in jsonResponse.objects){
+	var objFields = obj.fields;
+	organizationNamesArray.push(obj.fields.name);
+	//System.log("Name: "+obj.fields.name);	
+}
+
+function data(operation,className,key,outPutFields)
+{
+	this["operation"]=operation;
+	this["class"]=className;
+	this["key"]=key;
+	this["output_fields"]=outPutFields;
+}]]></script>
+    <in-binding>
+      <bind name="activeOnly" type="boolean" export-name="activeOnly"/>
+      <bind name="auth_user" type="string" export-name="auth_user"/>
+      <bind name="auth_pwd" type="SecureString" export-name="auth_pwd"/>
+      <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+    </in-binding>
+    <out-binding>
+      <bind name="organizationNamesArray" type="Array/string" export-name="organizationNamesArray"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

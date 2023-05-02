@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getTopic" result-type="Any" api-version="6.0.0" id="ba3739c8-00d8-4e3c-ac29-77273abad5fb" version="0.0.1" allowed-operations="evf" category-name="com.vmware.vra.extensibility.rest.eventBroker">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="customHeaders" t="Properties"><![CDATA[]]></param>
+  <param n="parameters" t="string"><![CDATA[]]></param>
+  <param n="eventTopicId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (restHost == null || username == null || password == null || eventTopicId == null) return null;
+
+var url = "/event-broker/api/topics/" + eventTopicId;
+var contentObject = System.getModule("com.vmware.vra.extensibility.rest").getObjectFromUrl(restHost,username,password,customHeaders,url, parameters);
+return contentObject;]]></script>
+</dunes-script-module>
