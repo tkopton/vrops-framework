@@ -1,0 +1,1 @@
+{"schema":{"vraVM":{"id":"vraVM","type":{"dataType":"string"},"label":"vraVM"}},"layout":{"pages":[{"id":"page_ca5ec813","sections":[{"id":"section_8ok8rzp3","fields":[{"id":"vraVM","display":"textField","signpostPosition":"right-middle","state":{"visible":true,"read-only":false}}]}],"title":"New tab","state":{}}]},"options":{"externalValidations":[]},"itemId":""}

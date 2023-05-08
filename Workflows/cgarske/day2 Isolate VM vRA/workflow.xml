@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item3" object-name="workflow:name=generic" id="f44cc9f2-a3f4-4bc2-9cdb-3e523f5cb5e4" editor-version="2.0" version="0.0.6" api-version="6.0.0" allowed-operations="vef" restartMode="1" resumeFromFailedMode="0">
+    <display-name>day2 Isolate VM vRA</display-name>
+    <description>add tag to VM with specific Tag by cg</description>
+    <position y="50.0" x="100.0"/>
+    <input>
+        <param name="vraVM" type="string"/>
+    </input>
+    <output/>
+    <attrib name="tagKey" type="string">
+        <value encoded="n">isolate</value>
+    </attrib>
+    <attrib name="tagValue" type="string">
+        <value encoded="n">isolate</value>
+    </attrib>
+    <attrib name="vraHost" type="VRA:Host">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='s0sPklGQSva3aG-HLAj2vw'&amp;dunesName='VRA:Host'</value>
+    </attrib>
+    <attrib name="resourceId" type="string">
+        <value encoded="n"></value>
+    </attrib>
+    <attrib name="tag" type="string">
+        <value encoded="n">BASF</value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="50.0" x="540.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.cse.vapi/assigns_a_vRA_Tag_to_a_VM" comparator="0">
+        <display-name>assigns_a_vRA_Tag_to_a_VM</display-name>
+        <script encoded="false">//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.cse.vapi").assigns_a_vRA_Tag_to_a_VM(resourceId,tagKey,tagValue);
+</script>
+        <in-binding>
+            <bind name="resourceId" type="string" export-name="resourceId">
+                <description>VAPI Endpoint</description>
+            </bind>
+            <bind name="tagKey" type="string" export-name="tagKey">
+                <description>ID of the vCenter Tag</description>
+            </bind>
+            <bind name="tagValue" type="string" export-name="tagValue">
+                <description>VM to which tag will be assigned</description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="actionResult" type="string" export-name=""/>
+        </out-binding>
+        <description>Add a note to the workflow schema.</description>
+        <position y="60.0" x="260.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item0" type="task" comparator="0">
+        <display-name>Scriptable task</display-name>
+        <script encoded="false">System.log("deployment_name " + deployment_name);&#13;
+&#13;
+System.log("VMName " + Properties.arguments);&#13;
+System.log("\n" );</script>
+        <in-binding>
+            <bind name="deployment_name" type="string" export-name="tagKey"/>
+        </in-binding>
+        <out-binding/>
+        <description>Simple task with custom script capability.</description>
+        <position y="60.0" x="380.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item1" type="task" comparator="0">
+        <display-name>Scriptable task</display-name>
+        <script encoded="false">var response = VraEntitiesFinder.getMachines(vraHost, null);&#13;
+ System.log("vraVM: " +vraVM);&#13;
+ for (var i=0; i&lt;response.length; i++) {&#13;
+    if (response[i].name === vraVM) {&#13;
+    resourceId = response[i].id;&#13;
+    }&#13;
+ }&#13;
+&#13;
+&#13;
+//resourceId = vraVM.id;&#13;
+&#13;
+//System.log(resourceId);</script>
+        <in-binding>
+            <bind name="vraHost" type="VRA:Host" export-name="vraHost"/>
+            <bind name="vraVM" type="string" export-name="vraVM"/>
+        </in-binding>
+        <out-binding>
+            <bind name="resourceId" type="string" export-name="resourceId"/>
+        </out-binding>
+        <description>Simple task with custom script capability.</description>
+        <position y="60.0" x="160.0"/>
+    </workflow-item>
+</ns2:workflow>
